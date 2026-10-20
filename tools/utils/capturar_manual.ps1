@@ -5,7 +5,8 @@
 # as telas pelo menu lateral. Os nomes e a ordem seguem MANUAL_IMAGE_NAMES de tools/build_release_dotnet_4.py; o
 # pipeline embute as imagens no manual.html.
 #
-# Uso: .\tools\utils\capturar_manual.ps1 -OutDir <pasta> [-TokenProfile RD] [-Exe <qdisk.exe>]
+# Uso (PowerShell 7, pwsh): .\tools\utils\capturar_manual.ps1 -OutDir <pasta> [-TokenProfile RD] [-Exe <qdisk.exe>]
+#   Sem -Exe: usa o build de src\qdisk.UI\bin\Release e, se ele nao existir, dist\qdisk.exe.
 #   Gere numa pasta temporaria, confira e copie para assets\manual\images.
 #
 # © Quallit — Licenciado sob GPL-3.0-or-later.
@@ -22,7 +23,10 @@ param(
 $ErrorActionPreference = 'Stop'
 . (Join-Path $RepoRoot 'tools\utils\uia_lib.ps1')
 $script:OutDir = (New-Item -ItemType Directory -Force $OutDir).FullName
-if (-not $Exe) { $Exe = Join-Path $RepoRoot 'src\qdisk.UI\bin\Release\net8.0-windows\win-x64\qdisk.exe' }
+if (-not $Exe) {
+    $Exe = Join-Path $RepoRoot 'src\qdisk.UI\bin\Release\net8.0-windows\win-x64\qdisk.exe'
+    if (-not (Test-Path $Exe)) { $Exe = Join-Path $RepoRoot 'dist\qdisk.exe' }
+}
 
 function Get-DailyToken([string] $profileName) {
     $ids = (Get-Content (Join-Path $RepoRoot 'config\qdisk.tokens.json') -Raw | ConvertFrom-Json).profiles
