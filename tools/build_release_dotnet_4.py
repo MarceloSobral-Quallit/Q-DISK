@@ -54,12 +54,12 @@ DIST_DIR = PROJECT_ROOT / "dist"
 UPDATE_DIR = DIST_DIR / "update"
 DIST_EXE = DIST_DIR / "qdisk.exe"
 ADM_DIST_DIR = DIST_DIR / "ADM"
-ADM_EXE = ADM_DIST_DIR / "GUI_ADM.exe"
-# Bancada do teste de velocidade: aplicativo autonomo como o GUI_ADM (fora do instalador)
+ADM_EXE = ADM_DIST_DIR / "QDisk_Adm.exe"
+# Bancada do teste de velocidade: aplicativo autonomo como o QDisk_Adm (fora do instalador)
 NETSPEED_PROJECT = PROJECT_ROOT / "tools" / "Quallit.NetSpeedTest" / "Quallit.NetSpeedTest.vbproj"
 NETSPEED_DIST_DIR = DIST_DIR / "NetSpeedTest"
 NETSPEED_EXE = NETSPEED_DIST_DIR / "Quallit.NetSpeedTest.exe"
-# Helper de manifesto de USB do GUI_ADM, publicado compilado ao lado do GUI_ADM.exe (antes: dotnet run --project).
+# Helper de manifesto de USB do QDisk_Adm, publicado compilado ao lado do QDisk_Adm.exe (antes: dotnet run --project).
 ISO_MANIFEST_TOOL_PROJECT = PROJECT_ROOT / "tools" / "Quallit.IsoManifestTool" / "Quallit.IsoManifestTool.csproj"
 ISO_MANIFEST_TOOL_EXE = ADM_DIST_DIR / "Quallit.IsoManifestTool.exe"
 BACKUP_ROOT = PROJECT_ROOT.parent.parent / "PROJECT_BACKUP"
@@ -180,7 +180,7 @@ STEP_TITLES = {
     3: "Atualizar manual",
     4: "Limpar artefatos",
     5: "Publicar app principal",
-    6: "Compilar GUI_ADM e NetSpeedTest",
+    6: "Compilar QDisk_Adm e NetSpeedTest",
     7: "Assinar executaveis",
     8: "Verificar assinaturas",
     9: "Empacotar distribuicao",
@@ -739,7 +739,7 @@ def pyinstaller_version_tuple(version: str) -> tuple[int, int, int, int]:
     return tuple(parts[:4])
 
 
-def write_gui_adm_version_file(path: Path, version: str) -> None:
+def write_qdisk_adm_version_file(path: Path, version: str) -> None:
     filevers = pyinstaller_version_tuple(version)
     safe_version = version.replace("\\", "\\\\").replace("'", "\\'")
     path.write_text(
@@ -759,10 +759,10 @@ def write_gui_adm_version_file(path: Path, version: str) -> None:
         "    StringFileInfo([\n"
         "      StringTable('040904B0', [\n"
         "        StringStruct('CompanyName', 'Quallit Solucoes em TI'),\n"
-        f"        StringStruct('FileDescription', 'GUI_ADM - Quallit Catalogo ADM {safe_version}'),\n"
+        f"        StringStruct('FileDescription', 'QDisk_Adm - Quallit Catalogo ADM {safe_version}'),\n"
         f"        StringStruct('FileVersion', '{safe_version}'),\n"
-        "        StringStruct('InternalName', 'GUI_ADM'),\n"
-        "        StringStruct('OriginalFilename', 'GUI_ADM.exe'),\n"
+        "        StringStruct('InternalName', 'QDisk_Adm'),\n"
+        "        StringStruct('OriginalFilename', 'QDisk_Adm.exe'),\n"
         "        StringStruct('ProductName', 'Q-DISK'),\n"
         f"        StringStruct('ProductVersion', '{safe_version}')\n"
         "      ])\n"
@@ -778,16 +778,16 @@ def resolve_config_json(name: str) -> Path:
     return PROJECT_ROOT / "config" / name
 
 
-def build_gui_adm_exe(log_file: Path | None, version: str | None = None) -> bool:
+def build_qdisk_adm_exe(log_file: Path | None, version: str | None = None) -> bool:
     version = version or read_version()
-    source = PROJECT_ROOT / "GUI_ADM" / "catalog_admin.py"
+    source = PROJECT_ROOT / "QDisk_Adm" / "catalog_admin.py"
     if not source.is_file():
-        log_message(f"Fonte do GUI_ADM nao encontrado: {source}", "ERROR", log_file)
+        log_message(f"Fonte do QDisk_Adm nao encontrado: {source}", "ERROR", log_file)
         return False
 
     ADM_DIST_DIR.mkdir(parents=True, exist_ok=True)
 
-    # Limpeza best-effort de sobras de builds anteriores em que o GUI_ADM.exe
+    # Limpeza best-effort de sobras de builds anteriores em que o QDisk_Adm.exe
     # estava em uso (ver rename abaixo). Se ainda estiverem travadas (processo
     # antigo ainda rodando), ignora -- serao limpas num build futuro.
     for stale in ADM_DIST_DIR.glob(f"{ADM_EXE.stem}.locked-*{ADM_EXE.suffix}"):
@@ -801,7 +801,7 @@ def build_gui_adm_exe(log_file: Path | None, version: str | None = None) -> bool
             ADM_EXE.unlink()
         except OSError:
             # Provavelmente em uso -- cenario tipico quando o proprio
-            # GUI_ADM.exe compilado dispara o build completo (botao
+            # QDisk_Adm.exe compilado dispara o build completo (botao
             # "Executar build completo"): o Windows nao deixa apagar/
             # sobrescrever um executavel em execucao, mas deixa renomea-lo.
             # O processo antigo continua rodando normalmente a partir do
@@ -811,7 +811,7 @@ def build_gui_adm_exe(log_file: Path | None, version: str | None = None) -> bool
             stale_name = ADM_EXE.with_name(f"{ADM_EXE.stem}.locked-{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}{ADM_EXE.suffix}")
             try:
                 ADM_EXE.rename(stale_name)
-                log_message(f"GUI_ADM.exe estava em uso; renomeado para {stale_name.name} para liberar o build.", "WARN", log_file)
+                log_message(f"QDisk_Adm.exe estava em uso; renomeado para {stale_name.name} para liberar o build.", "WARN", log_file)
             except OSError as exc:
                 log_message(f"Nao foi possivel substituir {ADM_EXE}: {exc}", "ERROR", log_file)
                 return False
@@ -819,14 +819,14 @@ def build_gui_adm_exe(log_file: Path | None, version: str | None = None) -> bool
     # Workpath descartavel do PyInstaller: usa um diretorio temporario real do
     # SO (nao uma pasta fixa dentro do projeto) -- e limpo automaticamente ao
     # sair do "with", igual ao clone temporario usado em sync_installer_git.
-    with tempfile.TemporaryDirectory(prefix="quallit-pyinstaller-gui-adm-") as temp_root:
+    with tempfile.TemporaryDirectory(prefix="quallit-pyinstaller-qdisk-adm-") as temp_root:
         work_dir = Path(temp_root)
         spec_dir = work_dir / "spec"
         build_dir = work_dir / "build"
         spec_dir.mkdir(parents=True, exist_ok=True)
         build_dir.mkdir(parents=True, exist_ok=True)
-        version_file = work_dir / "GUI_ADM.version"
-        write_gui_adm_version_file(version_file, version)
+        version_file = work_dir / "QDisk_Adm.version"
+        write_qdisk_adm_version_file(version_file, version)
 
         rc, _ = run_command([
             sys.executable,
@@ -836,7 +836,7 @@ def build_gui_adm_exe(log_file: Path | None, version: str | None = None) -> bool
             "--clean",
             "--onefile",
             "--name",
-            "GUI_ADM",
+            "QDisk_Adm",
             "--distpath",
             str(ADM_DIST_DIR),
             "--workpath",
@@ -846,18 +846,18 @@ def build_gui_adm_exe(log_file: Path | None, version: str | None = None) -> bool
             "--version-file",
             str(version_file),
             str(source),
-        ], log_file=log_file, cwd=PROJECT_ROOT, label="Compilando GUI_ADM (PyInstaller)")
+        ], log_file=log_file, cwd=PROJECT_ROOT, label="Compilando QDisk_Adm (PyInstaller)")
 
         if rc != 0 or not ADM_EXE.is_file():
-            log_message("Falha ao gerar dist/ADM/GUI_ADM.exe com PyInstaller.", "ERROR", log_file)
+            log_message("Falha ao gerar dist/ADM/QDisk_Adm.exe com PyInstaller.", "ERROR", log_file)
             return False
 
-    log_message(f"GUI_ADM gerado: {ADM_EXE} (versao {version})", "OK", log_file)
+    log_message(f"QDisk_Adm gerado: {ADM_EXE} (versao {version})", "OK", log_file)
     return True
 
 
 def build_iso_manifest_tool_exe(log_file: Path | None) -> bool:
-    """Publica tools/Quallit.IsoManifestTool como exe unico em dist/ADM/, usado pelo GUI_ADM para gerar manifestos."""
+    """Publica tools/Quallit.IsoManifestTool como exe unico em dist/ADM/, usado pelo QDisk_Adm para gerar manifestos."""
     if not ISO_MANIFEST_TOOL_PROJECT.is_file():
         log_message(f"Projeto do helper de manifesto nao encontrado: {ISO_MANIFEST_TOOL_PROJECT}", "ERROR", log_file)
         return False
@@ -883,7 +883,7 @@ def build_iso_manifest_tool_exe(log_file: Path | None) -> bool:
 
 def build_netspeedtest_exe(log_file: Path | None, version: str | None = None) -> bool:
     """Publica a bancada do teste de velocidade (tools/Quallit.NetSpeedTest) como exe
-    unico autonomo em dist/NetSpeedTest/, como o GUI_ADM em dist/ADM/. A versao vem do
+    unico autonomo em dist/NetSpeedTest/, como o QDisk_Adm em dist/ADM/. A versao vem do
     Directory.Build.props, como a do app principal. Nao entra no instalador nem no update."""
     version = version or read_version()
     if not NETSPEED_PROJECT.is_file():
@@ -900,7 +900,7 @@ def build_netspeedtest_exe(log_file: Path | None, version: str | None = None) ->
         try:
             NETSPEED_EXE.unlink()
         except OSError:
-            # Em uso (bancada aberta): renomeia para liberar o caminho, como no GUI_ADM.
+            # Em uso (bancada aberta): renomeia para liberar o caminho, como no QDisk_Adm.
             stale_name = NETSPEED_EXE.with_name(f"{NETSPEED_EXE.stem}.locked-{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}{NETSPEED_EXE.suffix}")
             try:
                 NETSPEED_EXE.rename(stale_name)
@@ -1683,7 +1683,7 @@ def run_full_build(args: argparse.Namespace, log_file: Path, status: dict[int, s
 
     banner(STEP_TITLES[6], 6, len(STEP_TITLES), log_file)
     t0 = time.monotonic()
-    status[6] = "OK" if build_gui_adm_exe(log_file, version) and build_iso_manifest_tool_exe(log_file) and build_netspeedtest_exe(log_file, version) else "FALHOU"
+    status[6] = "OK" if build_qdisk_adm_exe(log_file, version) and build_iso_manifest_tool_exe(log_file) and build_netspeedtest_exe(log_file, version) else "FALHOU"
     duration[6] = time.monotonic() - t0
     if status[6] == "FALHOU":
         return 1
@@ -1769,7 +1769,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--verify-only", action="store_true")
     parser.add_argument(
         "--sign-only", action="store_true",
-        help="Reassina o(s) executavel(is) ja publicado(s) em dist/ (app principal, GUI_ADM e/ou NetSpeedTest) sem rebuildar nada. Util apos trocar/renovar o certificado.",
+        help="Reassina o(s) executavel(is) ja publicado(s) em dist/ (app principal, QDisk_Adm e/ou NetSpeedTest) sem rebuildar nada. Util apos trocar/renovar o certificado.",
     )
     parser.add_argument("--no-update-package", action="store_true")
     parser.add_argument("--no-fallback-publish", action="store_true")

@@ -3,7 +3,7 @@ using qdisk.Core.Services;
 
 namespace qdisk.Tests;
 
-// P2: regra unica de metodo de gravacao (helper do GUI_ADM e app).
+// P2: regra unica de metodo de gravacao (helper do QDisk_Adm e app).
 public class UsbWriteMethodAdvisorTests
 {
     private const long Gb = 1024L * 1024 * 1024;

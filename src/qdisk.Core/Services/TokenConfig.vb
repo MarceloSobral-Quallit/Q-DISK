@@ -5,7 +5,7 @@ Namespace Services
     ''' <summary>
     ''' Perfis de acesso e verificadores do token diario. Le config/qdisk.tokens.app.json (embutido no executavel),
     ''' gerado por tools/utils/generate_token_verifiers.py: nomes, catalogos e verificadores PBKDF2 por dia, sem os
-    ''' internal_id (esses ficam so em config/qdisk.tokens.json, no repositorio e no GUI_ADM).
+    ''' internal_id (esses ficam so em config/qdisk.tokens.json, no repositorio e no QDisk_Adm).
     ''' </summary>
     Public Class TokenConfig
         Public Const FileName As String = "qdisk.tokens.app.json"

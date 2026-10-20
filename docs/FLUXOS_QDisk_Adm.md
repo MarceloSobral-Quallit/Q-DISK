@@ -1,8 +1,8 @@
-# Fluxos do administrador (GUI_ADM)
+# Fluxos do administrador (QDisk_Adm)
 
-Fluxos do GUI_ADM (`GUI_ADM/catalog_admin.py`), a ferramenta que mantém os catálogos `config/qdisk.quallit.*.json`,
+Fluxos do QDisk_Adm (`QDisk_Adm/catalog_admin.py`), a ferramenta que mantém os catálogos `config/qdisk.quallit.*.json`,
 gera os manifestos USB em `config/manifests/`, decide o método de gravação de cada ISO, verifica as imagens no
-Microsoft Defender e publica. Uso botão a botão e linha de comando: [`GUI_ADM/README.md`](../GUI_ADM/README.md).
+Microsoft Defender e publica. Uso botão a botão e linha de comando: [`QDisk_Adm/README.md`](../QDisk_Adm/README.md).
 Fluxos do app: [`FLUXOS_APP.md`](FLUXOS_APP.md).
 
 ## Sumário
@@ -23,7 +23,7 @@ Fluxos do app: [`FLUXOS_APP.md`](FLUXOS_APP.md).
 
 ```mermaid
 flowchart LR
-    A["Abrir: run_gui_adm.cmd,<br/>python catalog_admin.py<br/>ou dist/ADM/GUI_ADM.exe"] --> B["Abre o primeiro<br/>qdisk.quallit.*.json da pasta"]
+    A["Abrir: run_qdisk_adm.cmd,<br/>python catalog_admin.py<br/>ou dist/ADM/QDisk_Adm.exe"] --> B["Abre o primeiro<br/>qdisk.quallit.*.json da pasta"]
     B --> C[Editar itens]
     C --> D["TIBX: Hashes…"]
     C --> E["ISO: Preparar ISO…"]
@@ -42,7 +42,7 @@ flowchart TD
     A[Início] --> B{QDISK_ROOT definida?}
     B -- sim --> R[Raiz = QDISK_ROOT]
     B -- não --> C{Executável?}
-    C -- "não (Python)" --> R1["Raiz = pasta acima de GUI_ADM"]
+    C -- "não (Python)" --> R1["Raiz = pasta acima de QDisk_Adm"]
     C -- "sim, em dist/ADM" --> R2[Raiz = dois níveis acima]
     C -- "sim, em outra pasta" --> R3[Raiz = pasta acima da do .exe]
     R & R1 & R2 & R3 --> D{QDISK_CONFIG_DIR definida?}
@@ -246,7 +246,7 @@ Etapas do pipeline: [`DOCUMENTACAO_TECNICA.md`](DOCUMENTACAO_TECNICA.md#pipeline
 
 ```mermaid
 flowchart TD
-    A["python GUI_ADM/catalog_admin.py"] --> B{Opção}
+    A["python QDisk_Adm/catalog_admin.py"] --> B{Opção}
     B -- "--validate" --> V[Valida e sai com 0 ou 1]
     B -- "--export-package" --> P["Valida e grava {build, items}"]
     B -- "--generate-manifest" --> M[Manifesto de uma ISO + resumo]
@@ -260,10 +260,10 @@ flowchart TD
 Uma ação por execução, na ordem do diagrama de cima para baixo. Exemplo de preparo em lote de um catálogo de ISOs:
 
 ```powershell
-python .\GUI_ADM\catalog_admin.py --generate-missing-manifests .\config\qdisk.quallit.pnb.json --refresh
-python .\GUI_ADM\catalog_admin.py --suggest-write-policies .\config\qdisk.quallit.pnb.json
-python .\GUI_ADM\catalog_admin.py --suggest-write-policies .\config\qdisk.quallit.pnb.json --apply --overwrite
-python .\GUI_ADM\catalog_admin.py --validate .\config\qdisk.quallit.pnb.json
+python .\QDisk_Adm\catalog_admin.py --generate-missing-manifests .\config\qdisk.quallit.pnb.json --refresh
+python .\QDisk_Adm\catalog_admin.py --suggest-write-policies .\config\qdisk.quallit.pnb.json
+python .\QDisk_Adm\catalog_admin.py --suggest-write-policies .\config\qdisk.quallit.pnb.json --apply --overwrite
+python .\QDisk_Adm\catalog_admin.py --validate .\config\qdisk.quallit.pnb.json
 ```
 
-Opções e exemplos completos: [`GUI_ADM/README.md`](../GUI_ADM/README.md#linha-de-comando).
+Opções e exemplos completos: [`QDisk_Adm/README.md`](../QDisk_Adm/README.md#linha-de-comando).

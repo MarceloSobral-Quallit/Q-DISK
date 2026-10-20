@@ -3,7 +3,7 @@ Imports qdisk.Core.Models
 Namespace Services
     ''' <summary>
     ''' Texto de orientacao de uma imagem do catalogo para o tecnico: a descricao funcional (campo description, editado
-    ''' no GUI_ADM) e o "Como gravar", gerado a partir da usbWritePolicy (ISO) ou fixo para TIBX. Gerar o "Como gravar"
+    ''' no QDisk_Adm) e o "Como gravar", gerado a partir da usbWritePolicy (ISO) ou fixo para TIBX. Gerar o "Como gravar"
     ''' em vez de escreve-lo a mao mantem a orientacao igual a politica quando ela muda.
     ''' </summary>
     Public NotInheritable Class ImageGuidance

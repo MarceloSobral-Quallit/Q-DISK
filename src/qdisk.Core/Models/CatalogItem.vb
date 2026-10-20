@@ -20,9 +20,9 @@ Namespace Models
         Public Property Sha256Url As String
         Public Property ImageSizeBytes As Long
         Public Property UsbIdentification As UsbIdentificationInfo
-        ''' <summary>Metodo de gravacao USB decidido no GUI_ADM para esta ISO (P2).</summary>
+        ''' <summary>Metodo de gravacao USB decidido no QDisk_Adm para esta ISO (P2).</summary>
         Public Property UsbWritePolicy As UsbWritePolicyInfo
-        ''' <summary>Descricao funcional da imagem (o que e e para que serve), editada no GUI_ADM e exibida no app.</summary>
+        ''' <summary>Descricao funcional da imagem (o que e e para que serve), editada no QDisk_Adm e exibida no app.</summary>
         Public Property Description As String
     End Class
 

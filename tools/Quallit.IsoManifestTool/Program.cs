@@ -11,7 +11,7 @@ namespace Quallit.IsoManifestTool;
 
 internal static class Program
 {
-    // Identifica a regra que produziu recommendedMethod/methods; o GUI_ADM trata outros valores como analise parcial.
+    // Identifica a regra que produziu recommendedMethod/methods; o QDisk_Adm trata outros valores como analise parcial.
     private const string AnalysisEngine = "core-1";
 
     // Manifestos publicados sao UTF-8 sem BOM (o manifestSha256 e calculado sobre os bytes exatos).

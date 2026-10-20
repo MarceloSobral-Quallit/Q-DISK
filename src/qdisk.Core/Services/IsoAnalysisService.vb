@@ -302,7 +302,7 @@ Namespace Services
             If result.HasGrub Then result.Reasons.Add("Artefatos GRUB detectados.")
             If result.HasAcronisBootwiz Then result.Reasons.Add("Artefatos Acronis Bootwiz detectados.")
 
-            ' Recomendacao derivada da regra unica de metodo (UsbWriteMethodAdvisor), a mesma do GUI_ADM e da janela de
+            ' Recomendacao derivada da regra unica de metodo (UsbWriteMethodAdvisor), a mesma do QDisk_Adm e da janela de
             ' metodo do app; este enum segue alimentando rotulo da lista, confirmacoes e evidencias.
             Dim assessment = New UsbWriteMethodAdvisor().Assess(result)
             Select Case assessment.RecommendedMethod

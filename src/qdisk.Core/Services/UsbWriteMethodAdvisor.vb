@@ -2,7 +2,7 @@ Imports qdisk.Core.Models
 
 Namespace Services
     ''' <summary>
-    ''' Regra unica de metodo de gravacao USB. Usada pelo helper de manifesto (decisao do GUI_ADM) e pelo app
+    ''' Regra unica de metodo de gravacao USB. Usada pelo helper de manifesto (decisao do QDisk_Adm) e pelo app
     ''' (ISOs fora dos catalogos). Trabalha so com o IsoAnalysisResult; nao le a imagem.
     ''' </summary>
     Public NotInheritable Class UsbWriteMethodAdvisor

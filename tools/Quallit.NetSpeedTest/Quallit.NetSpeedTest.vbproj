@@ -13,7 +13,7 @@
     <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
     <OptionStrict>Off</OptionStrict>
     <OptionInfer>On</OptionInfer>
-    <!-- Aplicativo autônomo, como o GUI_ADM: um exe só, sem .NET instalado (mesmas opções do app principal).
+    <!-- Aplicativo autônomo, como o QDisk_Adm: um exe só, sem .NET instalado (mesmas opções do app principal).
          IncludeAllContentForSelfExtract põe os ícones e o logo dentro do exe; na execução eles são extraídos
          junto com o app e AppContext.BaseDirectory aponta para essa pasta (AppPaths.AssetsDir). -->
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>

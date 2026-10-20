@@ -29,7 +29,7 @@
 - **Teste de velocidade** das origens, **Logs**, **Configurações**, **Manual** embutido e **atualização online**
   assinada.
 
-O **GUI_ADM** (`GUI_ADM/`) é a ferramenta de administração: mantém os catálogos, gera os manifestos USB, decide o
+O **QDisk_Adm** (`QDisk_Adm/`) é a ferramenta de administração: mantém os catálogos, gera os manifestos USB, decide o
 método de gravação de cada ISO, verifica as imagens no Microsoft Defender e publica.
 
 ## Documentação
@@ -37,12 +37,12 @@ método de gravação de cada ISO, verifica as imagens no Microsoft Defender e p
 | Documento | Conteúdo |
 |---|---|
 | [docs/FLUXOS_APP.md](docs/FLUXOS_APP.md) | Fluxos do aplicativo, tela a tela (diagramas) |
-| [docs/FLUXOS_GUI_ADM.md](docs/FLUXOS_GUI_ADM.md) | Fluxos do administrador de catálogos (diagramas) |
+| [docs/FLUXOS_QDisk_Adm.md](docs/FLUXOS_QDisk_Adm.md) | Fluxos do administrador de catálogos (diagramas) |
 | [docs/DOCUMENTACAO_TECNICA.md](docs/DOCUMENTACAO_TECNICA.md) | Guia do desenvolvedor: estrutura, arquitetura, configuração, build, release, testes, tarefas comuns, catálogos e servidores, atualização online, método de gravação por imagem e regra do token para o site |
 | [docs/pendencias.md](docs/pendencias.md) | O que está em aberto |
 | [docs/RoadMap.md](docs/RoadMap.md) | Histórico de versões |
 | [docs/RESULTADOS_TESTES.md](docs/RESULTADOS_TESTES.md) | Resultados de todos os testes reais (bancadas e testes pelo app) |
-| [GUI_ADM/README.md](GUI_ADM/README.md) | Uso do GUI_ADM, botão a botão |
+| [QDisk_Adm/README.md](QDisk_Adm/README.md) | Uso do QDisk_Adm, botão a botão |
 | [docs/arquivo/](docs/arquivo/README.md) | Documentos antigos, só para consulta |
 
 ## Início rápido (desenvolvimento)
@@ -50,7 +50,7 @@ método de gravação de cada ISO, verifica as imagens no Microsoft Defender e p
 ```powershell
 dotnet build src\qdisk.UI -c Release          # app
 dotnet test tests\qdisk.Tests                 # testes unitários
-.\GUI_ADM\run_gui_adm.cmd                                   # administrador de catálogos
+.\QDisk_Adm\run_qdisk_adm.cmd                                   # administrador de catálogos
 python tools\build_release_dotnet_4.py                      # release completa (bump, build, assinatura, publicação)
 ```
 

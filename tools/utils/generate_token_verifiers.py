@@ -3,7 +3,7 @@
 # Gera config/qdisk.tokens.app.json a partir de config/qdisk.tokens.json.
 #
 # O app embute so o arquivo gerado: perfis (nome, catalogo) e, para cada perfil e dia da janela, o PBKDF2-SHA256 do
-# token daquele dia. Os internal_id ficam so em qdisk.tokens.json (repositorio privado e GUI_ADM). O token
+# token daquele dia. Os internal_id ficam so em qdisk.tokens.json (repositorio privado e QDisk_Adm). O token
 # continua o mesmo do site (docs/DOCUMENTACAO_TECNICA.md, secao 14). A mesma conta do hash esta em
 # TokenVerifierSet.ComputeHash (src/qdisk.Core/Services/TokenVerifiers.vb).
 #

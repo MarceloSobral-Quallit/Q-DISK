@@ -480,7 +480,7 @@ def make_build_metadata() -> dict:
         "product": "Q-DISK",
         "version": read_version(),
         "buildDateUtc": dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
-        "generatedBy": "GUI_ADM/catalog_admin.py",
+        "generatedBy": "QDisk_Adm/catalog_admin.py",
     }
 
 
@@ -999,7 +999,7 @@ def image_scan_summary(scan: object, item_sha256: str = "") -> str:
 
 
 def get_image_scan(item: dict) -> dict | None:
-    """Resultado da ultima verificacao do Defender (campo imageScan; preservado em _extra pelo GUI_ADM)."""
+    """Resultado da ultima verificacao do Defender (campo imageScan; preservado em _extra pelo QDisk_Adm)."""
     scan = item.get("imageScan")
     if not isinstance(scan, dict) and isinstance(item.get("_extra"), dict):
         scan = item["_extra"].get("imageScan")
@@ -1480,7 +1480,7 @@ def setup_logging() -> tuple[logging.Logger, Path, Path]:
     logger.addHandler(app_handler)
     logger.addHandler(debug_handler)
     logger.propagate = False
-    logger.info("GUI_ADM iniciado.")
+    logger.info("QDisk_Adm iniciado.")
     logger.debug("Log operacional: %s", log_path)
     logger.debug("Log debug: %s", debug_path)
     return logger, log_path, debug_path

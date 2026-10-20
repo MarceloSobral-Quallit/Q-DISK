@@ -1,6 +1,6 @@
-# GUI_ADM — administração dos catálogos do qdisk
+# QDisk_Adm — administração dos catálogos do qdisk
 
-O GUI_ADM (`GUI_ADM/catalog_admin.py`, Python com Tkinter) é a ferramenta do administrador para:
+O QDisk_Adm (`QDisk_Adm/catalog_admin.py`, Python com Tkinter) é a ferramenta do administrador para:
 
 - editar e validar os catálogos `config/qdisk.quallit.*.json`;
 - gerar os manifestos USB das ISOs em `config/manifests/`;
@@ -12,7 +12,7 @@ O GUI_ADM (`GUI_ADM/catalog_admin.py`, Python com Tkinter) é a ferramenta do ad
 A janela se chama **Quallit Catalogo ADM v&lt;versão&gt;**; a versão vem da linha `Versao:` de
 [`version_info.txt`](../version_info.txt). Um `*` no fim do título indica alterações ainda não salvas.
 
-Fluxos com diagramas: [`docs/FLUXOS_GUI_ADM.md`](../docs/FLUXOS_GUI_ADM.md).
+Fluxos com diagramas: [`docs/FLUXOS_QDisk_Adm.md`](../docs/FLUXOS_QDisk_Adm.md).
 
 ## Sumário
 
@@ -35,20 +35,20 @@ Fluxos com diagramas: [`docs/FLUXOS_GUI_ADM.md`](../docs/FLUXOS_GUI_ADM.md).
 Pelo launcher (troca para a raiz do repositório e roda o script, sem repassar argumentos):
 
 ```powershell
-.\GUI_ADM\run_gui_adm.cmd
+.\QDisk_Adm\run_qdisk_adm.cmd
 ```
 
 Direto pelo Python, a partir da raiz do repositório:
 
 ```powershell
-python .\GUI_ADM\catalog_admin.py
+python .\QDisk_Adm\catalog_admin.py
 ```
 
-Executável gerado pelo pipeline (etapa "Compilar GUI_ADM e NetSpeedTest" de
+Executável gerado pelo pipeline (etapa "Compilar QDisk_Adm e NetSpeedTest" de
 [`tools/build_release_dotnet_4.py`](../tools/build_release_dotnet_4.py)):
 
 ```powershell
-.\dist\ADM\GUI_ADM.exe
+.\dist\ADM\QDisk_Adm.exe
 ```
 
 Sem argumentos, abre a janela. Com argumentos, roda a [linha de comando](#linha-de-comando).
@@ -70,7 +70,7 @@ específicas:
 
 | Item | Valor |
 |---|---|
-| Raiz do projeto | `QDISK_ROOT`, se definida; senão a pasta acima de `GUI_ADM/`. No executável: dois níveis acima de `dist/ADM/` (ou a pasta acima da do `.exe`, se ele estiver em outro lugar). |
+| Raiz do projeto | `QDISK_ROOT`, se definida; senão a pasta acima de `QDisk_Adm/`. No executável: dois níveis acima de `dist/ADM/` (ou a pasta acima da do `.exe`, se ele estiver em outro lugar). |
 | Pasta dos catálogos | `QDISK_CONFIG_DIR`, se definida; senão `<raiz>/config` |
 | Catálogos | `<pasta dos catálogos>/qdisk.quallit.*.json` (`rd`, `pnb`, `devteam`, `devteam2`, `tools`) |
 | Endpoints | `<pasta dos catálogos>/qdisk.endpoints.json` |
@@ -81,9 +81,9 @@ específicas:
 | Log detalhado | `<pasta do programa>/log_debug/catalog_admin_debug_AAAAMMDD_HHMMSS.log` (um por execução) |
 | Console do build | `<pasta do programa>/log_debug/build_console_AAAAMMDD_HHMMSS.log` |
 
-"Pasta do programa" é `GUI_ADM/` no modo Python e a pasta do `.exe` (`dist/ADM/`) no executável.
+"Pasta do programa" é `QDisk_Adm/` no modo Python e a pasta do `.exe` (`dist/ADM/`) no executável.
 
-Quando `QDISK_CONFIG_DIR` aponta para outra pasta, antes do **Upload** e do **Build completo** o GUI_ADM copia todos
+Quando `QDISK_CONFIG_DIR` aponta para outra pasta, antes do **Upload** e do **Build completo** o QDisk_Adm copia todos
 os `*.json` dessa pasta (com subpastas, incluindo `manifests/`) para `<raiz>/config`, que é de onde os scripts leem.
 
 ## A janela
@@ -114,7 +114,7 @@ Atalhos: `Ctrl+S` (Salvar) e `Ctrl+Shift+S` (Salvar como…).
 | **Novo** | Começa um catálogo vazio, em memória, sem arquivo. |
 | **Salvar ▾** → **Salvar** | Aplica as alterações pendentes do item, valida e grava no arquivo aberto. Sem arquivo, age como "Salvar como…". |
 | **Salvar ▾** → **Salvar como…** | Igual, escolhendo o arquivo. |
-| **Salvar ▾** → **Salvar no formato publicado com build/items** | Liga/desliga o formato de gravação. Desligado: array direto `[ … ]`. Ligado: `{ "build": {…}, "items": [ … ] }`, com `build.product` = `Q-DISK`, `build.version` (de `version_info.txt`), `build.buildDateUtc` e `build.generatedBy` = `GUI_ADM/catalog_admin.py`. Ao abrir um arquivo, a opção acompanha o formato dele. |
+| **Salvar ▾** → **Salvar no formato publicado com build/items** | Liga/desliga o formato de gravação. Desligado: array direto `[ … ]`. Ligado: `{ "build": {…}, "items": [ … ] }`, com `build.product` = `Q-DISK`, `build.version` (de `version_info.txt`), `build.buildDateUtc` e `build.generatedBy` = `QDisk_Adm/catalog_admin.py`. Ao abrir um arquivo, a opção acompanha o formato dele. |
 | **Validar** | Aplica as alterações pendentes e valida o catálogo inteiro (até 20 erros na mensagem). Ver [Validação](#validação-do-catálogo). |
 | **Destino** | Para onde vai o Upload: `Both` (Installer Git + Fallback mateweb), `InstallerGit` (somente installer Git) ou `Fallback` (somente fallback mateweb). Padrão: `Both`. |
 | **Upload** | Publica o catálogo aberto. Ver [Upload](#upload). |
@@ -174,7 +174,7 @@ sequência:
 1. **Manifesto USB.** Usa o helper `Quallit.IsoManifestTool`, procurado nesta ordem: `Quallit.IsoManifestTool.exe`
    na pasta do programa; `<raiz>/dist/ADM/Quallit.IsoManifestTool.exe`; `dotnet run --project
    tools/Quallit.IsoManifestTool/Quallit.IsoManifestTool.csproj -c Release`. Se o helper falhar, o erro é exibido e
-   o fluxo para. Só quando nenhuma das três opções existe o GUI_ADM usa a análise parcial em Python (monta a ISO
+   o fluxo para. Só quando nenhuma das três opções existe o QDisk_Adm usa a análise parcial em Python (monta a ISO
    pelo Windows), marcada `analysisEngine: python-fallback`, que não gera sugestão de gravação.
 2. Grava `<pasta dos catálogos>/manifests/<nome-da-iso>.manifest.json` e põe o resumo em `usbIdentification` do
    item, com `manifestUrl` = `<primary.baseUrl>/manifests/<nome-da-iso>.manifest.json` (de
@@ -229,7 +229,7 @@ Regras da política (validadas ao aplicar o item):
 
 ## Microsoft Defender e ISO limpa
 
-**Verificar no Defender** — exige item selecionado; escolha a ISO (seletor em `~/Downloads/qdisk`). O GUI_ADM
+**Verificar no Defender** — exige item selecionado; escolha a ISO (seletor em `~/Downloads/qdisk`). O QDisk_Adm
 calcula o SHA-256 da ISO, monta a ISO e roda `MpCmdRun.exe -Scan -ScanType 3 -File <unidade> -DisableRemediation`
 (sem remediação: nada vai para a quarentena). O resultado vai para o campo `imageScan` do item:
 
@@ -290,7 +290,7 @@ se existir. Senha SSH: variável de ambiente ou `SshPassword` em `config/secret.
 [`config/secret.md.example`](../config/secret.md.example)). O script também lê variáveis de um arquivo `.env`
 (`tools/.env`, `tools/publish_update.env`, `.env` ou `config/publish_update.env`, o primeiro que existir).
 
-Ensaio sem enviar nada (direto pelo script; o upload do GUI_ADM não usa esta opção):
+Ensaio sem enviar nada (direto pelo script; o upload do QDisk_Adm não usa esta opção):
 
 ```powershell
 .\tools\utils\publish_catalogs.ps1 -CatalogPath .\config\qdisk.quallit.tools.json -Target Fallback -DryRun
@@ -327,7 +327,7 @@ todos os campos, menos a host key, são obrigatórios.
 
 Nenhum perfil tem `qdisk.quallit.tools.json` ou `qdisk.quallit.devteam2.json` como catálogo associado.
 
-Se algo da aba Tokens mudou, o GUI_ADM roda `tools/utils/generate_token_verifiers.py`, que gera
+Se algo da aba Tokens mudou, o QDisk_Adm roda `tools/utils/generate_token_verifiers.py`, que gera
 `config/qdisk.tokens.app.json` (o arquivo embutido no app) a partir de `config/qdisk.tokens.json`. Sem `python`/`py`
 no `PATH` ou sem o script, avisa no console que o próximo build regera.
 
@@ -359,7 +359,7 @@ Usada por **Validar**, **Salvar**, **Atualizar item**, **Upload** e pela linha d
 - `usbWritePolicy` conforme a [janela Gravação USB](#janela-gravação-usb);
 - `description` com até 600 caracteres.
 
-Formatos aceitos ao abrir: array direto `[ … ]` ou objeto com `items`. Campos que o GUI_ADM não edita (por exemplo
+Formatos aceitos ao abrir: array direto `[ … ]` ou objeto com `items`. Campos que o QDisk_Adm não edita (por exemplo
 `imageScan`) são preservados ao salvar.
 
 ## Linha de comando
@@ -367,7 +367,7 @@ Formatos aceitos ao abrir: array direto `[ … ]` ou objeto com `items`. Campos 
 Execute a partir da raiz do repositório:
 
 ```powershell
-python .\GUI_ADM\catalog_admin.py <opções>
+python .\QDisk_Adm\catalog_admin.py <opções>
 ```
 
 Cada execução faz uma única ação, na primeira que estiver presente nesta ordem: `--validate`, `--export-package`,
@@ -395,34 +395,34 @@ Sem nenhuma delas, abre a janela.
 | `--exclude` | arquivos… | nenhum | Com `--clean-iso`: caminhos relativos à raiz da ISO. |
 | `-h`, `--help` | — | — | Mostra a ajuda. |
 
-O `run_gui_adm.cmd` não repassa argumentos; para a linha de comando use o `python` direto.
+O `run_qdisk_adm.cmd` não repassa argumentos; para a linha de comando use o `python` direto.
 
 ### Exemplos
 
 Validar catálogos:
 
 ```powershell
-python .\GUI_ADM\catalog_admin.py --validate .\config\qdisk.quallit.tools.json
-python .\GUI_ADM\catalog_admin.py --validate .\config\qdisk.quallit.pnb.json
+python .\QDisk_Adm\catalog_admin.py --validate .\config\qdisk.quallit.tools.json
+python .\QDisk_Adm\catalog_admin.py --validate .\config\qdisk.quallit.pnb.json
 ```
 
 Exportar no formato publicado (para fora do repositório):
 
 ```powershell
-python .\GUI_ADM\catalog_admin.py --export-package .\config\qdisk.quallit.tools.json "$env:TEMP\qdisk.quallit.tools.json"
+python .\QDisk_Adm\catalog_admin.py --export-package .\config\qdisk.quallit.tools.json "$env:TEMP\qdisk.quallit.tools.json"
 ```
 
 Gerar o manifesto de uma ISO (grava em `config\manifests\` e imprime o resumo):
 
 ```powershell
-python .\GUI_ADM\catalog_admin.py --generate-manifest "$HOME\Downloads\qdisk\PNB-Win11-x64.iso"
+python .\QDisk_Adm\catalog_admin.py --generate-manifest "$HOME\Downloads\qdisk\PNB-Win11-x64.iso"
 ```
 
 Preencher os manifestos que faltam num catálogo, com as imagens em `~/Downloads/qdisk`:
 
 ```powershell
-python .\GUI_ADM\catalog_admin.py --generate-missing-manifests .\config\qdisk.quallit.pnb.json
-python .\GUI_ADM\catalog_admin.py --generate-missing-manifests .\config\qdisk.quallit.pnb.json --image-dir "D:\isos" --refresh
+python .\QDisk_Adm\catalog_admin.py --generate-missing-manifests .\config\qdisk.quallit.pnb.json
+python .\QDisk_Adm\catalog_admin.py --generate-missing-manifests .\config\qdisk.quallit.pnb.json --image-dir "D:\isos" --refresh
 ```
 
 Comportamento de `--generate-missing-manifests`, item a item:
@@ -439,9 +439,9 @@ Comportamento de `--generate-missing-manifests`, item a item:
 Sugestões de método de gravação:
 
 ```powershell
-python .\GUI_ADM\catalog_admin.py --suggest-write-policies .\config\qdisk.quallit.pnb.json
-python .\GUI_ADM\catalog_admin.py --suggest-write-policies .\config\qdisk.quallit.pnb.json --apply
-python .\GUI_ADM\catalog_admin.py --suggest-write-policies .\config\qdisk.quallit.pnb.json --apply --overwrite
+python .\QDisk_Adm\catalog_admin.py --suggest-write-policies .\config\qdisk.quallit.pnb.json
+python .\QDisk_Adm\catalog_admin.py --suggest-write-policies .\config\qdisk.quallit.pnb.json --apply
+python .\QDisk_Adm\catalog_admin.py --suggest-write-policies .\config\qdisk.quallit.pnb.json --apply --overwrite
 ```
 
 Cada item sai como `SKIP` (não é ISO, ou já tem política sem `--overwrite`), `PENDENTE` (sem análise completa ou sem
@@ -450,7 +450,7 @@ método que preserve a imagem), `SUGESTAO` (sem `--apply`) ou `OK` (gravado).
 Verificar uma ISO no Defender e gravar o resultado nos dois itens que usam a mesma imagem:
 
 ```powershell
-python .\GUI_ADM\catalog_admin.py --scan-iso "$HOME\Downloads\qdisk\Quallit_Boot.iso" --catalog .\config\qdisk.quallit.tools.json --item "quallit-boot-sharepoint,quallit-boot-dropbox"
+python .\QDisk_Adm\catalog_admin.py --scan-iso "$HOME\Downloads\qdisk\Quallit_Boot.iso" --catalog .\config\qdisk.quallit.tools.json --item "quallit-boot-sharepoint,quallit-boot-dropbox"
 ```
 
 Sem `--catalog`/`--item`, só imprime o resultado.
@@ -458,14 +458,14 @@ Sem `--catalog`/`--item`, só imprime o resultado.
 Gerar a ISO limpa:
 
 ```powershell
-python .\GUI_ADM\catalog_admin.py --clean-iso "$HOME\Downloads\qdisk\Quallit_Boot.iso" --clean-out "$HOME\Downloads\qdisk\Quallit_Boot_clean.iso" --exclude "Programs\ProduKey\ProduKey.exe"
+python .\QDisk_Adm\catalog_admin.py --clean-iso "$HOME\Downloads\qdisk\Quallit_Boot.iso" --clean-out "$HOME\Downloads\qdisk\Quallit_Boot_clean.iso" --exclude "Programs\ProduKey\ProduKey.exe"
 ```
 
 Imprime o caminho, o tamanho e o SHA-256 da ISO gerada.
 
 ### Helper de manifesto direto
 
-O GUI_ADM chama o helper assim (a análise completa só sai por ele):
+O QDisk_Adm chama o helper assim (a análise completa só sai por ele):
 
 ```powershell
 .\dist\ADM\Quallit.IsoManifestTool.exe --iso "<iso>" --out .\config\manifests --manifest-url-base "https://installer.quallit.com.br/qdisk/manifests" --summary-out "<resumo.json>" --quiet

@@ -5,7 +5,7 @@ Mermaid (o GitHub e o VS Code os renderizam). Os textos entre aspas são os que 
 código (inclusive a falta de acentos em várias mensagens).
 
 Documentos relacionados: [`DOCUMENTACAO_TECNICA.md`](DOCUMENTACAO_TECNICA.md) (guia técnico) e
-[`FLUXOS_GUI_ADM.md`](FLUXOS_GUI_ADM.md) (administrador de catálogos).
+[`FLUXOS_QDisk_Adm.md`](FLUXOS_QDisk_Adm.md) (administrador de catálogos).
 
 Abreviações usadas nas referências:
 
