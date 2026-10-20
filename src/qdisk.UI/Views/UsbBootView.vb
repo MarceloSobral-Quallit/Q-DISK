@@ -922,7 +922,7 @@ Namespace Views
                 ' Adicionar argumentos se houver
                 If Not String.IsNullOrEmpty(argsWithToken) Then
                     startInfo.Arguments = argsWithToken
-                    _logService.WriteAsync($"APP | RESTART_AS_ADMIN | TOKEN_PASSED | {argsWithToken}").GetAwaiter().GetResult()
+                    _logService.WriteAsync("APP | RESTART_AS_ADMIN | TOKEN_PASSED").GetAwaiter().GetResult()
                 Else
                     _logService.WriteAsync("APP | RESTART_AS_ADMIN | NO_TOKEN").GetAwaiter().GetResult()
                 End If
