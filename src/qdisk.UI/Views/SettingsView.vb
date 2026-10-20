@@ -209,7 +209,6 @@ Namespace Views
                 .AutoVerifySha256AfterUsbBurn = CheckAutoVerifySha256.Checked,
                 .AutoUpdateApp = CheckAutoUpdateApp.Checked,
                 .ImageCacheDir = currentSettings.ImageCacheDir,
-                .LegacyImageCacheMigrationPrompted = currentSettings.LegacyImageCacheMigrationPrompted,
                 .EnableMultiConnectionDownload = CheckEnableMultiConnection.Checked,
                 .MaxDownloadConnections = CInt(NumericMaxConnections.Value),
                 .ShowIdentifyUsbButton = CheckShowIdentifyUsbButton.Checked,

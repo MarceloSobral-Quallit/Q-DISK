@@ -37,9 +37,6 @@ Namespace Services
                 settings = New AppSettings()
             End If
             settings.ImageCacheDir = ResolveImageCacheDir(settings.ImageCacheDir)
-            If AppSettings.ApplyDefaultUpgrades(settings) Then
-                Save(settings)
-            End If
 
             Return settings
         End Function

@@ -29,23 +29,16 @@ public class AppSettingsDefaultsTests
         Assert.True(AppSettings.CreateDefault().AutoValidateMd5OnStartup);
         Assert.True(AppSettings.CreateDefault().AutoUpdateApp);
         Assert.True(new AppSettings().AutoValidateMd5OnStartup);
-        Assert.False(AppSettings.ApplyDefaultUpgrades(AppSettings.CreateDefault()));
     }
 
     [Fact]
-    public void ConfiguracaoSalvaAntiga_LigaUmaVez_DepoisRespeitaOTecnico()
+    public void ConfiguracaoSalva_OpcaoDesligadaContinuaDesligada()
     {
-        // settings.json gravado ate a 3.11: a opcao vinha False (sem efeito) e nao havia a marca do ajuste.
-        var json = "{\"AutoValidateMd5OnStartup\": false, \"AutoUpdateApp\": true}";
-        var settings = System.Text.Json.JsonSerializer.Deserialize<AppSettings>(json)!;
-        Assert.False(settings.AutoValidateMd5OnStartup);
-
-        Assert.True(AppSettings.ApplyDefaultUpgrades(settings));
-        Assert.True(settings.AutoValidateMd5OnStartup);
-
-        // O tecnico desligou depois do ajuste: continua desligada.
+        // O tecnico desmarcou "Verificar atualizacoes de imagens na inicializacao": gravar e reler mantem False.
+        var settings = AppSettings.CreateDefault();
         settings.AutoValidateMd5OnStartup = false;
-        Assert.False(AppSettings.ApplyDefaultUpgrades(settings));
-        Assert.False(settings.AutoValidateMd5OnStartup);
+        var json = System.Text.Json.JsonSerializer.Serialize(settings);
+        var lida = System.Text.Json.JsonSerializer.Deserialize<AppSettings>(json)!;
+        Assert.False(lida.AutoValidateMd5OnStartup);
     }
 }

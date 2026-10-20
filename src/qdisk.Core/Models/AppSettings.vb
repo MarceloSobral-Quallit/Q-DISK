@@ -21,14 +21,10 @@ Namespace Models
         Public Property AutoVerifySha256AfterUsbBurn As Boolean = True
         Public Property AutoUpdateApp As Boolean = True
         Public Property ImageCacheDir As String = GetDefaultImageCacheDir()
-        Public Property LegacyImageCacheMigrationPrompted As Boolean = False
         Public Property EnableMultiConnectionDownload As Boolean = True
         Public Property MaxDownloadConnections As Integer = 8
         Public Property ShowIdentifyUsbButton As Boolean = False
         Public Property ShowValidateBootButton As Boolean = False
-        ' Marca do ajuste unico que ligou a verificacao de imagens para configuracoes ja salvas (antes ela nao fazia nada
-        ' e todo settings.json gravava False).
-        Public Property ImageUpdateCheckDefaultApplied As Boolean = False
 
         Public Shared Function CreateDefault() As AppSettings
             Return New AppSettings() With {
@@ -43,24 +39,11 @@ Namespace Models
                 .AutoVerifySha256AfterUsbBurn = True,
                 .AutoUpdateApp = True,
                 .ImageCacheDir = GetDefaultImageCacheDir(),
-                .LegacyImageCacheMigrationPrompted = False,
                 .EnableMultiConnectionDownload = True,
                 .MaxDownloadConnections = 8,
                 .ShowIdentifyUsbButton = False,
-                .ShowValidateBootButton = False,
-                .ImageUpdateCheckDefaultApplied = True
+                .ShowValidateBootButton = False
             }
-        End Function
-
-        ''' <summary>
-        ''' Ajustes de padrao aplicados uma vez a configuracoes ja salvas. True se mudou algo (a configuracao deve ser
-        ''' gravada). Liga a verificacao de imagens na abertura: ate a 3.11 a opcao era gravada como False sem ter efeito.
-        ''' </summary>
-        Public Shared Function ApplyDefaultUpgrades(settings As AppSettings) As Boolean
-            If settings Is Nothing OrElse settings.ImageUpdateCheckDefaultApplied Then Return False
-            settings.AutoValidateMd5OnStartup = True
-            settings.ImageUpdateCheckDefaultApplied = True
-            Return True
         End Function
 
         Public Shared Function GetDefaultImageCacheDir() As String
