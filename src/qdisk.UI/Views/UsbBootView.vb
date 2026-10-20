@@ -1955,7 +1955,7 @@ Namespace Views
         Private Async Function ExecuteLogicalFat32BootAsync(drive As UsbDriveOption, item As CacheItem, analysis As IsoAnalysisResult, bootTarget As UsbBootTarget) As Task
             Dim bootTargetName = GetBootTargetDisplayName(bootTarget)
 
-            Dim confirm = MessageBox.Show($"O USB selecionado sera formatado para criacao de USB bootavel ({bootTargetName}).{Environment.NewLine}{Environment.NewLine}Recomendacao da analise: {analysis.RecommendationText}{Environment.NewLine}Para o teste, mantenha a opcao sugerida ja pre-selecionada.{Environment.NewLine}{Environment.NewLine}Deseja continuar?",
+            Dim confirm = MessageBox.Show($"O USB selecionado sera formatado para criacao de USB bootavel ({bootTargetName}).{Environment.NewLine}{Environment.NewLine}Recomendacao da analise: {analysis.RecommendationText}{Environment.NewLine}{Environment.NewLine}Deseja continuar?",
                                           "USB Boot",
                                           MessageBoxButtons.YesNo,
                                           MessageBoxIcon.Warning)
