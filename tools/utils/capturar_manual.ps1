@@ -20,7 +20,7 @@ param(
     [int] $Height = 643
 )
 $ErrorActionPreference = 'Stop'
-. (Join-Path $RepoRoot 'tools\testes\teste_real\lib.ps1')
+. (Join-Path $RepoRoot 'tools\utils\uia_lib.ps1')
 $script:OutDir = (New-Item -ItemType Directory -Force $OutDir).FullName
 if (-not $Exe) { $Exe = Join-Path $RepoRoot 'src\qdisk.UI\bin\Release\net8.0-windows\win-x64\qdisk.exe' }
 

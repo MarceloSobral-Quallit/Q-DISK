@@ -75,7 +75,7 @@ Peças do repositório:
 | `tests/qdisk.Tests/` | Testes xUnit sobre o Core |
 | `QDisk_Adm/` | [`catalog_admin.py`](../QDisk_Adm/catalog_admin.py), [`run_qdisk_adm.cmd`](../QDisk_Adm/run_qdisk_adm.cmd), [`README.md`](../QDisk_Adm/README.md); logs em `QDisk_Adm/log/` e `QDisk_Adm/log_debug/` (ignorados pelo Git) |
 | `tools/` | [`build_release_dotnet_4.py`](../tools/build_release_dotnet_4.py) (pipeline), `installer/` ([`qdisk.iss`](../tools/installer/qdisk.iss)), `utils/`, `git/`, `certs/`, os dois projetos acima; log do pipeline em `tools/log/` (ignorado) |
-| `tools/utils/` | `Build-OneFile-Sign_v4.bat` (atalho do pipeline), `generate_token_verifiers.py`, `publish_catalogs.ps1`, `validate_catalogs.ps1`, `generate_image_hashes.ps1`, `embed_manual_images.py`, `capturar_manual.ps1`, `publish_update_package.ps1.example` |
+| `tools/utils/` | `Build-OneFile-Sign_v4.bat` (atalho do pipeline), `generate_token_verifiers.py`, `publish_catalogs.ps1`, `validate_catalogs.ps1`, `generate_image_hashes.ps1`, `embed_manual_images.py`, `capturar_manual.ps1` (usa `uia_lib.ps1`), `publish_update_package.ps1.example` |
 | `tools/git/` | `github_sync.py` (commit/push conforme `config/github_sync.ini`), `restore_from_backup.ps1`, `git-details.txt` |
 | `tools/certs/` | Só `.gitkeep` e `extract_cert_chain.ps1` vão para o Git; o PFX de assinatura (`quallit_codesign.pfx`) fica local |
 | `config/` | Catálogos, manifestos USB, endpoints, tokens, modelos de segredos — fonte do que é embutido no app e publicado |
@@ -625,8 +625,6 @@ Comportamentos atuais do código que exigem cuidado:
   aceita `qdisk.quallit.(pnb|rd|tools|devteam).json`: com `qdisk.quallit.devteam2.json` na pasta, termina com
   "Catalogo nao oficial para upload automatico". Passe `-CatalogPath` (o `Upload` do QDisk_Adm sempre passa o
   catálogo aberto). `validate_catalogs.ps1` valida os cinco, inclusive o `devteam2`.
-- **`tools/utils/capturar_manual.ps1` não roda**: carrega uma biblioteca de UI Automation que não está no
-  repositório.
 - `config/qdisk.tokens.json` (IDs dos perfis) está no Git: aceitável só com o repositório privado.
 - O backup ZIP (etapa 11) não exclui `tools/certs/`, então leva o PFX e demais arquivos locais dessa pasta.
 - A etapa 12 limpa só `src/`; `bin`/`obj` de `tests/` e `tools/` ficam.
