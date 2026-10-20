@@ -15,10 +15,10 @@ public class CatalogValidationTests
     }
 
     [Theory]
-    [InlineData("qdisk.rd.json")]
-    [InlineData("qdisk.pnb.json")]
-    [InlineData("qdisk.tools.json")]
-    [InlineData("qdisk.devteam.json")]
+    [InlineData("qdisk.quallit.rd.json")]
+    [InlineData("qdisk.quallit.pnb.json")]
+    [InlineData("qdisk.quallit.tools.json")]
+    [InlineData("qdisk.quallit.devteam.json")]
     public void CatalogoVersionado_CarregaSemErro(string fileName)
     {
         var items = new CatalogService().LoadFromJson(Path.Combine(ConfigDir(), fileName), includeDisabled: true);

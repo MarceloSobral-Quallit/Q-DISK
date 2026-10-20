@@ -16,10 +16,10 @@ Imports qdisk.Core.Models
 
 Namespace Services
     Public Class CatalogService
-        Public Const PnbCatalogFileName As String = "qdisk.pnb.json"
-        Public Const ToolsCatalogFileName As String = "qdisk.tools.json"
-        Public Const RdCatalogFileName As String = "qdisk.rd.json"
-        Public Const DevTeamCatalogFileName As String = "qdisk.devteam.json"
+        Public Const PnbCatalogFileName As String = "qdisk.quallit.pnb.json"
+        Public Const ToolsCatalogFileName As String = "qdisk.quallit.tools.json"
+        Public Const RdCatalogFileName As String = "qdisk.quallit.rd.json"
+        Public Const DevTeamCatalogFileName As String = "qdisk.quallit.devteam.json"
 
         Public Shared ReadOnly Property PrimaryBaseUrl As String
             Get
@@ -59,7 +59,7 @@ Namespace Services
 
         Public Shared ReadOnly Property RemoteUpdateCatalogUrl As String
             Get
-                Return PrimaryBaseUrl & "qdisk.update.json"
+                Return PrimaryBaseUrl & "qdisk.quallit.update.json"
             End Get
         End Property
 

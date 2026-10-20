@@ -346,7 +346,7 @@ if ($CatalogPath.Count -gt 0) {
     }
 }
 else {
-    $catalogFiles = Get-ChildItem -LiteralPath $CatalogDir -Filter 'qdisk.*.json' -File | Sort-Object Name
+    $catalogFiles = Get-ChildItem -LiteralPath $CatalogDir -Filter 'qdisk.quallit.*.json' -File | Sort-Object Name
 }
 
 if ($catalogFiles.Count -eq 0) {

@@ -17,7 +17,7 @@ Namespace Infrastructure
     Public Class UpdateClient
         Public Shared ReadOnly Property UpdateManifestUrl As String
             Get
-                Return EndpointConfig.Current.PrimaryBaseUrl & "qdisk.update.json"
+                Return EndpointConfig.Current.PrimaryBaseUrl & "qdisk.quallit.update.json"
             End Get
         End Property
 
@@ -29,7 +29,7 @@ Namespace Infrastructure
 
         Public Shared ReadOnly Property DirectUpdateManifestUrl As String
             Get
-                Return EndpointConfig.Current.FallbackPublicBaseUrl & "qdisk.update.json"
+                Return EndpointConfig.Current.FallbackPublicBaseUrl & "qdisk.quallit.update.json"
             End Get
         End Property
 

@@ -311,7 +311,7 @@ Friend Module Program
             For Each name In resourceNames
                 If Not name.StartsWith(EmbeddedPrefix, StringComparison.Ordinal) Then Continue For
 
-                ' "assets\APP_BG.jpg" ou "Data\qdisk.rd.json"
+                ' "assets\APP_BG.jpg" ou "Data\qdisk.quallit.rd.json"
                 Dim relativePath = name.Substring(EmbeddedPrefix.Length)
                 Dim targetPath = Path.Combine(AppPaths.DataRoot, relativePath)
                 Directory.CreateDirectory(Path.GetDirectoryName(targetPath))

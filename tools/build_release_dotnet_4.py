@@ -70,12 +70,12 @@ DEFAULT_INSTALLER_URL = "https://installer.quallit.com.br/qdisk/Setup_qdisk.upda
 DEFAULT_REMOTE_BASE_URL = "https://installer.quallit.com.br/qdisk"
 DEFAULT_SETUP_UPDATE_NAME = "Setup_qdisk.update.exe"
 DEFAULT_APP_UPDATE_NAME = "qdisk.update.exe"
-DEFAULT_MANIFEST_NAME = "qdisk.update.json"
+DEFAULT_MANIFEST_NAME = "qdisk.quallit.update.json"
 CATALOG_FILE_NAMES = (
-    "qdisk.pnb.json",
-    "qdisk.rd.json",
-    "qdisk.tools.json",
-    "qdisk.devteam.json",
+    "qdisk.quallit.pnb.json",
+    "qdisk.quallit.rd.json",
+    "qdisk.quallit.tools.json",
+    "qdisk.quallit.devteam.json",
 )
 # Manifestos de USB ("Identificar USB"): os catalogos apontam para <base>/manifests/<nome>.
 # Publicados junto com o pacote nos passos 14 e 16 (antes o passo 14 apagava a pasta no installer).
@@ -1033,7 +1033,7 @@ def get_manifest_payload(local_update_dir: Path) -> tuple[dict, list[Path]]:
 
 def prepare_update_dir() -> None:
     UPDATE_DIR.mkdir(parents=True, exist_ok=True)
-    for pattern in ("Setup_qdisk_*.exe", "Setup_qdisk.update.exe", "qdisk.exe", "qdisk.update.exe", "update.json", "qdisk.update.json", *CATALOG_FILE_NAMES):
+    for pattern in ("Setup_qdisk_*.exe", "Setup_qdisk.update.exe", "qdisk.exe", "qdisk.update.exe", "update.json", "qdisk.quallit.update.json", *CATALOG_FILE_NAMES):
         for path in UPDATE_DIR.glob(pattern):
             if path.is_file():
                 path.unlink()

@@ -50,17 +50,17 @@
   <!-- LogicalName define o nome do recurso; prefixo "_embedded\" é usado por AppPaths.EnsureAssetsExtracted -->
   <ItemGroup>
     <!-- Catalogos: fonte unica em config/ (sem copia em UI/Data) -->
-    <EmbeddedResource Include="..\..\config\qdisk.rd.json">
-      <LogicalName>_embedded\Data\qdisk.rd.json</LogicalName>
+    <EmbeddedResource Include="..\..\config\qdisk.quallit.rd.json">
+      <LogicalName>_embedded\Data\qdisk.quallit.rd.json</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\config\qdisk.pnb.json">
-      <LogicalName>_embedded\Data\qdisk.pnb.json</LogicalName>
+    <EmbeddedResource Include="..\..\config\qdisk.quallit.pnb.json">
+      <LogicalName>_embedded\Data\qdisk.quallit.pnb.json</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\config\qdisk.devteam.json">
-      <LogicalName>_embedded\Data\qdisk.devteam.json</LogicalName>
+    <EmbeddedResource Include="..\..\config\qdisk.quallit.devteam.json">
+      <LogicalName>_embedded\Data\qdisk.quallit.devteam.json</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\config\qdisk.tools.json">
-      <LogicalName>_embedded\Data\qdisk.tools.json</LogicalName>
+    <EmbeddedResource Include="..\..\config\qdisk.quallit.tools.json">
+      <LogicalName>_embedded\Data\qdisk.quallit.tools.json</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\config\manifests\PNB-WIN7-x64.manifest.json">
       <LogicalName>_embedded\Data\manifests\PNB-WIN7-x64.manifest.json</LogicalName>
