@@ -171,7 +171,6 @@ Namespace Views
             Try
                 Dim settings = _settingsService.Load()
                 CheckAutoSha256.Checked = settings.AutoCalculateSha256AfterDownload
-                CheckAutoMd5.Checked = CheckAutoSha256.Checked
                 CheckAutoVerifySha256.Checked = settings.AutoVerifySha256AfterUsbBurn
                 CheckAutoMd5AfterCopy.Checked = settings.AutoValidateSha256AfterTibxCopy
                 CheckVerifyExistingTibxBeforeCopy.Checked = settings.AutoVerifyExistingTibxBeforeCopy
@@ -198,7 +197,6 @@ Namespace Views
 
             Dim currentSettings = _settingsService.Load()
             Dim settings = New AppSettings() With {
-                .AutoValidateMd5AfterDownload = CheckAutoSha256.Checked,
                 .AutoValidateSha256AfterTibxCopy = CheckAutoMd5AfterCopy.Checked,
                 .AutoVerifyExistingTibxBeforeCopy = CheckVerifyExistingTibxBeforeCopy.Checked,
                 .AutoValidateMd5AfterCacheRefresh = CheckAutoMd5AfterCacheRefresh.Checked,
@@ -215,7 +213,7 @@ Namespace Views
                 .ShowValidateBootButton = CheckShowValidateBootButton.Checked
             }
             _settingsService.Save(settings)
-            _logService.WriteAsync($"SETTINGS | ATUALIZADO | Download={settings.AutoValidateMd5AfterDownload} | TIBX_SHA256={settings.AutoValidateSha256AfterTibxCopy} | TIBX_EXISTING_SHA256={settings.AutoVerifyExistingTibxBeforeCopy} | Cache={settings.AutoValidateMd5AfterCacheRefresh} | Startup={settings.AutoValidateMd5OnStartup} | ISO_SHA256={settings.AutoValidateSha256BeforeIsoBurn} | Autoplay={settings.AutoDisableAutoplayDuringUsbOps} | SHA256={settings.AutoCalculateSha256AfterDownload} | VerifyUSB={settings.AutoVerifySha256AfterUsbBurn} | AppUpdate={settings.AutoUpdateApp} | MultiConn={settings.EnableMultiConnectionDownload}/{settings.MaxDownloadConnections} | ShowIdentifyUsb={settings.ShowIdentifyUsbButton} | ShowValidateBoot={settings.ShowValidateBootButton}").GetAwaiter().GetResult()
+            _logService.WriteAsync($"SETTINGS | ATUALIZADO | TIBX_SHA256={settings.AutoValidateSha256AfterTibxCopy} | TIBX_EXISTING_SHA256={settings.AutoVerifyExistingTibxBeforeCopy} | Cache={settings.AutoValidateMd5AfterCacheRefresh} | Startup={settings.AutoValidateMd5OnStartup} | ISO_SHA256={settings.AutoValidateSha256BeforeIsoBurn} | Autoplay={settings.AutoDisableAutoplayDuringUsbOps} | SHA256={settings.AutoCalculateSha256AfterDownload} | VerifyUSB={settings.AutoVerifySha256AfterUsbBurn} | AppUpdate={settings.AutoUpdateApp} | MultiConn={settings.EnableMultiConnectionDownload}/{settings.MaxDownloadConnections} | ShowIdentifyUsb={settings.ShowIdentifyUsbButton} | ShowValidateBoot={settings.ShowValidateBootButton}").GetAwaiter().GetResult()
         End Sub
 
         Private Sub OnEnableMultiConnectionChanged(sender As Object, e As EventArgs)

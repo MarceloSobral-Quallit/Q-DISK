@@ -9,7 +9,6 @@ Imports System.IO
 
 Namespace Models
     Public Class AppSettings
-        Public Property AutoValidateMd5AfterDownload As Boolean
         Public Property AutoValidateSha256AfterTibxCopy As Boolean = True
         Public Property AutoVerifyExistingTibxBeforeCopy As Boolean = True
         Public Property AutoValidateMd5AfterCacheRefresh As Boolean
@@ -28,7 +27,6 @@ Namespace Models
 
         Public Shared Function CreateDefault() As AppSettings
             Return New AppSettings() With {
-                .AutoValidateMd5AfterDownload = True,
                 .AutoValidateSha256AfterTibxCopy = True,
                 .AutoVerifyExistingTibxBeforeCopy = True,
                 .AutoValidateMd5AfterCacheRefresh = True,

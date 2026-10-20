@@ -10,7 +10,6 @@ Namespace Views
         Friend WithEvents LayoutRoot As TableLayoutPanel
         Friend WithEvents LabelTitle As Label
         Friend WithEvents ContentPanel As FlowLayoutPanel
-        Friend WithEvents CheckAutoMd5 As CheckBox
         Friend WithEvents CheckAutoSha256 As CheckBox
         Friend WithEvents CheckAutoVerifySha256 As CheckBox
         Friend WithEvents CheckAutoMd5AfterCopy As CheckBox
@@ -52,7 +51,6 @@ Namespace Views
             Me.LayoutRoot = New TableLayoutPanel()
             Me.LabelTitle = New Label()
             Me.ContentPanel = New FlowLayoutPanel()
-            Me.CheckAutoMd5 = New CheckBox()
             Me.CheckAutoSha256 = New CheckBox()
             Me.CheckAutoVerifySha256 = New CheckBox()
             Me.CheckAutoMd5AfterCopy = New CheckBox()
@@ -142,14 +140,6 @@ Namespace Views
             Me.CheckAutoMd5AfterCacheRefresh.AutoSize = True
             Me.CheckAutoMd5AfterCacheRefresh.Padding = New Padding(4)
             AddHandler Me.CheckAutoMd5AfterCacheRefresh.CheckedChanged, AddressOf Me.OnAutoMd5Changed
-            '
-            'CheckAutoMd5
-            '
-            Me.CheckAutoMd5.Text = "Validar integridade automaticamente após o download"
-            Me.CheckAutoMd5.AutoSize = True
-            Me.CheckAutoMd5.Padding = New Padding(4)
-            Me.CheckAutoMd5.Visible = False
-            AddHandler Me.CheckAutoMd5.CheckedChanged, AddressOf Me.OnAutoMd5Changed
             '
             'CheckAutoSha256
             '

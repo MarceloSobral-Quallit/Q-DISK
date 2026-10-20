@@ -27,13 +27,10 @@ Namespace Views
         Friend WithEvents ActionsBottomPanel As FlowLayoutPanel
         Friend WithEvents _copyButton As Button
         Friend WithEvents _bootButton As Button
-        Friend WithEvents _uefiBootButton As Button
-        Friend WithEvents _rawBootButton As Button
         Friend WithEvents _identifyUsbButton As Button
         Friend WithEvents _verifyBootButton As Button
         Friend WithEvents _verifyTibxButton As Button
         Friend WithEvents _zeroUsbButton As Button
-        Friend WithEvents _deepCleanCheck As CheckBox
         Friend WithEvents _statusLabel As Label
         Friend WithEvents _progressBar As ProgressBar
         Friend WithEvents _cancelOperationButton As Button
@@ -73,13 +70,10 @@ Namespace Views
             Me.ActionsBottomPanel = New FlowLayoutPanel()
             Me._copyButton = New Button()
             Me._bootButton = New Button()
-            Me._uefiBootButton = New Button()
-            Me._rawBootButton = New Button()
             Me._identifyUsbButton = New Button()
             Me._verifyBootButton = New Button()
             Me._verifyTibxButton = New Button()
             Me._zeroUsbButton = New Button()
-            Me._deepCleanCheck = New CheckBox()
             Me._statusLabel = New Label()
             Me.ProgressPanel = New TableLayoutPanel()
             Me._busyGif = New PictureBox()
@@ -252,7 +246,6 @@ Namespace Views
             Me.ActionsTopPanel.Padding = New Padding(4, 12, 12, 8)
             Me.ActionsTopPanel.Controls.Add(Me._copyButton)
             Me.ActionsTopPanel.Controls.Add(Me._verifyTibxButton)
-            Me.ActionsTopPanel.Controls.Add(Me._deepCleanCheck)
             Me.ActionsTopPanel.Controls.Add(Me._zeroUsbButton)
             '
             'ActionsBottomPanel
@@ -282,26 +275,6 @@ Namespace Views
             Me._bootButton.Margin = New Padding(0)
             Me._bootButton.Font = New Font(Me._bootButton.Font.FontFamily, 9.0F, FontStyle.Regular)
             AddHandler Me._bootButton.Click, AddressOf Me.OnBootClick
-            '
-            '_uefiBootButton
-            '
-            Me._uefiBootButton.Text = "Boot UEFI"
-            Me._uefiBootButton.Width = 108
-            Me._uefiBootButton.Height = 28
-            Me._uefiBootButton.Margin = New Padding(0, 6, 0, 0)
-            Me._uefiBootButton.Font = New Font(Me._uefiBootButton.Font.FontFamily, 9.0F, FontStyle.Regular)
-            Me._uefiBootButton.Visible = False
-            AddHandler Me._uefiBootButton.Click, AddressOf Me.OnBootClick
-            '
-            '_rawBootButton
-            '
-            Me._rawBootButton.Text = "Boot RAW/DD"
-            Me._rawBootButton.Width = 108
-            Me._rawBootButton.Height = 28
-            Me._rawBootButton.Margin = New Padding(0, 6, 0, 0)
-            Me._rawBootButton.Font = New Font(Me._rawBootButton.Font.FontFamily, 9.0F, FontStyle.Regular)
-            Me._rawBootButton.Visible = False
-            AddHandler Me._rawBootButton.Click, AddressOf Me.OnRawBootClick
             '
             '_identifyUsbButton
             '
@@ -338,12 +311,6 @@ Namespace Views
             Me._zeroUsbButton.Margin = New Padding(0, 10, 0, 0)
             Me._zeroUsbButton.Font = New Font(Me._zeroUsbButton.Font.FontFamily, 9.0F, FontStyle.Regular)
             AddHandler Me._zeroUsbButton.Click, AddressOf Me.OnZeroUsbClick
-            '
-            '_deepCleanCheck
-            '
-            Me._deepCleanCheck.Text = "Formatar USB"
-            Me._deepCleanCheck.AutoSize = True
-            Me._deepCleanCheck.Margin = New Padding(0, 8, 0, 0)
             '
             '_statusLabel
             '

@@ -547,7 +547,6 @@ Namespace Views
                     _verifyTibxButton.Text = "Verificar TIBX no USB"
                     _verifyTibxButton.Width = 150
                     _verifyTibxButton.Visible = True
-                    _deepCleanCheck.Visible = False
                     _zeroUsbButton.Text = "Zerar USB"
                     _zeroUsbButton.Width = 150
                     ConfigureActionsWithBottomZero(ActionsTopPanel, _copyButton, _verifyTibxButton)
@@ -813,8 +812,6 @@ Namespace Views
             _copyButton.Enabled = enabled
             _verifyTibxButton.Enabled = enabled
             _bootButton.Enabled = adminEnabled
-            _uefiBootButton.Enabled = adminEnabled
-            _rawBootButton.Enabled = adminEnabled
             _identifyUsbButton.Enabled = enabled
             _verifyBootButton.Enabled = enabled
             _zeroUsbButton.Enabled = adminEnabled
@@ -822,7 +819,6 @@ Namespace Views
             _driveCombo.Enabled = enabled
             _tibxList.Enabled = enabled
             _isoList.Enabled = enabled
-            _deepCleanCheck.Enabled = adminEnabled
             If enabled Then UpdateImageActionButtons()
         End Sub
 
@@ -848,12 +844,9 @@ Namespace Views
             Dim isAdmin = IsRunningAsAdmin()
             ' Operações destrutivas (formatar, gravar raw, boot) exigem elevação
             _bootButton.Enabled = isAdmin AndAlso HasRealCacheSelection(_isoList, ".iso")
-            _uefiBootButton.Enabled = isAdmin
-            _rawBootButton.Enabled = isAdmin
             _identifyUsbButton.Enabled = True
             _verifyBootButton.Enabled = True
             _zeroUsbButton.Enabled = isAdmin
-            _deepCleanCheck.Enabled = isAdmin
             ' Avisos de modo administrador
             _adminWarningLabel.Visible = Not isAdmin
             _adminRestartButton.Visible = Not isAdmin
@@ -1498,19 +1491,14 @@ Namespace Views
                 MessageBox.Show("Selecione um arquivo TIBX no cache.", "USB Boot", MessageBoxButtons.OK, MessageBoxIcon.Information)
                 Return
             End If
-            ' Formatar antes de copiar: USB sem letra, "Formatar USB" marcado, ou volume atual que nao recebe o TIBX
+            ' Formatar antes de copiar: USB sem letra ou volume atual que nao recebe o TIBX
             ' (FAT com arquivo > 4 GB, CDFS/UDF de imagem gravada em RAW/DD, particao menor que o USB e sem espaco).
             Dim tibxBytes = New FileInfo(item.FullPath).Length
             Dim formatReason As String = Nothing
-            Dim askBeforeFormat = True
             If String.IsNullOrWhiteSpace(drive.DriveLetter) Then
                 formatReason = "USB sem letra detectado."
             Else
                 formatReason = GetTibxFormatReason(drive, tibxBytes)
-                If formatReason Is Nothing AndAlso _deepCleanCheck.Checked Then
-                    formatReason = "Formatar USB marcado."
-                    askBeforeFormat = False
-                End If
             End If
 
             If formatReason IsNot Nothing Then
@@ -1522,17 +1510,15 @@ Namespace Views
                     Return
                 End If
                 Await _logService.WriteAsync($"USB | TIBX_FORMAT | NECESSARIO | Disk {drive.DiskNumber} | Letter={drive.DriveLetter} | {formatReason}")
-                If askBeforeFormat Then
-                    Dim confirmFormat = MessageBox.Show($"{formatReason}{Environment.NewLine}O dispositivo sera formatado para receber uma letra e copiar o TIBX. Todo o conteudo atual do USB sera apagado." &
-                                                        Environment.NewLine &
-                                                        "Deseja continuar?",
-                                                        "USB Boot",
-                                                        MessageBoxButtons.YesNo,
-                                                        MessageBoxIcon.Warning)
-                    If confirmFormat <> DialogResult.Yes Then
-                        Await _logService.WriteAsync($"USB | TIBX_FORMAT | RECUSADO | Disk {drive.DiskNumber}")
-                        Return
-                    End If
+                Dim confirmFormat = MessageBox.Show($"{formatReason}{Environment.NewLine}O dispositivo sera formatado para receber uma letra e copiar o TIBX. Todo o conteudo atual do USB sera apagado." &
+                                                    Environment.NewLine &
+                                                    "Deseja continuar?",
+                                                    "USB Boot",
+                                                    MessageBoxButtons.YesNo,
+                                                    MessageBoxIcon.Warning)
+                If confirmFormat <> DialogResult.Yes Then
+                    Await _logService.WriteAsync($"USB | TIBX_FORMAT | RECUSADO | Disk {drive.DiskNumber}")
+                    Return
                 End If
 
                 Dim formatCancellationToken As CancellationToken
@@ -1983,8 +1969,6 @@ Namespace Views
                 End If
                 _copyButton.Enabled = False
                 _bootButton.Enabled = False
-                _uefiBootButton.Enabled = False
-                _rawBootButton.Enabled = False
                 _zeroUsbButton.Enabled = False
                 Await _logService.WriteAsync($"USB | ISO | INICIO | Target={bootTargetName} | {item.DisplayName} -> Disk {drive.DiskNumber}")
                 _statusLabel.Text = "Iniciando gravacao..."
@@ -2030,8 +2014,6 @@ Namespace Views
                 SetBusyIndicator(False)
                 _copyButton.Enabled = True
                 _bootButton.Enabled = True
-                _uefiBootButton.Enabled = True
-                _rawBootButton.Enabled = True
                 _zeroUsbButton.Enabled = True
                 EndUsbOperation()
                 RefreshUsbListKeepingDisk(drive.DiskNumber)
@@ -2263,29 +2245,6 @@ Namespace Views
             End If
         End Sub
 
-        Private Async Sub OnRawBootClick(sender As Object, e As EventArgs)
-            Dim drive = TryCast(_driveCombo.SelectedItem, UsbDriveOption)
-            Dim item = TryCast(_isoList.SelectedItem, CacheItem)
-            If drive Is Nothing Then
-                MessageBox.Show("Selecione um USB.", "USB Boot", MessageBoxButtons.OK, MessageBoxIcon.Information)
-                Return
-            End If
-            If Not IsRealCacheItem(item, ".iso") Then
-                MessageBox.Show("Selecione um arquivo ISO no cache.", "USB Boot", MessageBoxButtons.OK, MessageBoxIcon.Information)
-                Return
-            End If
-            If drive.DiskNumber < 0 Then
-                MessageBox.Show("Nao foi possivel identificar o disco fisico do USB selecionado.", "USB Boot", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                Return
-            End If
-            If Not EnsureUsbUacIfNeeded() Then
-                Return
-            End If
-
-            Dim analysis = If(item.IsoAnalysis, _isoAnalysisService.Analyze(item.FullPath))
-            Await ExecuteRawBootAsync(drive, item, analysis)
-        End Sub
-
         Private Async Sub OnIdentifyUsbClick(sender As Object, e As EventArgs)
             Dim drive = TryCast(_driveCombo.SelectedItem, UsbDriveOption)
             If drive Is Nothing Then
@@ -2492,8 +2451,6 @@ Namespace Views
             Try
                 _copyButton.Enabled = False
                 _bootButton.Enabled = False
-                _uefiBootButton.Enabled = False
-                _rawBootButton.Enabled = False
                 _verifyBootButton.Enabled = False
                 _zeroUsbButton.Enabled = False
                 SetBusyIndicator(True)
@@ -2548,8 +2505,6 @@ Namespace Views
                 SetBusyIndicator(False)
                 _copyButton.Enabled = True
                 _bootButton.Enabled = True
-                _uefiBootButton.Enabled = True
-                _rawBootButton.Enabled = True
                 _verifyBootButton.Enabled = True
                 _zeroUsbButton.Enabled = True
                 EndUsbOperation()
@@ -5644,33 +5599,6 @@ Namespace Views
             End Using
         End Sub
 
-        Private Async Function GetExpectedMd5ForIsoAsync(isoPath As String) As Task(Of String)
-            Dim catalog = _catalogService.LoadAllCatalogs(AppPaths.DataDir)
-            If catalog.Count = 0 Then
-                Return String.Empty
-            End If
-
-            Dim statusMap = LoadDownloadStatusMap()
-            Dim matchedName = FindCatalogNameForPath(statusMap, isoPath)
-            If String.IsNullOrWhiteSpace(matchedName) Then
-                Return String.Empty
-            End If
-
-            Dim catalogItem As CatalogItem = Nothing
-            For Each candidate In catalog
-                If String.Equals(candidate.Name, matchedName, StringComparison.OrdinalIgnoreCase) Then
-                    catalogItem = candidate
-                    Exit For
-                End If
-            Next
-
-            If catalogItem Is Nothing OrElse (String.IsNullOrWhiteSpace(catalogItem.Md5) AndAlso String.IsNullOrWhiteSpace(catalogItem.Md5Url)) Then
-                Return String.Empty
-            End If
-
-            Return Await ResolveExpectedMd5Async(catalogItem)
-        End Function
-
         Private Sub UpdateDriveInfo()
             If _driveCombo.Items.Count = 0 Then
                 _infoLabel.Text = "USB: Nenhum dispositivo removível detectado."
@@ -5928,91 +5856,6 @@ Namespace Views
         Private Sub SetBusyIndicator(isBusy As Boolean)
             _busyGif.Visible = isBusy
         End Sub
-
-        Private Async Sub BeginValidateCacheMd5()
-            Dim settings = _settingsService.Load()
-            If Not settings.AutoValidateMd5AfterCacheRefresh Then
-                Return
-            End If
-
-            Dim catalog = _catalogService.LoadAllCatalogs(AppPaths.DataDir)
-            If catalog.Count = 0 Then
-                _statusLabel.Text = "Cache: catalogo nao encontrado."
-                Return
-            End If
-
-            Dim statusMap = LoadDownloadStatusMap()
-            Dim cacheItems As New List(Of CacheItem)()
-
-            Dim tibxSource = TryCast(_tibxList.DataSource, List(Of CacheItem))
-            If tibxSource IsNot Nothing Then
-                cacheItems.AddRange(tibxSource)
-            End If
-
-            Dim isoSource = TryCast(_isoList.DataSource, List(Of CacheItem))
-            If isoSource IsNot Nothing Then
-                cacheItems.AddRange(isoSource)
-            End If
-
-            Dim okCount As Integer = 0
-            Dim errorCount As Integer = 0
-
-            SetProgressMarquee(True)
-            _statusLabel.Text = "Validando integridade do cache..."
-
-            For Each cacheItem In cacheItems
-                Dim matchedName = FindCatalogNameForPath(statusMap, cacheItem.FullPath)
-                If String.IsNullOrWhiteSpace(matchedName) Then
-                    Continue For
-                End If
-
-                Dim catalogItem As CatalogItem = Nothing
-                For Each candidate In catalog
-                    If String.Equals(candidate.Name, matchedName, StringComparison.OrdinalIgnoreCase) Then
-                        catalogItem = candidate
-                        Exit For
-                    End If
-                Next
-
-                If catalogItem Is Nothing Then
-                    Continue For
-                End If
-
-                Try
-                    Dim expected = Await ResolveExpectedMd5Async(catalogItem)
-                    If String.IsNullOrWhiteSpace(expected) Then
-                        Continue For
-                    End If
-
-                    Dim actual = Await _hashService.ComputeMd5Async(cacheItem.FullPath, Threading.CancellationToken.None)
-                    If String.Equals(expected, actual, StringComparison.OrdinalIgnoreCase) Then
-                        okCount += 1
-                        statusMap(matchedName).Md5Valid = True
-                    Else
-                        errorCount += 1
-                        statusMap(matchedName).Md5Valid = False
-                    End If
-                Catch
-                    errorCount += 1
-                End Try
-            Next
-
-            SaveDownloadStatusMap(statusMap)
-            SetProgressMarquee(False)
-            _statusLabel.Text = $"MD5 cache: {okCount} ok, {errorCount} erro(s)"
-        End Sub
-
-        Private Async Function ResolveExpectedMd5Async(item As CatalogItem) As Task(Of String)
-            If item IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(item.Md5) Then
-                Return ParseMd5(item.Md5)
-            End If
-
-            If item Is Nothing OrElse String.IsNullOrWhiteSpace(item.Md5Url) Then
-                Return String.Empty
-            End If
-
-            Return Await FetchMd5Async(item.Md5Url)
-        End Function
 
         Private Async Function FetchMd5Async(md5Url As String) As Task(Of String)
             Dim content = Await GetStringWithRedirectAsync(md5Url, 0)
