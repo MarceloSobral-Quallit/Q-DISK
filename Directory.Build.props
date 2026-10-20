@@ -7,7 +7,7 @@
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <PublishDir>$(MSBuildThisFileDirectory)dist\</PublishDir>
     <!-- Caminhos relativos a raiz do projeto que nao devem entrar no build/backup do pipeline. Separe por ponto e virgula. -->
-    <QuallitBackupExcludePaths>temp;secret.txt;config/secret.md</QuallitBackupExcludePaths>
+    <QuallitBackupExcludePaths>temp;secret.txt;config/secret.md;tools/certs/quallit_codesign.pfx;tools/certs/SIGN.TXT;tools/utils/publish_update_package.ps1</QuallitBackupExcludePaths>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(MSBuildThisFileDirectory)temp\**</DefaultItemExcludes>
     <!-- Metadados do executavel (visiveis em Propriedades > Detalhes no Explorer) -->
     <Company>Quallit</Company>

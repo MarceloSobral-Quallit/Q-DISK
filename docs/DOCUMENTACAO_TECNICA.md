@@ -63,7 +63,8 @@ Peças do repositório:
 [`Directory.Build.props`](../Directory.Build.props) vale para todos os projetos: versão (`Version`,
 `AssemblyVersion`, `FileVersion`, `InformationalVersion`), metadados do executável (`Product`/`Title` `Q-DISK`,
 `Company` `Quallit`, licença GPL-3.0-or-later), `PublishDir` = `dist\` e `QuallitBackupExcludePaths`
-(`temp;secret.txt;config/secret.md`, lido pelo pipeline para o backup ZIP).
+(`temp;secret.txt;config/secret.md;tools/certs/quallit_codesign.pfx;tools/certs/SIGN.TXT;tools/utils/publish_update_package.ps1`,
+lido pelo pipeline para o backup ZIP: segredos locais ficam fora do backup).
 
 ### Pastas
 
@@ -626,7 +627,6 @@ Comportamentos atuais do código que exigem cuidado:
   "Catalogo nao oficial para upload automatico". Passe `-CatalogPath` (o `Upload` do QDisk_Adm sempre passa o
   catálogo aberto). `validate_catalogs.ps1` valida os cinco, inclusive o `devteam2`.
 - `config/qdisk.tokens.json` (IDs dos perfis) está no Git: aceitável só com o repositório privado.
-- O backup ZIP (etapa 11) não exclui `tools/certs/`, então leva o PFX e demais arquivos locais dessa pasta.
 - A etapa 12 limpa só `src/`; `bin`/`obj` de `tests/` e `tools/` ficam.
 - Regras ASR do Intune podem impedir o app de ler ferramentas copiadas para o pendrive (ex.: `bootsect.exe`); o
   QDisk_Adm registra esses arquivos em `imageScan.systemToolCopies`.
