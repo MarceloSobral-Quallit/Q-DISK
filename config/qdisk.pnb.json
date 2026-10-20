@@ -1,0 +1,528 @@
+[
+  {
+    "name": "PNB-STOREX-atual-sharepoint",
+    "group": "PNB-STOREX",
+    "fileUrl": "https://quallit.link/pnb-storex-sp",
+    "fileName": "PNB-Storex-05-26.iso",
+    "md5": "c3cecb7119834161a42704d5a6e9e8c8",
+    "sha256": "5b6900203ff06fce23e4aeb7134261ca3653d1eab82e56df1a97172948d3b6e0",
+    "imageSizeBytes": 6767489024,
+    "usbIdentification": {
+      "schema": 1,
+      "mode": "logical",
+      "bootTargets": [],
+      "fileCount": 4051,
+      "totalBytes": 6761521017,
+      "treeHash": "c3d9191718bfe523ae4210ce2ed37e41c596720c4d5736a47aa8fddb446046a5",
+      "manifestUrl": "https://installer.quallit.com.br/qdisk/manifests/PNB-Storex-05-26.manifest.json",
+      "manifestSha256": "53944a00e1e6649ce362b5310212ee8e23fbdccbf2377a68741f4dbe77ff648c",
+      "sentinelFiles": [
+        {
+          "path": "CentOS_B",
+          "size": 14,
+          "sha256": "98d9a8b99d33b8861df0a7e31951c57c3f7887c5e178b6d7140f0b25c1e65141"
+        }
+      ],
+      "technicalAnalysis": {
+        "largestFile": {
+          "path": "product/usr/p2k/installe/pkg/p2k-pos-.nfc",
+          "size": 1175995818,
+          "sha256": "c44462c43b6088a37db97dfc79c182f25c4a1dc3edf3ff673efd33ecd8c03e59"
+        },
+        "hasFilesOver4Gb": false,
+        "recommendedMethod": "raw",
+        "alternativeMethods": [],
+        "reasons": [
+          "ISO hibrida: RAW/DD com indicio de boot BIOS (confirmar com teste de boot).",
+          "Boot BIOS por carregador proprio (Syslinux/GRUB/Bootwiz): a copia logica nao preserva o boot BIOS."
+        ],
+        "analysisEngine": "core-1",
+        "imageBootTargets": [
+          "bios"
+        ],
+        "methods": [
+          {
+            "method": "raw",
+            "bootTargets": [
+              "bios"
+            ],
+            "transformsContent": false
+          }
+        ]
+      }
+    },
+    "usbWritePolicy": {
+      "imageSha256": "5b6900203ff06fce23e4aeb7134261ca3653d1eab82e56df1a97172948d3b6e0",
+      "preferredMethod": "raw",
+      "preferredBootTargets": [
+        "bios"
+      ],
+      "allowedMethods": [
+        "raw"
+      ],
+      "preserveSourceImage": true,
+      "allowContentTransformations": false,
+      "note": "ISO hibrida: RAW/DD com indicio de boot BIOS (confirmar com teste de boot). Boot BIOS por carregador proprio (Syslinux/GRUB/Bootwiz): a copia logica nao preserva o boot BIOS."
+    },
+    "description": "Instalador do sistema Storex base CentOS"
+  },
+  {
+    "name": "PNB-STOREX-atual-dropbox",
+    "group": "PNB-STOREX",
+    "fileUrl": "https://quallit.link/pnb-storex-db",
+    "fileName": "PNB-Storex-05-26.iso",
+    "md5": "c3cecb7119834161a42704d5a6e9e8c8",
+    "sha256": "5b6900203ff06fce23e4aeb7134261ca3653d1eab82e56df1a97172948d3b6e0",
+    "imageSizeBytes": 6767489024,
+    "usbIdentification": {
+      "schema": 1,
+      "mode": "logical",
+      "bootTargets": [],
+      "fileCount": 4051,
+      "totalBytes": 6761521017,
+      "treeHash": "c3d9191718bfe523ae4210ce2ed37e41c596720c4d5736a47aa8fddb446046a5",
+      "manifestUrl": "https://installer.quallit.com.br/qdisk/manifests/PNB-Storex-05-26.manifest.json",
+      "manifestSha256": "53944a00e1e6649ce362b5310212ee8e23fbdccbf2377a68741f4dbe77ff648c",
+      "sentinelFiles": [
+        {
+          "path": "CentOS_B",
+          "size": 14,
+          "sha256": "98d9a8b99d33b8861df0a7e31951c57c3f7887c5e178b6d7140f0b25c1e65141"
+        }
+      ],
+      "technicalAnalysis": {
+        "largestFile": {
+          "path": "product/usr/p2k/installe/pkg/p2k-pos-.nfc",
+          "size": 1175995818,
+          "sha256": "c44462c43b6088a37db97dfc79c182f25c4a1dc3edf3ff673efd33ecd8c03e59"
+        },
+        "hasFilesOver4Gb": false,
+        "recommendedMethod": "raw",
+        "alternativeMethods": [],
+        "reasons": [
+          "ISO hibrida: RAW/DD com indicio de boot BIOS (confirmar com teste de boot).",
+          "Boot BIOS por carregador proprio (Syslinux/GRUB/Bootwiz): a copia logica nao preserva o boot BIOS."
+        ],
+        "analysisEngine": "core-1",
+        "imageBootTargets": [
+          "bios"
+        ],
+        "methods": [
+          {
+            "method": "raw",
+            "bootTargets": [
+              "bios"
+            ],
+            "transformsContent": false
+          }
+        ]
+      }
+    },
+    "usbWritePolicy": {
+      "imageSha256": "5b6900203ff06fce23e4aeb7134261ca3653d1eab82e56df1a97172948d3b6e0",
+      "preferredMethod": "raw",
+      "preferredBootTargets": [
+        "bios"
+      ],
+      "allowedMethods": [
+        "raw"
+      ],
+      "preserveSourceImage": true,
+      "allowContentTransformations": false,
+      "note": "ISO hibrida: RAW/DD com indicio de boot BIOS (confirmar com teste de boot). Boot BIOS por carregador proprio (Syslinux/GRUB/Bootwiz): a copia logica nao preserva o boot BIOS."
+    },
+    "description": "Instalador do sistema Storex base CentOS"
+  },
+  {
+    "name": "PNB-WIN7-X64-sharepoint",
+    "group": "PNB-WIN7",
+    "fileUrl": "https://quallit.link/pnb-win7-x64-sp",
+    "fileName": "PNB-WIN7-x64.ISO",
+    "md5": "caff8e0768ef1dc82db4e7120d6267ad",
+    "sha256": "475f187c6d3b9a4a238b8b892bc111fa4212b4403a7e4b8df9880c47931120d2",
+    "imageSizeBytes": 7867660288,
+    "usbIdentification": {
+      "schema": 1,
+      "mode": "logical",
+      "bootTargets": [
+        "bios",
+        "uefi"
+      ],
+      "fileCount": 444,
+      "totalBytes": 7863460817,
+      "treeHash": "dea77c11b6d81819a984804bcae7fd93b11c7875f5502f115f8a4b660f158b1f",
+      "manifestUrl": "https://installer.quallit.com.br/qdisk/manifests/PNB-WIN7-x64.manifest.json",
+      "manifestSha256": "75b2c65aebe996c3ba187fedafda93b2561a67909b862d355525114971ce830c",
+      "sentinelFiles": [
+        {
+          "path": "bootmgr",
+          "size": 400228,
+          "sha256": "180a0d4144b44fc54acc9345a1453a32064ce8329ed387f4bf5faad1d7bc883a"
+        },
+        {
+          "path": "bootmgr.efi",
+          "size": 1147744,
+          "sha256": "1b32241553c0aad66e807b47708c9501b4ba04ad3cb1fa55ca43d943e1d6103d"
+        },
+        {
+          "path": "EFI/Boot/bootx64.efi",
+          "size": 1159008,
+          "sha256": "638af16a9162d240d14760abf0821283d58839e09633b7abab96602d8f4d3105"
+        },
+        {
+          "path": "boot/BCD",
+          "size": 20480,
+          "sha256": "fd8253258f62eaf03eae0d963b809043171a73eb6d1d0885e4cfa44f053b3757"
+        },
+        {
+          "path": "sources/boot.wim",
+          "size": 266828977,
+          "sha256": "ade22fc0dcda3b00d71d63dfb1b42003310d23d14bd746d3a6e2ce0794352032"
+        }
+      ],
+      "technicalAnalysis": {
+        "largestFile": {
+          "path": "SMS/PKG/99900270/89B6017F545355E6E73E79B7540AA843739ABCFCFC0B3402C208F6F6D0CD3B2C000.swm",
+          "size": 4294928584,
+          "sha256": "fe6da86d02f665b991f5edc0f7295ffe25ff2ecbf93e2be8c177b8e3794956df"
+        },
+        "hasFilesOver4Gb": false,
+        "recommendedMethod": "logical-fat32",
+        "alternativeMethods": [],
+        "reasons": [
+          "ISO nao hibrida (area de sistema sem MBR de boot): gravada como RAW/DD nao deve dar boot.",
+          "Maior arquivo (SMS/PKG/99900270/89B6017F545355E6E73E79B7540AA843739ABCFCFC0B3402C208F6F6D0CD3B2C000.swm) a 38.711 bytes do limite de 4 GB do FAT32."
+        ],
+        "analysisEngine": "core-1",
+        "imageBootTargets": [
+          "bios",
+          "uefi"
+        ],
+        "methods": [
+          {
+            "method": "logical-fat32",
+            "bootTargets": [
+              "bios",
+              "uefi"
+            ],
+            "transformsContent": false
+          }
+        ]
+      }
+    },
+    "usbWritePolicy": {
+      "imageSha256": "475f187c6d3b9a4a238b8b892bc111fa4212b4403a7e4b8df9880c47931120d2",
+      "preferredMethod": "logical-fat32",
+      "preferredBootTargets": [
+        "bios",
+        "uefi"
+      ],
+      "allowedMethods": [
+        "logical-fat32"
+      ],
+      "preserveSourceImage": true,
+      "allowContentTransformations": false,
+      "note": "ISO nao hibrida (area de sistema sem MBR de boot): gravada como RAW/DD nao deve dar boot. Maior arquivo (SMS/PKG/99900270/89B6017F545355E6E73E79B7540AA843739ABCFCFC0B3402C208F6F6D0CD3B2C000.swm) a 38.711 bytes do limite de 4 GB do FAT32."
+    },
+    "description": "Instalação do Windows 7 PNB"
+  },
+  {
+    "name": "PNB-WIN7-X64-dropbox",
+    "group": "PNB-WIN7",
+    "fileUrl": "https://quallit.link/pnb-win7-x64-db",
+    "fileName": "PNB-WIN7-x64.ISO",
+    "md5": "caff8e0768ef1dc82db4e7120d6267ad",
+    "sha256": "475f187c6d3b9a4a238b8b892bc111fa4212b4403a7e4b8df9880c47931120d2",
+    "imageSizeBytes": 7867660288,
+    "usbIdentification": {
+      "schema": 1,
+      "mode": "logical",
+      "bootTargets": [
+        "bios",
+        "uefi"
+      ],
+      "fileCount": 444,
+      "totalBytes": 7863460817,
+      "treeHash": "dea77c11b6d81819a984804bcae7fd93b11c7875f5502f115f8a4b660f158b1f",
+      "manifestUrl": "https://installer.quallit.com.br/qdisk/manifests/PNB-WIN7-x64.manifest.json",
+      "manifestSha256": "75b2c65aebe996c3ba187fedafda93b2561a67909b862d355525114971ce830c",
+      "sentinelFiles": [
+        {
+          "path": "bootmgr",
+          "size": 400228,
+          "sha256": "180a0d4144b44fc54acc9345a1453a32064ce8329ed387f4bf5faad1d7bc883a"
+        },
+        {
+          "path": "bootmgr.efi",
+          "size": 1147744,
+          "sha256": "1b32241553c0aad66e807b47708c9501b4ba04ad3cb1fa55ca43d943e1d6103d"
+        },
+        {
+          "path": "EFI/Boot/bootx64.efi",
+          "size": 1159008,
+          "sha256": "638af16a9162d240d14760abf0821283d58839e09633b7abab96602d8f4d3105"
+        },
+        {
+          "path": "boot/BCD",
+          "size": 20480,
+          "sha256": "fd8253258f62eaf03eae0d963b809043171a73eb6d1d0885e4cfa44f053b3757"
+        },
+        {
+          "path": "sources/boot.wim",
+          "size": 266828977,
+          "sha256": "ade22fc0dcda3b00d71d63dfb1b42003310d23d14bd746d3a6e2ce0794352032"
+        }
+      ],
+      "technicalAnalysis": {
+        "largestFile": {
+          "path": "SMS/PKG/99900270/89B6017F545355E6E73E79B7540AA843739ABCFCFC0B3402C208F6F6D0CD3B2C000.swm",
+          "size": 4294928584,
+          "sha256": "fe6da86d02f665b991f5edc0f7295ffe25ff2ecbf93e2be8c177b8e3794956df"
+        },
+        "hasFilesOver4Gb": false,
+        "recommendedMethod": "logical-fat32",
+        "alternativeMethods": [],
+        "reasons": [
+          "ISO nao hibrida (area de sistema sem MBR de boot): gravada como RAW/DD nao deve dar boot.",
+          "Maior arquivo (SMS/PKG/99900270/89B6017F545355E6E73E79B7540AA843739ABCFCFC0B3402C208F6F6D0CD3B2C000.swm) a 38.711 bytes do limite de 4 GB do FAT32."
+        ],
+        "analysisEngine": "core-1",
+        "imageBootTargets": [
+          "bios",
+          "uefi"
+        ],
+        "methods": [
+          {
+            "method": "logical-fat32",
+            "bootTargets": [
+              "bios",
+              "uefi"
+            ],
+            "transformsContent": false
+          }
+        ]
+      }
+    },
+    "usbWritePolicy": {
+      "imageSha256": "475f187c6d3b9a4a238b8b892bc111fa4212b4403a7e4b8df9880c47931120d2",
+      "preferredMethod": "logical-fat32",
+      "preferredBootTargets": [
+        "bios",
+        "uefi"
+      ],
+      "allowedMethods": [
+        "logical-fat32"
+      ],
+      "preserveSourceImage": true,
+      "allowContentTransformations": false,
+      "note": "ISO nao hibrida (area de sistema sem MBR de boot): gravada como RAW/DD nao deve dar boot. Maior arquivo (SMS/PKG/99900270/89B6017F545355E6E73E79B7540AA843739ABCFCFC0B3402C208F6F6D0CD3B2C000.swm) a 38.711 bytes do limite de 4 GB do FAT32."
+    },
+    "description": "Instalação do Windows 7 PNB"
+  },
+  {
+    "name": "PNB-Win11-x64-sharepoint",
+    "group": "PNB-WIN11",
+    "fileUrl": "https://quallit.link/pnb-win11-x64-sp",
+    "fileName": "PNB-Win11-x64.iso",
+    "md5": "de8e1e79647c048ed337a00a98733067",
+    "sha256": "1ab8f7d50c804abf209fe9819916c5035d4e9eb1d76f79304e519f56865194ce",
+    "imageSizeBytes": 15703867392,
+    "usbIdentification": {
+      "schema": 1,
+      "mode": "logical",
+      "bootTargets": [
+        "bios",
+        "uefi"
+      ],
+      "fileCount": 946,
+      "totalBytes": 15698019293,
+      "treeHash": "ca8d22b7f1029b4e2c249fa21022eef1f583e9598e19e8de819ee98536bb70d6",
+      "manifestUrl": "https://installer.quallit.com.br/qdisk/manifests/PNB-Win11-x64.manifest.json",
+      "manifestSha256": "3741fab5346a9b17c47f0424cf34a9ae0832f67b571d4f939c36f1b119589307",
+      "sentinelFiles": [
+        {
+          "path": "bootmgr",
+          "size": 442062,
+          "sha256": "5aa5fb717d051696ead5b13568760068e1e263425532fea5e5b13977fb0f95fa"
+        },
+        {
+          "path": "bootmgr.efi",
+          "size": 1671144,
+          "sha256": "f4d65cb9c75c256881168a150230f0de4ef2448c81b93160cb794586545a2da0"
+        },
+        {
+          "path": "efi/boot/bootx64.efi",
+          "size": 1688024,
+          "sha256": "ac0513fa88d841d4698f5331c4012bc9747f36f7e5904c634315392d680d9794"
+        },
+        {
+          "path": "boot/bcd",
+          "size": 16384,
+          "sha256": "293bff9113d50c62669c31bdd8b1a4fe50eee6be7988243808cec2f1c74428a9"
+        },
+        {
+          "path": "sources/boot.wim",
+          "size": 524756857,
+          "sha256": "43d21d5758c96179e8e0e7863f2f040fc5a67b43b4758e0c6a5caca44932319d"
+        }
+      ],
+      "technicalAnalysis": {
+        "largestFile": {
+          "path": "sources/install.wim",
+          "size": 14917593251,
+          "sha256": "c5e869a1d0aa9d399f8c644e1378d072701c85674925f2cc4bf1e869f2668e27"
+        },
+        "hasFilesOver4Gb": true,
+        "recommendedMethod": "uefi-ntfs",
+        "alternativeMethods": [
+          "fat32-split-wim"
+        ],
+        "reasons": [
+          "Arquivo maior que 4 GB: sources/install.wim; FAT32 nao comporta a copia sem transformar a imagem.",
+          "ISO nao hibrida (area de sistema sem MBR de boot): gravada como RAW/DD nao deve dar boot.",
+          "Nenhum metodo sem transformacao atende BIOS + UEFI; uefi-ntfs atende UEFI e perde BIOS."
+        ],
+        "analysisEngine": "core-1",
+        "imageBootTargets": [
+          "bios",
+          "uefi"
+        ],
+        "methods": [
+          {
+            "method": "uefi-ntfs",
+            "bootTargets": [
+              "uefi"
+            ],
+            "transformsContent": false
+          },
+          {
+            "method": "fat32-split-wim",
+            "bootTargets": [
+              "bios",
+              "uefi"
+            ],
+            "transformsContent": true
+          }
+        ]
+      }
+    },
+    "usbWritePolicy": {
+      "imageSha256": "1ab8f7d50c804abf209fe9819916c5035d4e9eb1d76f79304e519f56865194ce",
+      "preferredMethod": "uefi-ntfs",
+      "preferredBootTargets": [
+        "uefi"
+      ],
+      "allowedMethods": [
+        "uefi-ntfs"
+      ],
+      "preserveSourceImage": true,
+      "allowContentTransformations": false,
+      "note": "Arquivo maior que 4 GB: sources/install.wim; FAT32 nao comporta a copia sem transformar a imagem. ISO nao hibrida (area de sistema sem MBR de boot): gravada como RAW/DD nao deve dar boot. Nenhum metodo sem transformacao atende BIOS + UEFI; uefi-ntfs atende UEFI e perde BIOS.",
+      "volumeLabel": "PNB_Win11"
+    },
+    "description": "Instalação do Windows 11 PNB exige PC com UEFI"
+  },
+  {
+    "name": "PNB-Win11-x64-dropbox",
+    "group": "PNB-WIN11",
+    "fileUrl": "https://quallit.link/pnb-win11-x64-db",
+    "fileName": "PNB-Win11-x64.iso",
+    "md5": "de8e1e79647c048ed337a00a98733067",
+    "sha256": "1ab8f7d50c804abf209fe9819916c5035d4e9eb1d76f79304e519f56865194ce",
+    "imageSizeBytes": 15703867392,
+    "usbIdentification": {
+      "schema": 1,
+      "mode": "logical",
+      "bootTargets": [
+        "bios",
+        "uefi"
+      ],
+      "fileCount": 946,
+      "totalBytes": 15698019293,
+      "treeHash": "ca8d22b7f1029b4e2c249fa21022eef1f583e9598e19e8de819ee98536bb70d6",
+      "manifestUrl": "https://installer.quallit.com.br/qdisk/manifests/PNB-Win11-x64.manifest.json",
+      "manifestSha256": "3741fab5346a9b17c47f0424cf34a9ae0832f67b571d4f939c36f1b119589307",
+      "sentinelFiles": [
+        {
+          "path": "bootmgr",
+          "size": 442062,
+          "sha256": "5aa5fb717d051696ead5b13568760068e1e263425532fea5e5b13977fb0f95fa"
+        },
+        {
+          "path": "bootmgr.efi",
+          "size": 1671144,
+          "sha256": "f4d65cb9c75c256881168a150230f0de4ef2448c81b93160cb794586545a2da0"
+        },
+        {
+          "path": "efi/boot/bootx64.efi",
+          "size": 1688024,
+          "sha256": "ac0513fa88d841d4698f5331c4012bc9747f36f7e5904c634315392d680d9794"
+        },
+        {
+          "path": "boot/bcd",
+          "size": 16384,
+          "sha256": "293bff9113d50c62669c31bdd8b1a4fe50eee6be7988243808cec2f1c74428a9"
+        },
+        {
+          "path": "sources/boot.wim",
+          "size": 524756857,
+          "sha256": "43d21d5758c96179e8e0e7863f2f040fc5a67b43b4758e0c6a5caca44932319d"
+        }
+      ],
+      "technicalAnalysis": {
+        "largestFile": {
+          "path": "sources/install.wim",
+          "size": 14917593251,
+          "sha256": "c5e869a1d0aa9d399f8c644e1378d072701c85674925f2cc4bf1e869f2668e27"
+        },
+        "hasFilesOver4Gb": true,
+        "recommendedMethod": "uefi-ntfs",
+        "alternativeMethods": [
+          "fat32-split-wim"
+        ],
+        "reasons": [
+          "Arquivo maior que 4 GB: sources/install.wim; FAT32 nao comporta a copia sem transformar a imagem.",
+          "ISO nao hibrida (area de sistema sem MBR de boot): gravada como RAW/DD nao deve dar boot.",
+          "Nenhum metodo sem transformacao atende BIOS + UEFI; uefi-ntfs atende UEFI e perde BIOS."
+        ],
+        "analysisEngine": "core-1",
+        "imageBootTargets": [
+          "bios",
+          "uefi"
+        ],
+        "methods": [
+          {
+            "method": "uefi-ntfs",
+            "bootTargets": [
+              "uefi"
+            ],
+            "transformsContent": false
+          },
+          {
+            "method": "fat32-split-wim",
+            "bootTargets": [
+              "bios",
+              "uefi"
+            ],
+            "transformsContent": true
+          }
+        ]
+      }
+    },
+    "usbWritePolicy": {
+      "imageSha256": "1ab8f7d50c804abf209fe9819916c5035d4e9eb1d76f79304e519f56865194ce",
+      "preferredMethod": "uefi-ntfs",
+      "preferredBootTargets": [
+        "uefi"
+      ],
+      "allowedMethods": [
+        "uefi-ntfs"
+      ],
+      "preserveSourceImage": true,
+      "allowContentTransformations": false,
+      "note": "Arquivo maior que 4 GB: sources/install.wim; FAT32 nao comporta a copia sem transformar a imagem. ISO nao hibrida (area de sistema sem MBR de boot): gravada como RAW/DD nao deve dar boot. Nenhum metodo sem transformacao atende BIOS + UEFI; uefi-ntfs atende UEFI e perde BIOS.",
+      "volumeLabel": "PNB_Win11"
+    },
+    "description": "Instalação do Windows 11 PNB exige PC com UEFI"
+  }
+]

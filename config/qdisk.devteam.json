@@ -1,0 +1,138 @@
+[
+  {
+    "name": "WIN7-POSITIVO",
+    "group": "PNB-WIN7",
+    "fileUrl": "https://mateweb.ddns.net/TIBX/PNB-WIN7/WIN7-POSITIVO.TIBX",
+    "fileName": "WIN7-POSITIVO.TIBX",
+    "md5": "38494f8e6a81eb7ef9d4f027bd7adeb4",
+    "sha256": "3fee392a5872800d0d43dc54fede6a0d1cac65d1204ad06bc75f119673bbcd0b",
+    "imageSizeBytes": 13764415488,
+    "description": "Imagem de sistema operacional (backup Acronis). Restauração com 2 pendrives: (1) o pendrive com a mídia Acronis (gravada em RAW/DD), para dar boot; (2) o pendrive com o TIBX (copiado em NTFS). Inicie pelo pendrive 1 e restaure a partir do arquivo no pendrive 2."
+  },
+  {
+    "name": "WIN7-PNB-REG",
+    "group": "PNB-WIN7",
+    "fileUrl": "https://mateweb.ddns.net/TIBX/PNB-WIN7/WIN7-PNB-REG.TIBX",
+    "fileName": "WIN7-PNB-REG.TIBX",
+    "md5": "8ba8fe96db1fe27386c24ac7063509ee",
+    "sha256": "095c6b69568d8857c120e142e8d9cfc3ad0d6b5c1dbf990ec130aa3f63a5c7d4",
+    "imageSizeBytes": 13763194880,
+    "description": "Imagem de sistema operacional (backup Acronis). Restauração com 2 pendrives: (1) o pendrive com a mídia Acronis (gravada em RAW/DD), para dar boot; (2) o pendrive com o TIBX (copiado em NTFS). Inicie pelo pendrive 1 e restaure a partir do arquivo no pendrive 2."
+  },
+  {
+    "name": "PNB-WIN7-IMG",
+    "group": "PNB-WIN7",
+    "fileUrl": "https://mateweb.ddns.net/TIBX/PNB-WIN7/PNB-WIN7-IMG.TIBX",
+    "fileName": "PNB-WIN7-IMG.TIBX",
+    "md5": "8ba8fe96db1fe27386c24ac7063509ee",
+    "sha256": "095c6b69568d8857c120e142e8d9cfc3ad0d6b5c1dbf990ec130aa3f63a5c7d4",
+    "imageSizeBytes": 13763194880,
+    "description": "Imagem de sistema operacional (backup Acronis). Restauração com 2 pendrives: (1) o pendrive com a mídia Acronis (gravada em RAW/DD), para dar boot; (2) o pendrive com o TIBX (copiado em NTFS). Inicie pelo pendrive 1 e restaure a partir do arquivo no pendrive 2."
+  },
+  {
+    "imageScan": {
+      "engine": "Microsoft Defender (MpCmdRun -DisableRemediation)",
+      "scannedAtUtc": "2026-10-18T06:00:49Z",
+      "imageFileName": "Quallit_Boot_clean.iso",
+      "imageSha256": "2fc5fd7af8a79c90c759798f943ba36387f724824ef414e29ac520b81ddcaf3d",
+      "threats": [],
+      "unclassified": [],
+      "systemToolCopies": [
+        "Programs\\AOMEI Partition Assistant\\ddm\\Help.exe",
+        "Programs\\Check Disk GUI\\chkdsk.exe",
+        "Programs\\ExamDiff Pro\\Plug-Ins\\cURL\\curl.exe"
+      ]
+    },
+    "name": "Quallit_Boot_clean",
+    "group": "TOOL",
+    "fileUrl": "https://mateweb.ddns.net/tibx/QUALLIT/Quallit_Boot_clean.iso",
+    "fileName": "Quallit_Boot_clean.iso",
+    "md5": "539f6e332e6a135a6cd61f6390b9d659",
+    "sha256": "2fc5fd7af8a79c90c759798f943ba36387f724824ef414e29ac520b81ddcaf3d",
+    "imageSizeBytes": 3102611456,
+    "usbIdentification": {
+      "schema": 1,
+      "mode": "logical",
+      "bootTargets": [
+        "bios",
+        "uefi"
+      ],
+      "fileCount": 5104,
+      "totalBytes": 3122110828,
+      "treeHash": "cdc21aaa0b69cf5154aefa0939a0f3c2fd94eafab304d93fefcfc763a9b98d51",
+      "manifestUrl": "https://installer.quallit.com.br/qdisk/manifests/Quallit_Boot_clean.manifest.json",
+      "manifestSha256": "331b9db1f00450394a6bae5cbbedc4d1ed1172aa43b17846c923ad72729a92bd",
+      "sentinelFiles": [
+        {
+          "path": "BOOTMGR",
+          "size": 413738,
+          "sha256": "4eeac11be050843d0d824850d8646b966ce45f23102ff955dbef81d52c82d693"
+        },
+        {
+          "path": "bootmgr.efi",
+          "size": 1541432,
+          "sha256": "01446fa0c905abb248178fe1b6b7e6208b792cdc5f39a328f19684612813e713"
+        },
+        {
+          "path": "efi/boot/bootx64.efi",
+          "size": 1557816,
+          "sha256": "cb959ca5b7a9fc5f104f485365aa2b23215ebb82ae43ff35c3bd55468c00ddd0"
+        },
+        {
+          "path": "boot/bcd",
+          "size": 24576,
+          "sha256": "407870620994ce72f3a787e7b03c93805e432ff91dd4a496ef1129ee34c772f4"
+        },
+        {
+          "path": "sources/boot.wim",
+          "size": 1141523270,
+          "sha256": "d8c63dba9ed70c39fdfc43d01365e88e58e7f6e51ca889b9f7e813487e9c6993"
+        }
+      ],
+      "technicalAnalysis": {
+        "largestFile": {
+          "path": "sources/boot.wim",
+          "size": 1141523270,
+          "sha256": "d8c63dba9ed70c39fdfc43d01365e88e58e7f6e51ca889b9f7e813487e9c6993"
+        },
+        "hasFilesOver4Gb": false,
+        "recommendedMethod": "logical-fat32",
+        "alternativeMethods": [],
+        "reasons": [
+          "ISO nao hibrida (area de sistema sem MBR de boot): gravada como RAW/DD nao deve dar boot."
+        ],
+        "analysisEngine": "core-1",
+        "imageBootTargets": [
+          "bios",
+          "uefi"
+        ],
+        "methods": [
+          {
+            "method": "logical-fat32",
+            "bootTargets": [
+              "bios",
+              "uefi"
+            ],
+            "transformsContent": false
+          }
+        ]
+      }
+    },
+    "usbWritePolicy": {
+      "imageSha256": "2fc5fd7af8a79c90c759798f943ba36387f724824ef414e29ac520b81ddcaf3d",
+      "preferredMethod": "logical-fat32",
+      "allowedMethods": [
+        "logical-fat32"
+      ],
+      "preserveSourceImage": true,
+      "allowContentTransformations": false,
+      "note": "ISO nao hibrida (area de sistema sem MBR de boot): gravada como RAW/DD nao deve dar boot.",
+      "volumeLabel": "Q_BOOT",
+      "preferredBootTargets": [
+        "bios",
+        "uefi"
+      ]
+    },
+    "description": "Pendrive de manutenção (WinPE) com ferramentas de disco, backup e recuperação."
+  }
+]

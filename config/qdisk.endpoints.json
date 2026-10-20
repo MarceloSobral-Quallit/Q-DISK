@@ -1,0 +1,17 @@
+{
+  "primary": {
+    "baseUrl": "https://installer.quallit.com.br/qdisk/"
+  },
+  "fallback": {
+    "publicBaseUrl": "https://mateweb.ddns.net/qdisk/",
+    "host": "mateweb.ddns.net",
+    "port": 2205,
+    "hostKey": "SHA256:aBVNSji5CI6pD+nASIXNxUTkCP86DMktrg1LoLiVre4",
+    "user": "qdisk-update",
+    "remotePath": "/store/sites/qdisk/www"
+  },
+  "installerGit": {
+    "repositoryUrl": "https://github.com/quallitdesenv/quallit-installer.git",
+    "targetSubdir": "public/qdisk"
+  }
+}

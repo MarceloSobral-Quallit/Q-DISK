@@ -1,0 +1,26 @@
+<Project>
+  <PropertyGroup>
+    <Version>0.00.10.26</Version>
+    <AssemblyVersion>0.00.10.26</AssemblyVersion>
+    <FileVersion>0.00.10.26</FileVersion>
+    <InformationalVersion>0.00.10.26</InformationalVersion>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <PublishDir>$(MSBuildThisFileDirectory)dist\</PublishDir>
+    <!-- Caminhos relativos a raiz do projeto que nao devem entrar no build/backup do pipeline. Separe por ponto e virgula. -->
+    <QuallitBackupExcludePaths>temp;secret.txt;config/secret.md</QuallitBackupExcludePaths>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(MSBuildThisFileDirectory)temp\**</DefaultItemExcludes>
+    <!-- Metadados do executavel (visiveis em Propriedades > Detalhes no Explorer) -->
+    <Company>Quallit</Company>
+    <Authors>Quallit</Authors>
+    <Title>Q-DISK</Title>
+    <Product>Q-DISK</Product>
+    <Description>Gerenciador de downloads e criacao de USB bootavel</Description>
+    <Copyright>Copyright (c) Quallit. Licensed under GPL-3.0-or-later.</Copyright>
+    <AssemblyTitle>Q-DISK</AssemblyTitle>
+    <AssemblyCompany>Quallit</AssemblyCompany>
+    <AssemblyProduct>Q-DISK</AssemblyProduct>
+    <AssemblyDescription>Gerenciador de downloads e criacao de USB bootavel</AssemblyDescription>
+    <AssemblyCopyright>Copyright (c) Quallit. Licensed under GPL-3.0-or-later.</AssemblyCopyright>
+    <NeutralLanguage>pt-BR</NeutralLanguage>
+  </PropertyGroup>
+</Project>

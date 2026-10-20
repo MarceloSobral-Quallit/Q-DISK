@@ -1,0 +1,39 @@
+# Normalizacao de fim de linha do qdisk.
+# No repositorio os arquivos de texto ficam com LF; na copia de trabalho,
+# os tipos abaixo ficam sempre com CRLF (exigido por .bat/.cmd e padrao do Visual Studio).
+* text=auto
+
+*.vb       text eol=crlf
+*.vbproj   text eol=crlf
+*.csproj   text eol=crlf
+*.cs       text eol=crlf
+*.sln      text eol=crlf
+*.resx     text eol=crlf
+*.props    text eol=crlf
+*.pubxml   text eol=crlf
+*.manifest text eol=crlf
+*.bat      text eol=crlf
+*.cmd      text eol=crlf
+*.ps1      text eol=crlf
+*.iss      text eol=crlf
+*.rsp      text eol=crlf
+
+*.jpg  binary
+*.png  binary
+*.gif  binary
+*.ico  binary
+*.docx binary
+*.pfx  binary
+
+# Imagens de disco e executaveis: nunca converter (o app confere o SHA-256 de assets/uefi-ntfs/uefi-ntfs.img).
+*.img  binary
+*.iso  binary
+*.tibx binary
+*.efi  binary
+*.exe  binary
+*.dll  binary
+*.zip  binary
+
+# Manifestos de USB: o catalogo guarda o SHA-256 dos bytes exatos (manifestSha256), entao o Git
+# nao pode converter fim de linha (convertia CRLF em LF e o app rejeitava o manifesto baixado).
+config/manifests/*.manifest.json -text

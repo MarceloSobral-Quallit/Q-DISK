@@ -1,0 +1,30 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  github_sync.ini.example
+#  Copie este arquivo para github_sync.ini e ajuste os valores.
+#  O arquivo github_sync.ini NÃO deve ser commitado (está no .gitignore).
+# ─────────────────────────────────────────────────────────────────────────────
+
+[git]
+# Liga/desliga a sincronização com GitHub para ESTA cópia do projeto.
+# true  = commit/push liberados (cópia "limpa", destinada a publicar).
+# false = nenhum commit/push acontece, mesmo chamando este script direto —
+#         use em cópias de desenvolvimento (DESENV) que não devem publicar sozinhas.
+active   = true
+
+# URL HTTPS do repositório no GitHub
+remote   = https://github.com/MarceloSobral-Quallit/Q-DISK.git
+
+# Branch alvo (padrão: main)
+branch   = main
+
+# Nome de usuário para commits locais
+username = INSIRA_SEU_USUARIO_GITHUB
+
+# E-mail para commits locais
+email    = INSIRA_SEU_EMAIL
+
+# Rótulo exibido nos prompts e mensagens de commit
+project  = qdisk
+
+# Mensagem padrão de commit (Enter vazio no prompt usa esta; deixe em branco para timestamp automático)
+default_commit_message =

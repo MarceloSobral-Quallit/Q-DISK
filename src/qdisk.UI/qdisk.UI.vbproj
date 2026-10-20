@@ -1,0 +1,95 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <AssemblyName>qdisk</AssemblyName>
+    <RootNamespace>qdisk.UI</RootNamespace>
+    <StartupObject>Sub Main</StartupObject>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>..\..\assets\favicon.ico</ApplicationIcon>
+    <!-- Configurações OneFile OBRIGATÓRIAS para TODAS as compilações -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!-- Força saída como EXE em vez de DLL -->
+    <OutputType>WinExe</OutputType>
+    <!-- Manifest embarcado: compatibilidade, UAC, DPI, Common Controls 6 -->
+    <!-- Aponta para a cópia gerada em obj/ (versão injetada pelo target GenerateVersionedManifest) -->
+    <ApplicationManifest>$(IntermediateOutputPath)app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <!-- Embeda a data de compilação no assembly como metadado -->  
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>BuildDate</_Parameter1>
+      <_Parameter2>$([System.DateTime]::Now.ToString("dd/MM/yyyy HH:mm"))</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Import Include="System.Data" />
+    <Import Include="System.Drawing" />
+    <Import Include="System.Windows.Forms" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\qdisk.Core\qdisk.Core.vbproj" />
+    <ProjectReference Include="..\qdisk.Infrastructure\qdisk.Infrastructure.vbproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DiscUtils" Version="0.16.13" />
+    <PackageReference Include="System.Management" Version="8.0.0" />
+  </ItemGroup>
+
+  <!-- Recursos embarcados no EXE — extraídos em runtime para %LOCALAPPDATA%\qdisk\ -->
+  <!-- LogicalName define o nome do recurso; prefixo "_embedded\" é usado por AppPaths.EnsureAssetsExtracted -->
+  <ItemGroup>
+    <!-- Catalogos: fonte unica em config/ (sem copia em UI/Data) -->
+    <EmbeddedResource Include="..\..\config\qdisk.rd.json">
+      <LogicalName>_embedded\Data\qdisk.rd.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\config\qdisk.pnb.json">
+      <LogicalName>_embedded\Data\qdisk.pnb.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\config\qdisk.devteam.json">
+      <LogicalName>_embedded\Data\qdisk.devteam.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\config\qdisk.tools.json">
+      <LogicalName>_embedded\Data\qdisk.tools.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\config\manifests\PNB-WIN7-x64.manifest.json">
+      <LogicalName>_embedded\Data\manifests\PNB-WIN7-x64.manifest.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\config\qdisk.endpoints.json">
+      <LogicalName>_embedded\config\qdisk.endpoints.json</LogicalName>
+    </EmbeddedResource>
+    <!-- So os verificadores do token (sem internal_id); gerado por tools/utils/generate_token_verifiers.py. -->
+    <EmbeddedResource Include="..\..\config\qdisk.tokens.app.json">
+      <LogicalName>_embedded\config\qdisk.tokens.app.json</LogicalName>
+    </EmbeddedResource>
+    <!-- assets\manual\images e fonte do manual.html, que ja as traz embutidas como data:; nao entra no EXE -->
+    <EmbeddedResource Include="..\..\assets\**\*" Exclude="..\..\assets\manual\images\**">
+      <LogicalName>_embedded\assets\%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <!-- Copia app.manifest para obj/ e injeta a versão real do produto antes de compilar -->
+  <Target Name="GenerateVersionedManifest" BeforeTargets="CoreCompile">
+    <Copy
+      SourceFiles="$(MSBuildThisFileDirectory)app.manifest"
+      DestinationFiles="$(IntermediateOutputPath)app.manifest"
+      SkipUnchangedFiles="false" />
+    <XmlPoke
+      XmlInputPath="$(IntermediateOutputPath)app.manifest"
+      Query="/asm:assembly/asm:assemblyIdentity/@version"
+      Value="$(FileVersion)"
+      Namespaces="&lt;Namespace Prefix='asm' Uri='urn:schemas-microsoft-com:asm.v1' /&gt;" />
+    <Message Text="Manifest gerado: $(IntermediateOutputPath)app.manifest — versão $(FileVersion)" Importance="high" />
+  </Target>
+
+</Project>

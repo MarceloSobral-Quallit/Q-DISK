@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>qdisk.Core</RootNamespace>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+
+  <!-- DEBUG fica com o padrao do SDK (definido so em Debug). Antes estava invertido. -->
+
+  <ItemGroup>
+    <PackageReference Include="DiscUtils" Version="0.16.13" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="qdisk.Tests" />
+  </ItemGroup>
+
+</Project>

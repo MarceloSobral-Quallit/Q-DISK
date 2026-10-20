@@ -1,0 +1,16 @@
+uefi-ntfs.img - particao FAT auxiliar do layout UEFI:NTFS (P1)
+
+Origem : https://github.com/pbatard/rufus/blob/master/res/uefi/uefi-ntfs.img
+Commit : 2350489fe9 (19/06/2026) "[uefi] update uefi-ntfs driver to latest and add RISC-V 64 support"
+Baixado: 17/10/2026
+Tamanho: 1048576 bytes (FAT12, rotulo RUFUS_BOOT)
+SHA-256: 72683fa1250eeea772d3399277b434d4e55ba8dd0dc926e52d817e701fc2eb9e
+
+Conteudo: carregador UEFI:NTFS (EFI\BOOT\BOOT*.EFI) e drivers NTFS/exFAT (EFI\Rufus\*.efi) para x64, IA32,
+ARM, ARM64 e RISC-V 64. BOOTX64.EFI e NTFS_X64.EFI assinados por "Microsoft Windows UEFI Driver Publisher"
+(Secure Boot com a CA UEFI de terceiros da Microsoft habilitada no firmware).
+
+Licenca: UEFI:NTFS (https://github.com/pbatard/uefi-ntfs) - GPL-2.0; drivers NTFS (ntfs-3g) - GPL-2.0.
+O app grava esta imagem, sem altera-la, numa particao propria do USB; o codigo-fonte esta nos repositorios acima.
+
+Ao atualizar a imagem, trocar tambem UefiNtfsImageSha256 em UsbBootView.vb.

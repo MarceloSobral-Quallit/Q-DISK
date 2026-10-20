@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- NetSpeedTest: bancada para evoluir o "Teste de velocidade" do qdisk.
+       Usa o mesmo tema (arquivos ligados de src/qdisk.UI/Theme) e os modelos do Core. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <AssemblyName>Quallit.NetSpeedTest</AssemblyName>
+    <RootNamespace>Quallit.NetSpeedTest</RootNamespace>
+    <StartupObject>Sub Main</StartupObject>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>..\..\assets\favicon.ico</ApplicationIcon>
+    <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
+    <OptionStrict>Off</OptionStrict>
+    <OptionInfer>On</OptionInfer>
+    <!-- Aplicativo autônomo, como o GUI_ADM: um exe só, sem .NET instalado (mesmas opções do app principal).
+         IncludeAllContentForSelfExtract põe os ícones e o logo dentro do exe; na execução eles são extraídos
+         junto com o app e AppContext.BaseDirectory aponta para essa pasta (AppPaths.AssetsDir). -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\qdisk.Core\qdisk.Core.vbproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Import Include="System.Drawing" />
+    <Import Include="System.Windows.Forms" />
+  </ItemGroup>
+
+  <!-- Tema do app principal: os mesmos arquivos, sem copia -->
+  <ItemGroup>
+    <Compile Include="..\..\src\qdisk.UI\Theme\*.vb" Link="Theme\%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <!-- Icones e logo ao lado do executavel (AppPaths.AssetsDir) -->
+  <ItemGroup>
+    <Content Include="..\..\assets\icons\**\*.png" Link="assets\icons\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\assets\logo-quallit-512x512.png" Link="assets\logo-quallit-512x512.png" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

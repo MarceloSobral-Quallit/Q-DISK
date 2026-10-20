@@ -1,0 +1,2323 @@
+{
+  "schema": 1,
+  "generatedAtUtc": "2026-07-26T17:12:05Z",
+  "image": {
+    "fileName": "PNB-WIN7-x64.ISO",
+    "sizeBytes": 7867660288,
+    "md5": "caff8e0768ef1dc82db4e7120d6267ad",
+    "sha256": "475f187c6d3b9a4a238b8b892bc111fa4212b4403a7e4b8df9880c47931120d2"
+  },
+  "logical": {
+    "fileCount": 444,
+    "totalBytes": 7863460817,
+    "treeHash": "dea77c11b6d81819a984804bcae7fd93b11c7875f5502f115f8a4b660f158b1f",
+    "sentinelFiles": [
+      {
+        "path": "bootmgr",
+        "size": 400228,
+        "sha256": "180a0d4144b44fc54acc9345a1453a32064ce8329ed387f4bf5faad1d7bc883a"
+      },
+      {
+        "path": "bootmgr.efi",
+        "size": 1147744,
+        "sha256": "1b32241553c0aad66e807b47708c9501b4ba04ad3cb1fa55ca43d943e1d6103d"
+      },
+      {
+        "path": "EFI/Boot/bootx64.efi",
+        "size": 1159008,
+        "sha256": "638af16a9162d240d14760abf0821283d58839e09633b7abab96602d8f4d3105"
+      },
+      {
+        "path": "boot/BCD",
+        "size": 20480,
+        "sha256": "fd8253258f62eaf03eae0d963b809043171a73eb6d1d0885e4cfa44f053b3757"
+      },
+      {
+        "path": "sources/boot.wim",
+        "size": 266828977,
+        "sha256": "ade22fc0dcda3b00d71d63dfb1b42003310d23d14bd746d3a6e2ce0794352032"
+      }
+    ],
+    "analysis": {
+      "largestFile": {
+        "path": "SMS/PKG/99900270/89B6017F545355E6E73E79B7540AA843739ABCFCFC0B3402C208F6F6D0CD3B2C000.swm",
+        "size": 4294928584,
+        "sha256": "fe6da86d02f665b991f5edc0f7295ffe25ff2ecbf93e2be8c177b8e3794956df"
+      },
+      "hasFilesOver4Gb": false,
+      "bootArtifacts": {
+        "biosBootmgr": true,
+        "uefiBootx64": true,
+        "bootBcd": true,
+        "bootWim": true
+      },
+      "filesystemCompatibility": {
+        "fat32": true,
+        "ntfs": true
+      },
+      "recommendedMethod": "logical-fat32",
+      "alternativeMethods": [],
+      "bootTargets": [
+        "bios",
+        "uefi"
+      ],
+      "reasons": [
+        "ISO nao hibrida (area de sistema sem MBR de boot): gravada como RAW/DD nao deve dar boot.",
+        "Maior arquivo (SMS/PKG/99900270/89B6017F545355E6E73E79B7540AA843739ABCFCFC0B3402C208F6F6D0CD3B2C000.swm) a 38.711 bytes do limite de 4 GB do FAT32."
+      ],
+      "analysisEngine": "core-1",
+      "imageBootTargets": [
+        "bios",
+        "uefi"
+      ],
+      "methods": [
+        {
+          "method": "logical-fat32",
+          "bootTargets": [
+            "bios",
+            "uefi"
+          ],
+          "transformsContent": false
+        }
+      ],
+      "fat32MarginBytes": 38711,
+      "bootloaders": {
+        "biosElTorito": true,
+        "uefiElTorito": true,
+        "bootmgr": true,
+        "efiBootx64": true,
+        "efiBootia32": true,
+        "syslinux": false,
+        "grub": false,
+        "acronisBootwiz": false
+      },
+      "isoHybrid": {
+        "mbr": false,
+        "gpt": false,
+        "mbrPartitionTypes": []
+      }
+    }
+  },
+  "files": [
+    {
+      "path": "AUTORUN.INF",
+      "size": 108,
+      "sha256": "e18c9068a950051ade06baa0caac1c4d622883b21f23f9014c3dd3a97abede05"
+    },
+    {
+      "path": "boot/BCD",
+      "size": 20480,
+      "sha256": "fd8253258f62eaf03eae0d963b809043171a73eb6d1d0885e4cfa44f053b3757"
+    },
+    {
+      "path": "boot/boot.sdi",
+      "size": 3170304,
+      "sha256": "cd2c00ce027687ce4a8bdc967f26a8ab82f651c9becd703658ba282ec49702bd"
+    },
+    {
+      "path": "boot/bootfix.bin",
+      "size": 1024,
+      "sha256": "a7a0edaf85f70e833fac02d0a416ae56ae2a3593e787f39c25dbb12830ca737c"
+    },
+    {
+      "path": "boot/bootnxt",
+      "size": 1,
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "boot/bootvhd.dll",
+      "size": 98144,
+      "sha256": "37882c5c81ea37999ab1c338ba703490c456b24d077ae1fa41df81192aeab50a"
+    },
+    {
+      "path": "boot/cs-CZ/memtest.exe.mui",
+      "size": 45408,
+      "sha256": "165b75f3403da1b06857674a1f43db9c0bf4ff7c2328f4370ba111aaf30fb6ac"
+    },
+    {
+      "path": "boot/da-DK/memtest.exe.mui",
+      "size": 45408,
+      "sha256": "7e68603597baff805b8b2f46b3f8c7eb49326349f0c76b362b1d106edf45cb9b"
+    },
+    {
+      "path": "boot/de-DE/memtest.exe.mui",
+      "size": 45912,
+      "sha256": "f0e656e2dfe0aebc58710e0f1c976b6d34fcca2d22c76914ee6c151be7283515"
+    },
+    {
+      "path": "boot/el-GR/memtest.exe.mui",
+      "size": 46432,
+      "sha256": "68b50e5d96932021b622fc4d2e1efc6003f693f44ba168241969f6835cd91c45"
+    },
+    {
+      "path": "boot/en-US/bootmgr.exe.mui",
+      "size": 74080,
+      "sha256": "300381eb8afea97bd76c9471d55f6b1d774793cfd07b456c14f510cd1ec559fd"
+    },
+    {
+      "path": "boot/en-US/memtest.exe.mui",
+      "size": 44888,
+      "sha256": "950e83ff614f06e80f5711ee40de98cef43ca3861b702de18d7bd304467e597b"
+    },
+    {
+      "path": "boot/es-ES/memtest.exe.mui",
+      "size": 45912,
+      "sha256": "b2ad76b9759862373c0cc94805226df2d7721f851dfaa65bfafd70db88001f65"
+    },
+    {
+      "path": "boot/fi-FI/memtest.exe.mui",
+      "size": 45400,
+      "sha256": "e483b2b726dd28a11d82efc98de5ba4aa3c6e7607b2a87cf5a679a88e24a2ed7"
+    },
+    {
+      "path": "boot/Fonts/segmono_boot.ttf",
+      "size": 36020,
+      "sha256": "9f8a2f92a8d6ebf3fb00624f3223c8e0b645f313e23b16b7350803380a1d42fa"
+    },
+    {
+      "path": "boot/Fonts/segoe_slboot.ttf",
+      "size": 77404,
+      "sha256": "c13aebd47a24734e454ccd4d300e6de9dedec5c045d5cf21301d56230d762518"
+    },
+    {
+      "path": "boot/Fonts/segoen_slboot.ttf",
+      "size": 77088,
+      "sha256": "86a735cd7cb59d0216c26e95068935b3acefe8ccb966b68de6694cb89b14d860"
+    },
+    {
+      "path": "boot/Fonts/wgl4_boot.ttf",
+      "size": 47452,
+      "sha256": "9ab081731e46db6cf1248669db7d6b09e9178b61b552a6a2287ca4202c83da2b"
+    },
+    {
+      "path": "boot/fr-FR/memtest.exe.mui",
+      "size": 45920,
+      "sha256": "bc3406bfb2b6aaf698b06c9ab97518bd2073cfe5fcc34713e5f3c2e525dd0b27"
+    },
+    {
+      "path": "boot/hu-HU/memtest.exe.mui",
+      "size": 45920,
+      "sha256": "0c6d0d2dad8aa370f040da41cc151015af045885ed02347a3332374f1157e13f"
+    },
+    {
+      "path": "boot/it-IT/memtest.exe.mui",
+      "size": 45400,
+      "sha256": "688c66260b34989a094dda53f04c723a3fe5610bac435a2a6435cc4e9eb97271"
+    },
+    {
+      "path": "boot/ja-JP/memtest.exe.mui",
+      "size": 42848,
+      "sha256": "ba68078b8dccf271cf7f8e2f727c889129da46e4f98011ad1553aeaa83c42428"
+    },
+    {
+      "path": "boot/ko-KR/memtest.exe.mui",
+      "size": 42848,
+      "sha256": "e798fb8ed92b58fcec959700ba9b42efe1e1880da4f31e8560aca194fe52a90e"
+    },
+    {
+      "path": "boot/memtest.exe",
+      "size": 797024,
+      "sha256": "d82ac44852c37a422922babdfc3704d2fc7cc40df5b316f92c2a4905d893c293"
+    },
+    {
+      "path": "boot/nb-NO/memtest.exe.mui",
+      "size": 45408,
+      "sha256": "c6c62355ed20d32dd110a1dd5e2bf279ff0852d0e9fb9ad9218544602fbe113e"
+    },
+    {
+      "path": "boot/nl-NL/memtest.exe.mui",
+      "size": 45400,
+      "sha256": "a44553d0ee4a0c7771f5307b463a04b72b4ae5ac1f6c635523d3e9db8ba203af"
+    },
+    {
+      "path": "boot/pl-PL/memtest.exe.mui",
+      "size": 45920,
+      "sha256": "db3d3c5fe2944465d36fbb81c551736185ef9f8a7b92b1835c50b6cebe31794a"
+    },
+    {
+      "path": "boot/pt-BR/memtest.exe.mui",
+      "size": 45408,
+      "sha256": "242d7c65a3c6f5a81b733bcf5d24bad942233c8e38ff1bff1e03a939a0a1b1bd"
+    },
+    {
+      "path": "boot/pt-PT/memtest.exe.mui",
+      "size": 45912,
+      "sha256": "8c3f432ed741d5d42ea8f702968f0c579627388e9e9ae6242bad948b6a59effa"
+    },
+    {
+      "path": "boot/qps-ploc/memtest.exe.mui",
+      "size": 44896,
+      "sha256": "d16d2275e780b63fe306816b9253afcd985f3604b3afb0d21b0538d802b1478b"
+    },
+    {
+      "path": "boot/ru-RU/memtest.exe.mui",
+      "size": 44896,
+      "sha256": "57dc42d82595b0b233e4ff4f9f0d6e0cdcb51820b6aea87610c2b084ac3e7186"
+    },
+    {
+      "path": "boot/sr-Latn-CS/memtest.exe.mui",
+      "size": 44888,
+      "sha256": "7e05e7a031d45079aa02e8ee7c1415bcd780eb0f0fb4e04c87f655eca502f55a"
+    },
+    {
+      "path": "boot/sv-SE/memtest.exe.mui",
+      "size": 44888,
+      "sha256": "0218358b4642d06222b5ee4d180835bb1ccc9e6ce6f63f9482b639ce8b8017ed"
+    },
+    {
+      "path": "boot/tr-TR/memtest.exe.mui",
+      "size": 45408,
+      "sha256": "f46f50bccda5ffebe5a2e2708c8a78a5ce716341ce952a2e026efc8a4dbd5f24"
+    },
+    {
+      "path": "boot/zh-CN/memtest.exe.mui",
+      "size": 42336,
+      "sha256": "df6d36d18e64996f4e3c0d5bd1a11bea2bf529cafc7b50ecd3ca6162c7161f9c"
+    },
+    {
+      "path": "boot/zh-HK/memtest.exe.mui",
+      "size": 42328,
+      "sha256": "6217b36962b59a9f4ca34de72322b0e18fa4abf515b3ba5b724bdada20b4372e"
+    },
+    {
+      "path": "boot/zh-TW/memtest.exe.mui",
+      "size": 42336,
+      "sha256": "23ef5a28e5a1443e00342c32d8cd4e71d02cb54897ac88f78845f4e4d7f721fd"
+    },
+    {
+      "path": "bootmgr",
+      "size": 400228,
+      "sha256": "180a0d4144b44fc54acc9345a1453a32064ce8329ed387f4bf5faad1d7bc883a"
+    },
+    {
+      "path": "bootmgr.efi",
+      "size": 1147744,
+      "sha256": "1b32241553c0aad66e807b47708c9501b4ba04ad3cb1fa55ca43d943e1d6103d"
+    },
+    {
+      "path": "EFI/Boot/bootia32.efi",
+      "size": 1159008,
+      "sha256": "638af16a9162d240d14760abf0821283d58839e09633b7abab96602d8f4d3105"
+    },
+    {
+      "path": "EFI/Boot/bootx64.efi",
+      "size": 1159008,
+      "sha256": "638af16a9162d240d14760abf0821283d58839e09633b7abab96602d8f4d3105"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/BCD",
+      "size": 20480,
+      "sha256": "d76e32a238dc4da0963d2bb30f5898cfe34ffd1debeb5eb1beb8541f43863b2e"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/boot.stl",
+      "size": 4391,
+      "sha256": "67f0da8a0b8353d5604697ed5696119cc36bca53f074df07082bf2b48a7713bc"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/bootmgfw.efi",
+      "size": 1159008,
+      "sha256": "638af16a9162d240d14760abf0821283d58839e09633b7abab96602d8f4d3105"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/cs-CZ/memtest.efi.mui",
+      "size": 45408,
+      "sha256": "64343cc12470a46cea92324ee8129dc44ef55021800c4baadef3984c33251e8c"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/da-DK/memtest.efi.mui",
+      "size": 45408,
+      "sha256": "41d19c886913e79a847ee99e6ae6e2a49087fa4663cc4fe5da8c2fba598217a1"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/de-DE/memtest.efi.mui",
+      "size": 45920,
+      "sha256": "2fce049831a73558cec905327728d3ddbb0ca9bc81b8a689b0ecea23265d1a53"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/el-GR/memtest.efi.mui",
+      "size": 46432,
+      "sha256": "4dea4e80b9f4036970c79ed4128cc8b922ea3db171132af4d2486b3f991114c5"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/en-US/bootmgfw.efi.mui",
+      "size": 74080,
+      "sha256": "78bad1995eb6e1e03e02db89a0bde49285e07e33dc6c7c8dcc5403c103a06e2a"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/en-US/bootmgr.efi.mui",
+      "size": 74080,
+      "sha256": "79cba08f1a0a8eb82499dd8d2b090070110b1f74aee9e58616fc98c818577f51"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/en-US/memtest.efi.mui",
+      "size": 44896,
+      "sha256": "48c05493ff016e4a2236b04222687ba363b0d6ee0e9d9e587aca9fe6609e4ed4"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/es-ES/memtest.efi.mui",
+      "size": 45920,
+      "sha256": "12f0c6c19cbed082118bdeef1e61a8e676a88593a209e2fe0ae6266255144171"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/fi-FI/memtest.efi.mui",
+      "size": 45408,
+      "sha256": "6a2af252edce8735029cb8ca43e9c328a09214de3952b1a769f47bfa7b9258ea"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/Fonts/segmono_boot.ttf",
+      "size": 36020,
+      "sha256": "9f8a2f92a8d6ebf3fb00624f3223c8e0b645f313e23b16b7350803380a1d42fa"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/Fonts/segoe_slboot.ttf",
+      "size": 77404,
+      "sha256": "c13aebd47a24734e454ccd4d300e6de9dedec5c045d5cf21301d56230d762518"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/Fonts/segoen_slboot.ttf",
+      "size": 77088,
+      "sha256": "86a735cd7cb59d0216c26e95068935b3acefe8ccb966b68de6694cb89b14d860"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/Fonts/wgl4_boot.ttf",
+      "size": 47452,
+      "sha256": "9ab081731e46db6cf1248669db7d6b09e9178b61b552a6a2287ca4202c83da2b"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/fr-FR/memtest.efi.mui",
+      "size": 45920,
+      "sha256": "b8c072474ef459ec95a3732810841112f3f26a4398d212d2acc08e0ac6867c56"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/hu-HU/memtest.efi.mui",
+      "size": 45920,
+      "sha256": "bfa0d67fbc1dc2ffc19616d6710924c865799751257e0774be138ac089d379ae"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/it-IT/memtest.efi.mui",
+      "size": 45400,
+      "sha256": "4742495a2a3a30f7515062415de6c47c014ed7fb000721386a431d24d930ba13"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/ja-JP/memtest.efi.mui",
+      "size": 42848,
+      "sha256": "0e59fbe2a53ff8a9a1ea09cecc648d657df88c4587372734d9f4a6f1dd3c0c68"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/ko-KR/memtest.efi.mui",
+      "size": 42840,
+      "sha256": "c2801cf719f0a0a22ab993b1316c46e85f2d3baf3d16782902dd0372a71ff558"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/memtest.efi",
+      "size": 1031520,
+      "sha256": "e6cee8b60ff53514e070393220e62d684484da40f041f10df6bd9522f795ce8c"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/nb-NO/memtest.efi.mui",
+      "size": 45408,
+      "sha256": "e60b3b5f7d94ce2ca1163c03ad05c07334757ea45f68d3d01ce511b8b5f44440"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/nl-NL/memtest.efi.mui",
+      "size": 45408,
+      "sha256": "ed9a5cded1ca704ae0b373cb32f4148246764adaacca0573a2b3c588a97d7325"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/pl-PL/memtest.efi.mui",
+      "size": 45912,
+      "sha256": "5c7d961275f7b2386c5b343b43d05370bc3ffde22a7753e15668a0630b799047"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/pt-BR/memtest.efi.mui",
+      "size": 45408,
+      "sha256": "49a5b287ad930ae60742ddd9ceb31f5674cffd86bd7bd835bde450cab731d656"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/pt-PT/memtest.efi.mui",
+      "size": 45920,
+      "sha256": "9055ed5180514767934b9e631327d38fad8807c1014cd74ff526a6fd6146e762"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/qps-ploc/memtest.efi.mui",
+      "size": 44896,
+      "sha256": "65f266c6ce302f20a98b87342b6c15e3a08f2bc1a5a801db5507db101d74c39c"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/ru-RU/memtest.efi.mui",
+      "size": 44888,
+      "sha256": "feaaae8a5e43f114ccdc4ed989202c1b2fdfe940f495bed8d45ff4accfb24da5"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/sr-Latn-CS/memtest.efi.mui",
+      "size": 44896,
+      "sha256": "d87583fc9af0cdf206ebc00f1bb42230d8015d87ac34afa6bdf4354b7f7e05e6"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/sv-SE/memtest.efi.mui",
+      "size": 44896,
+      "sha256": "48657f6ce192b80b850b85f9055503928afa0c5fe50471ed187c45a6f2c966cf"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/tr-TR/memtest.efi.mui",
+      "size": 45408,
+      "sha256": "2400b4f22b8f45f449ea4d1ccdfe6e71eba0a7484ba998187ce9bbd18c0d175e"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/zh-CN/memtest.efi.mui",
+      "size": 42336,
+      "sha256": "95a5747310aa455f44f15d8d2175d08c4939b4c465202e42a6124e9a9e69f069"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/zh-HK/memtest.efi.mui",
+      "size": 42336,
+      "sha256": "594cb996440cc274dc1cd0d38ed63cc3341ef8c8d4ea0c496fc4a4f8487f1dc3"
+    },
+    {
+      "path": "EFI/Microsoft/Boot/zh-TW/memtest.efi.mui",
+      "size": 42336,
+      "sha256": "5a32387b75c1d7fcab35b950a1f5dd4d3693f2a8515909d4590fa5f55ddd733b"
+    },
+    {
+      "path": "LaunchMedia.cmd",
+      "size": 36,
+      "sha256": "fb539cbf0d191873ae240c94c81bd3602a62d9a80f5e06c30982197857c949f9"
+    },
+    {
+      "path": "SMS/bin/i386/00000409/TsRes.dll",
+      "size": 143544,
+      "sha256": "4fc58feec8fea03fc6e31d2ad8ca269f0603ddc8d49edb725c396b4259bba2ff"
+    },
+    {
+      "path": "SMS/bin/i386/1033/TsRes.dll",
+      "size": 143544,
+      "sha256": "4fc58feec8fea03fc6e31d2ad8ca269f0603ddc8d49edb725c396b4259bba2ff"
+    },
+    {
+      "path": "SMS/bin/i386/bcd.mof",
+      "size": 12120,
+      "sha256": "8fd269bf028afca435697980975b395cf52c3b41f29e94361d9bfc02a24783e8"
+    },
+    {
+      "path": "SMS/bin/i386/bcdprov.dll",
+      "size": 61840,
+      "sha256": "b1ca285143eec657837c762faadb258238a3fbb682cbd89ef8b20d6d1ac1011d"
+    },
+    {
+      "path": "SMS/bin/i386/bcdsrv.dll",
+      "size": 139136,
+      "sha256": "cfb260fabb80bb0eefe4af4444420f8bb89b46577f76996a2a5ac8825ea7f36d"
+    },
+    {
+      "path": "SMS/bin/i386/CcmCore.dll",
+      "size": 965816,
+      "sha256": "10f8c39bd57b3efa5c02aa2e82efa9fcae0475f0103a929435ec8ac81bd63118"
+    },
+    {
+      "path": "SMS/bin/i386/ccmgencert.dll",
+      "size": 217784,
+      "sha256": "0287f713c7d1340e5192474d07ed97be90cc80f1d6494c24abb4072b13d21886"
+    },
+    {
+      "path": "SMS/bin/i386/CcmUtilLib.dll",
+      "size": 473784,
+      "sha256": "4ac7fdfc5e0f3b76c1f6a8a5a62d96a057fcca5b90da80f2ad07e8f073a0acfb"
+    },
+    {
+      "path": "SMS/bin/i386/CommonUtils.dll",
+      "size": 32440,
+      "sha256": "3469e6d835ce35c88dbad782027f770fd443d9417ab3b27aed5011c1d9ef6a6d"
+    },
+    {
+      "path": "SMS/bin/i386/msvcp120.dll",
+      "size": 455328,
+      "sha256": "87c42ca155473e4e71857d03497c8cbc28fa8ff7f2c8d72e8a1f39b71078f608"
+    },
+    {
+      "path": "SMS/bin/i386/msvcr120.dll",
+      "size": 970912,
+      "sha256": "86e39b5995af0e042fcdaa85fe2aefd7c9ddc7ad65e6327bd5e7058bc3ab615f"
+    },
+    {
+      "path": "SMS/bin/i386/OSDApplyOS.exe",
+      "size": 214200,
+      "sha256": "27f2ac7158c2afa31d9e4d4009510138aa0a5e608071c289be23e1a233aedb02"
+    },
+    {
+      "path": "SMS/bin/i386/OSDBitLocker.exe",
+      "size": 109240,
+      "sha256": "15d9d56f37cd4c75618846701cdcdcecf096126af01b4710f5f69ec086dedfd2"
+    },
+    {
+      "path": "SMS/bin/i386/OSDBitLocker_wtg.exe",
+      "size": 1241272,
+      "sha256": "31e90260c09a8b27fcb73cadd92b46c93845cfed35bb3d664f168065ad8e6a95"
+    },
+    {
+      "path": "SMS/bin/i386/OsdCaptureCd.exe",
+      "size": 86200,
+      "sha256": "ed10617557573a3d63fe0363bc7fd96b50bd2941fdf5ec901d6c23fff361d95b"
+    },
+    {
+      "path": "SMS/bin/i386/OsdCaptureSystemImage.exe",
+      "size": 90808,
+      "sha256": "f0315adf35025182f018232608a61ee8c0253fb052d4dcd90cb24af820a34450"
+    },
+    {
+      "path": "SMS/bin/i386/OsdCore.dll",
+      "size": 732856,
+      "sha256": "d483f5afb788789e60722b6e71c7fbd19f5140ea419c68b937348f057fad3b0a"
+    },
+    {
+      "path": "SMS/bin/i386/OsdDiskPart.exe",
+      "size": 76984,
+      "sha256": "f8b0cfc49ca3bce00c8cf9f07fd2cdb936c3b213974a6402b5097f7fa3300f1d"
+    },
+    {
+      "path": "SMS/bin/i386/OSDDownloadContent.exe",
+      "size": 61112,
+      "sha256": "7afd94d0e52ebe6bc21cfdaaa2b0d0b8fd2cbe2ea7ded4709cbdcd2cb68f7abf"
+    },
+    {
+      "path": "SMS/bin/i386/OsdDriverClient.exe",
+      "size": 351416,
+      "sha256": "0d89da367b6ddb49f195c872c08585a863bc8c69c49e27039ba279dae3ebf9c1"
+    },
+    {
+      "path": "SMS/bin/i386/OsdGina.dll",
+      "size": 409784,
+      "sha256": "8742809904583c5191945089cefbba4a737c4879dae8b8f94ca1f8add427b393"
+    },
+    {
+      "path": "SMS/bin/i386/OsdJoin.exe",
+      "size": 34488,
+      "sha256": "40887c2d77db030575b7948fd17ac407387088518ee9994f89876fcb8f802eab"
+    },
+    {
+      "path": "SMS/bin/i386/OsdMigrateUserState.exe",
+      "size": 115384,
+      "sha256": "b420d2b1ab76247c82bb0711d5021346104333538d0ffee070354b9afb225fb4"
+    },
+    {
+      "path": "SMS/bin/i386/OsdNetSettings.exe",
+      "size": 30392,
+      "sha256": "4f21b69754f3a68c086eb3401158d1d6981fcbd45d135d8f3d5ab25bda0c42ae"
+    },
+    {
+      "path": "SMS/bin/i386/OSDOfflineBitlocker.exe",
+      "size": 50872,
+      "sha256": "2afeb4545f89b0312530dfc6741d1e030e0a5f39cb10497092cd7c64eeb57fa3"
+    },
+    {
+      "path": "SMS/bin/i386/OsdPrepareOS.exe",
+      "size": 75448,
+      "sha256": "0d263c200957f2d11e9f1ab6b8ced85424c153cdd34f584e681548856b935e6f"
+    },
+    {
+      "path": "SMS/bin/i386/OsdPrepareSmsClient.exe",
+      "size": 79032,
+      "sha256": "35371914d83e6f1c188b9b24b4465648dac8f5b11c3603f60f4b64a26c5d278d"
+    },
+    {
+      "path": "SMS/bin/i386/OsdPrestartCheck.exe",
+      "size": 29880,
+      "sha256": "6481e40add4bc07b40dda12dba2a89f0135078acf6263253ce3d4c6baf99767d"
+    },
+    {
+      "path": "SMS/bin/i386/OSDRunPowerShellScript.exe",
+      "size": 40120,
+      "sha256": "63ea67032d70b742378e8dee099e6f43eb694fb727cc6ede6f02f077dd4885b8"
+    },
+    {
+      "path": "SMS/bin/i386/OSDSetDynamicVariables.exe",
+      "size": 47800,
+      "sha256": "8ee64c6ec2084b7d3ae6efe70b9cf652074dfcc2baa17617b5d15a18584eedcb"
+    },
+    {
+      "path": "SMS/bin/i386/OsdSetupHook.exe",
+      "size": 2047160,
+      "sha256": "dab3a7595b1f9e653bd5af9107866c78e9488a637e0485696233d154e120b54a"
+    },
+    {
+      "path": "SMS/bin/i386/OsdSetupWindows.exe",
+      "size": 84664,
+      "sha256": "91f4279001e62fc439180c7a968695a332952ceb4ef0e6c8624413e2fd22c190"
+    },
+    {
+      "path": "SMS/bin/i386/OsdSmpClient.exe",
+      "size": 227512,
+      "sha256": "50539435eb8d384e5aa541c3f9e42830aa7afd167ac7b5234f9a30530a880ab9"
+    },
+    {
+      "path": "SMS/bin/i386/OSDUpgradeOS.exe",
+      "size": 88760,
+      "sha256": "a69a9a8cbe5267cd8af5d29b020293c55796f3e966ce7cdf301b28605616b22e"
+    },
+    {
+      "path": "SMS/bin/i386/OsdWinSettings.exe",
+      "size": 46776,
+      "sha256": "a469069aaefe7cb9f3998dd0c9db8c0a1062830d98bc80fe32de124d5f47d9d6"
+    },
+    {
+      "path": "SMS/bin/i386/SetupCompleteTemplate.cmd",
+      "size": 1731,
+      "sha256": "af8b5e2ffca7d16594f45e18744347b180ebb23e6cd78c62ff95330e1acde765"
+    },
+    {
+      "path": "SMS/bin/i386/SetupRollbackTemplate.cmd",
+      "size": 1735,
+      "sha256": "44b39b6de6f4e71b3e1f42b85fd3baf8b28f579a9019cccbadff5775a8f8eb80"
+    },
+    {
+      "path": "SMS/bin/i386/smsappinstall.exe",
+      "size": 218296,
+      "sha256": "0a78bb9afe4e65d49e7ad284bb34a07a32abf744a429704148cbb11fbd88fb5a"
+    },
+    {
+      "path": "SMS/bin/i386/smsboot.exe",
+      "size": 28344,
+      "sha256": "b8919f7a32b422321ee7e37f6b062c704e6be9b57738bfbeb2a6c099d88f6c30"
+    },
+    {
+      "path": "SMS/bin/i386/SmsCore.dll",
+      "size": 218808,
+      "sha256": "e62be8fa529b3f13aaa194ce85b9e37e543978c2c65ab6bc18a313d6e7db08ba"
+    },
+    {
+      "path": "SMS/bin/i386/smsnetuse.exe",
+      "size": 25272,
+      "sha256": "86c92c31c8dabee06138247ad6a3d940a1063d7016b6dac5f4aafccfe80b8b72"
+    },
+    {
+      "path": "SMS/bin/i386/smsswd.exe",
+      "size": 211640,
+      "sha256": "eba16d7b5eabd4a1bbefc22d11061f479d0352bd1b81663c383b0241119f9170"
+    },
+    {
+      "path": "SMS/bin/i386/smstftp.exe",
+      "size": 25784,
+      "sha256": "54a976cf6fa8914b84d46454231dd8fbdf3ef3ec692688964a04104d748b7c6b"
+    },
+    {
+      "path": "SMS/bin/i386/smswdstc.dll",
+      "size": 150712,
+      "sha256": "2f9cb2a8da05d021a0205844d206fa4828748a1fcbf633fcd1aafbfcc9259003"
+    },
+    {
+      "path": "SMS/bin/i386/tasksqmediawiz.ico",
+      "size": 25214,
+      "sha256": "50007a6658ee229eb402665ada86c87cd7f06066cbf2ad9d216b5fafd29dcb73"
+    },
+    {
+      "path": "SMS/bin/i386/TsBootShell.exe",
+      "size": 1763000,
+      "sha256": "790621841b416eb7ceb77da89c3ccf95113832f49ff21a7fc51f2a929a4bc576"
+    },
+    {
+      "path": "SMS/bin/i386/TsCore.dll",
+      "size": 2010808,
+      "sha256": "ec2bd210b2aeec41ff2b26004bec87bad33a06a825741c9285b3cd0e22d746ef"
+    },
+    {
+      "path": "SMS/bin/i386/TSEnv.exe",
+      "size": 25784,
+      "sha256": "4bf79b2e2dda2ce22bafb74791d088cf6699adbce97daf398f6df1c7a784ec6b"
+    },
+    {
+      "path": "SMS/bin/i386/TsInstallSWUpdate.exe",
+      "size": 128184,
+      "sha256": "16bb959345e072f32fc469f66da6716a9f8ab909354318d342dbdf1812b01d14"
+    },
+    {
+      "path": "SMS/bin/i386/TsManager.exe",
+      "size": 245432,
+      "sha256": "d3f8fecbe6d4dd22b23e3d543f42db6fb91d9bfc711801f0709f823b7d358fa9"
+    },
+    {
+      "path": "SMS/bin/i386/TSMBAutorun.exe",
+      "size": 19128,
+      "sha256": "558c09931e916acc243540b32985caa2edc54af69f7e58678fbeeb6e1698f9ca"
+    },
+    {
+      "path": "SMS/bin/i386/TsmBootstrap.exe",
+      "size": 428728,
+      "sha256": "9e1993dd5b54c072cb91b9cd0f00244d540cd190a273048c207dabcee59dfd54"
+    },
+    {
+      "path": "SMS/bin/i386/TsMessaging.dll",
+      "size": 777912,
+      "sha256": "5f9454d0bc667a6eb9a570d931e5b56cd0cec3605a6080e170ac5b9c36b62674"
+    },
+    {
+      "path": "SMS/bin/i386/TsProgressUI.exe",
+      "size": 1119416,
+      "sha256": "94c30d4950b233882010563bd925128c38a8181c505f83d7b95f119337c1c832"
+    },
+    {
+      "path": "SMS/bin/i386/TsPxe.dll",
+      "size": 64696,
+      "sha256": "2fa1fb42ea4d8639bacfdff27c893c8975abd4ee7540e26d339d9ebe0c7d2dcf"
+    },
+    {
+      "path": "SMS/bin/i386/Tsresnlc.dll",
+      "size": 135864,
+      "sha256": "faeace471b5085ce8efeb1c7ace067ce02e56a57fd7a25687f2b3d1b251e9033"
+    },
+    {
+      "path": "SMS/bin/i386/wimgapi.dll",
+      "size": 606400,
+      "sha256": "c3a3d0b1f5bb253e176506fe7de345f1d1624ae6bf4752a2f0aa08f39856ccd4"
+    },
+    {
+      "path": "SMS/bin/i386/winpe.jpg",
+      "size": 18278,
+      "sha256": "24ac5cedc4f79579bc3478a6370893f00c9ff92878b96e84f844c9df32bde228"
+    },
+    {
+      "path": "SMS/bin/tasksqmediawiz.ico",
+      "size": 25214,
+      "sha256": "50007a6658ee229eb402665ada86c87cd7f06066cbf2ad9d216b5fafd29dcb73"
+    },
+    {
+      "path": "SMS/bin/x64/00000409/TsRes.dll",
+      "size": 143544,
+      "sha256": "9a21188162b352bc700bdc99e9283990288ce211bc0111633bdce7ddeb9aae5e"
+    },
+    {
+      "path": "SMS/bin/x64/1033/TsRes.dll",
+      "size": 143544,
+      "sha256": "9a21188162b352bc700bdc99e9283990288ce211bc0111633bdce7ddeb9aae5e"
+    },
+    {
+      "path": "SMS/bin/x64/bcd.mof",
+      "size": 12120,
+      "sha256": "8fd269bf028afca435697980975b395cf52c3b41f29e94361d9bfc02a24783e8"
+    },
+    {
+      "path": "SMS/bin/x64/bcdprov.dll",
+      "size": 83856,
+      "sha256": "4f849970af04c4cee0d4ee66af3dc27c69231dc0e712fbc8989b2089f5e1f46a"
+    },
+    {
+      "path": "SMS/bin/x64/bcdsrv.dll",
+      "size": 173968,
+      "sha256": "69fb07f148804ef71b7d149221cec9433abd4fbfb760520b82ee8adbdf640821"
+    },
+    {
+      "path": "SMS/bin/x64/CcmCore.dll",
+      "size": 1358520,
+      "sha256": "df8d78c0f66eb9446b66c5ff6afa68aad65153caf7d6f93f7be53f14e3235669"
+    },
+    {
+      "path": "SMS/bin/x64/ccmgencert.dll",
+      "size": 288440,
+      "sha256": "3a458c6122067da81508cf9a2e89bf6b8be2e617aa97932fa30c5425a295b2af"
+    },
+    {
+      "path": "SMS/bin/x64/CcmUtilLib.dll",
+      "size": 631480,
+      "sha256": "d6e3cea4710eea92864862b2327c2656cb73e12eabe06a8ee2547b6cc3f50dc3"
+    },
+    {
+      "path": "SMS/bin/x64/CommonUtils.dll",
+      "size": 38584,
+      "sha256": "57203f054c2486270e13c38147451fe3c39bc1a2cbc72af26e32e22ffe176c49"
+    },
+    {
+      "path": "SMS/bin/x64/msvcp120.dll",
+      "size": 660128,
+      "sha256": "2abf0aab5a3c5ae9424b64e9d19d9d6d4aebc67814d7e92e4927b9798fef2848"
+    },
+    {
+      "path": "SMS/bin/x64/msvcr120.dll",
+      "size": 963232,
+      "sha256": "ad32240bb1de55c3f5fcac8789f583a17057f9d14914c538c2a7a5ad346b341c"
+    },
+    {
+      "path": "SMS/bin/x64/OSDApplyOS.exe",
+      "size": 276152,
+      "sha256": "f1991f5ffb2672c848d8a693240087c3b405437f266bdd33256dbba36490f7c2"
+    },
+    {
+      "path": "SMS/bin/x64/OSDBitLocker.exe",
+      "size": 138424,
+      "sha256": "492833f866eb5e319996e05b1a507efa44eb231bafe0a9164dca71e192908504"
+    },
+    {
+      "path": "SMS/bin/x64/OSDBitLocker_wtg.exe",
+      "size": 1865912,
+      "sha256": "8bafa70c93c84082b4c9819c99c80e506fac6ca77f44fb6675a4fd2f4787d8a3"
+    },
+    {
+      "path": "SMS/bin/x64/OsdCaptureCd.exe",
+      "size": 114872,
+      "sha256": "6209733de675aff233c3fcc79be4939f731d61f187cf1b2c51f003ea528ea9ee"
+    },
+    {
+      "path": "SMS/bin/x64/OsdCaptureSystemImage.exe",
+      "size": 118968,
+      "sha256": "3a9564344d341eee539bb480ff70881874dbf2bfa2c4dc66ec007bc1f2b8e899"
+    },
+    {
+      "path": "SMS/bin/x64/OsdCore.dll",
+      "size": 1014456,
+      "sha256": "a7dd430a7156784e09864aaa3a2d991ac1e673adb637e8ef9983afc60ccc1c08"
+    },
+    {
+      "path": "SMS/bin/x64/OsdDiskPart.exe",
+      "size": 95416,
+      "sha256": "4d29a4274e68deb8e40f0d05fbe90973b538e031766322760bba762b18d39848"
+    },
+    {
+      "path": "SMS/bin/x64/OSDDownloadContent.exe",
+      "size": 72376,
+      "sha256": "76654975d0a877c7e802cda0c952ff7fbbf2f493253dbe2449f5175dd1287f1f"
+    },
+    {
+      "path": "SMS/bin/x64/OsdDriverClient.exe",
+      "size": 506552,
+      "sha256": "af823ea8e3e2a778eb4aeec628592177545bda9f3ea8c34fdfea78f73c495d89"
+    },
+    {
+      "path": "SMS/bin/x64/OsdGina.dll",
+      "size": 466104,
+      "sha256": "e728319d21e2bbb5d6fc0cf45dc897350e994de21f0a6ea224e7fd504296323b"
+    },
+    {
+      "path": "SMS/bin/x64/OsdJoin.exe",
+      "size": 41656,
+      "sha256": "37083b9d11300eff9d83a46de766a6b3838b8ca81327e8a68cf1bad1fe0311fb"
+    },
+    {
+      "path": "SMS/bin/x64/OsdMigrateUserState.exe",
+      "size": 148152,
+      "sha256": "5d906d425d43c54fb92b54acd879d6d56c81fbc5c60d7f2e5744f13a41d67d86"
+    },
+    {
+      "path": "SMS/bin/x64/OsdNetSettings.exe",
+      "size": 35000,
+      "sha256": "c2047c6368e12e55621da50daf6f5730d309a5ee93fb94cf29b60f19444a29d9"
+    },
+    {
+      "path": "SMS/bin/x64/OSDOfflineBitlocker.exe",
+      "size": 62648,
+      "sha256": "f8a48d850b07f7686852384d4d2946a0119781d458e5d2b81521bff918a816fe"
+    },
+    {
+      "path": "SMS/bin/x64/OsdPrepareOS.exe",
+      "size": 92344,
+      "sha256": "d5ea3f0458ff3c6fecba004d4a0ef8b6d198203d32d724d32b99e59a8acc1fec"
+    },
+    {
+      "path": "SMS/bin/x64/OsdPrepareSmsClient.exe",
+      "size": 100536,
+      "sha256": "ead8efbef57f806706737d48d2b781719b4d52c7b9126825766e6a538b37527e"
+    },
+    {
+      "path": "SMS/bin/x64/OsdPrestartCheck.exe",
+      "size": 34488,
+      "sha256": "b680965833f9338c116d44332511e79443f229102fdac9d76af4621ac47306fe"
+    },
+    {
+      "path": "SMS/bin/x64/OSDRunPowerShellScript.exe",
+      "size": 48312,
+      "sha256": "4a4849dbb7cea6852bbe2994626175f2de91d3dc312c5cf7940d85b6d6577d01"
+    },
+    {
+      "path": "SMS/bin/x64/OSDSetDynamicVariables.exe",
+      "size": 63160,
+      "sha256": "bf2c9403526ee90d9eafc670956e96224a6b2a57320f75e6cf69be4e66dc3ab3"
+    },
+    {
+      "path": "SMS/bin/x64/OsdSetupHook.exe",
+      "size": 2886840,
+      "sha256": "211b1cbf542d457623fc8222df99e689a24e4e91dc95bc8bd054522c405efd37"
+    },
+    {
+      "path": "SMS/bin/x64/OsdSetupWindows.exe",
+      "size": 109240,
+      "sha256": "0e219f34b5670be714207f3a34df5b9c06f244699420629b53cf13e2e26b181a"
+    },
+    {
+      "path": "SMS/bin/x64/OsdSmpClient.exe",
+      "size": 321720,
+      "sha256": "6f070d31caec00baaae2f11008868a8a38228f4d8db9956263db9f235dbd486e"
+    },
+    {
+      "path": "SMS/bin/x64/OSDUpgradeOS.exe",
+      "size": 112312,
+      "sha256": "8c2ef04887c0fcb90feafcb4fe7fab5c13885a0a53004fedd1e59d8d94e7fbe1"
+    },
+    {
+      "path": "SMS/bin/x64/OsdWinSettings.exe",
+      "size": 57528,
+      "sha256": "e0e1779603c3d4d2917b6b61718f272cc759f13e2134f79ce28bb60c50ede749"
+    },
+    {
+      "path": "SMS/bin/x64/SetupCompleteTemplate.cmd",
+      "size": 1731,
+      "sha256": "af8b5e2ffca7d16594f45e18744347b180ebb23e6cd78c62ff95330e1acde765"
+    },
+    {
+      "path": "SMS/bin/x64/SetupRollbackTemplate.cmd",
+      "size": 1735,
+      "sha256": "44b39b6de6f4e71b3e1f42b85fd3baf8b28f579a9019cccbadff5775a8f8eb80"
+    },
+    {
+      "path": "SMS/bin/x64/smsappinstall.exe",
+      "size": 291512,
+      "sha256": "299e5896d573d13eb4e372517b51b256d22cbb850a2200a47edbff3a4b496b2d"
+    },
+    {
+      "path": "SMS/bin/x64/smsboot.exe",
+      "size": 34488,
+      "sha256": "368cb51f19e9baf4fd225285f6bd9c3caabbc4b2c515161b760d4c1084eba3f2"
+    },
+    {
+      "path": "SMS/bin/x64/SmsCore.dll",
+      "size": 297656,
+      "sha256": "1dee391ea31ee7907242119313cab6a68917bb052bca08b07e874b538b90cc87"
+    },
+    {
+      "path": "SMS/bin/x64/smsnetuse.exe",
+      "size": 29368,
+      "sha256": "338168404c3bd40ffa41c6713b93c8a36fdd02b070893789de941a6b0a3ae39c"
+    },
+    {
+      "path": "SMS/bin/x64/smsswd.exe",
+      "size": 282808,
+      "sha256": "f0f20d395ccb7b95e217e5de4b1e59f78531e37c1289d7b289c14787a33e4464"
+    },
+    {
+      "path": "SMS/bin/x64/smstftp.exe",
+      "size": 28856,
+      "sha256": "35a4d24c82110df8f98b6422b8af24bf6a22b01c5f94ada1ba1c06869257883e"
+    },
+    {
+      "path": "SMS/bin/x64/smswdstc.dll",
+      "size": 193208,
+      "sha256": "baaad1fce57104309b69172ab5ce59c4c8754cb31dcf89f0820693adacdae5ba"
+    },
+    {
+      "path": "SMS/bin/x64/TsBootShell.exe",
+      "size": 2621112,
+      "sha256": "71922396548befa386990e779c9030ea5b210732c4451a9cc489d4615ab4053e"
+    },
+    {
+      "path": "SMS/bin/x64/TsCore.dll",
+      "size": 2781368,
+      "sha256": "4d8ac8a4d8f330a80cabf85dd444b6301e3b987e5ebce978c0c674c0aa8a002b"
+    },
+    {
+      "path": "SMS/bin/x64/TSEnv.exe",
+      "size": 29368,
+      "sha256": "93b09f9e695b6b10dca633823dbdc0b2735b98813f46e52078e09c833b4e1917"
+    },
+    {
+      "path": "SMS/bin/x64/TsInstallSWUpdate.exe",
+      "size": 171704,
+      "sha256": "d1190c92623121c5fa143657f2d34a96e4c709a96ac13714083a82aaa80741f6"
+    },
+    {
+      "path": "SMS/bin/x64/TsManager.exe",
+      "size": 317624,
+      "sha256": "49fc69163127b40e1d0159d908fdd4843b1fc7af7ae40ae8e93ea424412f1328"
+    },
+    {
+      "path": "SMS/bin/x64/TsmBootstrap.exe",
+      "size": 559800,
+      "sha256": "2c4679689d14c35f8d87775bfe8e8a85089e0b1382db7950059b337e9415a99a"
+    },
+    {
+      "path": "SMS/bin/x64/TsMessaging.dll",
+      "size": 1235128,
+      "sha256": "6489b1cde7c24813c86f1a592c0e3b9414cbc29b3f9471c13e1a61eab1215ac8"
+    },
+    {
+      "path": "SMS/bin/x64/TsProgressUI.exe",
+      "size": 1692344,
+      "sha256": "6064f411c1dd8d66af166629f0c2a0c4e5af70993db56e3b65eb150ec3d80771"
+    },
+    {
+      "path": "SMS/bin/x64/TsPxe.dll",
+      "size": 82104,
+      "sha256": "84d1ff097db9e0d97a1594fb6304a4f0d02fdc837b45936a5c5ba15ecebb5302"
+    },
+    {
+      "path": "SMS/bin/x64/TsResNlc.dll",
+      "size": 135864,
+      "sha256": "eca1550e424ca95647eb72b1a861b591a768112f3706c1a6a3cc6228c2ef5713"
+    },
+    {
+      "path": "SMS/bin/x64/wimgapi.dll",
+      "size": 721088,
+      "sha256": "3f76680c2f0f9d7610c7bda4f617ea68ac99fac2f637e07e65ea557b0a7a12d0"
+    },
+    {
+      "path": "SMS/data/Policy.xml",
+      "size": 2197142,
+      "sha256": "d650d10e21b95c57d0359473fa716eebd23e4c5bed608526eb30942ed6f6adaa"
+    },
+    {
+      "path": "SMS/data/TsmBootstrap.ini",
+      "size": 75,
+      "sha256": "65445d2496ee35aed09912c38b802418da69793f35c55584dd667ff6fef90aa7"
+    },
+    {
+      "path": "SMS/data/Variables.dat",
+      "size": 139176,
+      "sha256": "bc31015e7d54b4702f4c6cb635b625e57ad86fb6b2eacc5249ced4344cc51f0a"
+    },
+    {
+      "path": "SMS/PKG/99900010/Adobe_Acrobat_9_3.msi",
+      "size": 44793344,
+      "sha256": "a3eaf8d47638afc86c0f8d36578b5cb6f9091baeeb4b8c09a5266a3685a90a47"
+    },
+    {
+      "path": "SMS/PKG/99900010/Install_Acrobat_9_3_x64.vbs",
+      "size": 1104,
+      "sha256": "2d6058080355441165581b37934590e379b3be4b63ba273402e528507f20135b"
+    },
+    {
+      "path": "SMS/PKG/99900010/Install_Acrobat_9_3_x86.vbs",
+      "size": 1032,
+      "sha256": "aada910ab4f25a44db8798357478946866f21864752d3eeb4db153a3e9577c17"
+    },
+    {
+      "path": "SMS/PKG/99900010/Remove_Adobe5_0.vbs",
+      "size": 1266,
+      "sha256": "084becefc749be16de88f09a4cbdfe56971cac1607595bce2717607cc73d0ca5"
+    },
+    {
+      "path": "SMS/PKG/99900010/Remove_PDF_Extensao.reg",
+      "size": 3438,
+      "sha256": "2ded25394dcfbcc9402654068a5c55e2a8abbb6b29f1f795ed1de4e437b6875c"
+    },
+    {
+      "path": "SMS/PKG/99900010/SCRIPT_ANTIGO_CONSULTA.txt",
+      "size": 2610,
+      "sha256": "0ba79d49572e5dc6bcf273a0c4ef9d85dfe76b8a12498fb6b0a85d86ea5f4cd3"
+    },
+    {
+      "path": "SMS/PKG/99900015/Disable_Adobe_Update.vbs",
+      "size": 495,
+      "sha256": "d6d35aab816e46ecb08c824a912ee047bb6dbcd52f7ed5947363b42e7d7a570f"
+    },
+    {
+      "path": "SMS/PKG/99900015/Disable_Adobe_Update_x64.vbs",
+      "size": 527,
+      "sha256": "75632d036d1e3ebb2cdb9b1f508bad5b7abe84e8274cb0626d39ad0087add23d"
+    },
+    {
+      "path": "SMS/PKG/99900016/Disable_Java_Update.vbs",
+      "size": 166,
+      "sha256": "0e5a9b12331356effb5e98605749bb187ea26ad3ce0c43346c281bd4a10a43e1"
+    },
+    {
+      "path": "SMS/PKG/99900016/Disable_Java_Update_x64.vbs",
+      "size": 178,
+      "sha256": "68bcb6e005e2aac27d319ef3114d58d63f97f7a872b9544d2f7653d64f59ffea"
+    },
+    {
+      "path": "SMS/PKG/9990001D/Insert_Orant.vbs",
+      "size": 338,
+      "sha256": "bc64958a47b225d0237140eaa10f07d8cc02038e1db2361aac4816478cc95db2"
+    },
+    {
+      "path": "SMS/PKG/9990002D/cert-Penamb-MWG.cer",
+      "size": 1077,
+      "sha256": "4b12e4acd3414e7b1a24cf8fe0a609daeeff1209b3dfe69fc2ff8ab397fb4aac"
+    },
+    {
+      "path": "SMS/PKG/9990002D/certadm.dll",
+      "size": 85504,
+      "sha256": "bbba87bf62e8bdc11602f2a95712e5fe3fb1edbbcdeb28cbdcf191aeab286b04"
+    },
+    {
+      "path": "SMS/PKG/9990002D/certutil.exe",
+      "size": 569344,
+      "sha256": "75ddab1826f220eb36a9eea9cf8533c94c19bac89d961380f3a418f6eedb2b4e"
+    },
+    {
+      "path": "SMS/PKG/9990002D/Remove_Set_Proxy_Hosts.vbs",
+      "size": 1645,
+      "sha256": "96e7c1414a5683cf73129f88be078465ef93c50fee8b39e04f335002886d2936"
+    },
+    {
+      "path": "SMS/PKG/9990002F/FramePkg.exe",
+      "size": 7056812,
+      "sha256": "159d94c5e959745d2189fa4ee1fec9ea2e0118494543345b30fdc3d0bfede778"
+    },
+    {
+      "path": "SMS/PKG/99900057/Microsoft_Virtual_Machine.msi",
+      "size": 5303296,
+      "sha256": "f70f52240d94e0d647e1fd235a53ee35a482df1166cf96bec728a4cd6526cd00"
+    },
+    {
+      "path": "SMS/PKG/9990005B/driver_setup.exe",
+      "size": 55176,
+      "sha256": "4de5ebb396cd47a35542a4e215d966ac7273f6847c4aef240206586cd77b7b8a"
+    },
+    {
+      "path": "SMS/PKG/9990005B/drvupdate-x86.msi",
+      "size": 13292544,
+      "sha256": "8a0f8c35fb6e0ca45df2c83c429b0f20501384f319d398d5a9ed50bd42832123"
+    },
+    {
+      "path": "SMS/PKG/99900061/Pos_Inst.vbs",
+      "size": 1267,
+      "sha256": "b708b99081068c5834c4a74206631da68fccc13a087bc57007dc4cdeda1a4aee"
+    },
+    {
+      "path": "SMS/PKG/99900061/setup.exe",
+      "size": 54450112,
+      "sha256": "88e25887f9cc35ed4efb7041bc4564ee71ca49ad424532ede0ba748b359ca72f"
+    },
+    {
+      "path": "SMS/PKG/99900061/setup.msi",
+      "size": 28988928,
+      "sha256": "0f793f38471b1f2e777156f8f5a689ed55439a8291d28f139b5de7dd485867cb"
+    },
+    {
+      "path": "SMS/PKG/99900061/Support/Watson/dw20shared.msi",
+      "size": 1848832,
+      "sha256": "6552dc548e472f4cff0f948f0bb9eeeae6526cd06659b899dbc1ed9bca6d8437"
+    },
+    {
+      "path": "SMS/PKG/99900084/Disable_UAC_Active_Windows.cmd",
+      "size": 328,
+      "sha256": "60ef0a2dd20a79ae651a74311ea3a01971157ff106b2cbe8f42635b399c8022c"
+    },
+    {
+      "path": "SMS/PKG/99900094/7z920.msi",
+      "size": 1122816,
+      "sha256": "fe4807b4698ec89f82de7d85d32deaa4c772fc871537e31fb0fccf4473455cb8"
+    },
+    {
+      "path": "SMS/PKG/99900094/7z921-x64.msi",
+      "size": 1376768,
+      "sha256": "62df458bc521001cd9a947643a84810ecbaa5a16b5c8e87d80df8e34c4a16fe2"
+    },
+    {
+      "path": "SMS/PKG/99900094/7zip.bat",
+      "size": 11040,
+      "sha256": "94152664b5d90ff81ee9909b02b4d0eb977d2dd501cb5d9a0fa65d0b2f741f76"
+    },
+    {
+      "path": "SMS/PKG/99900096/Install.vbs",
+      "size": 212,
+      "sha256": "b1ecbfe4bdb54b7a849a3e245bf28c1acb58dcbef6dd1ccbd4b877e89d803b64"
+    },
+    {
+      "path": "SMS/PKG/99900096/LocalAdminReport.vbs",
+      "size": 1452,
+      "sha256": "4ca249d382ce9f20dcbe23dd048ea0738a286a4ea8746f4892320983383fee76"
+    },
+    {
+      "path": "SMS/PKG/99900096/setup.exe",
+      "size": 466944,
+      "sha256": "53029fe0d996594d2e7c01191600f977f25899a378784676c99054bd0d2769be"
+    },
+    {
+      "path": "SMS/PKG/99900096/Setup.msi",
+      "size": 403456,
+      "sha256": "929b223c7f829d4e7952d51b89a371691217d94ba4ceaaa2052f76c09dcfe31c"
+    },
+    {
+      "path": "SMS/PKG/9990009C/catsetup.exe",
+      "size": 5284965,
+      "sha256": "a91494f9a84798e6c5f796fbbda257f41a93f04d55134012ea00c88a5cc04ea1"
+    },
+    {
+      "path": "SMS/PKG/9990009C/Criacao_Atalho_CAT.vbs",
+      "size": 587,
+      "sha256": "c6cb84a74029b00b065c81220c7de1d74b4214ccbc6813a4093257764069a1d4"
+    },
+    {
+      "path": "SMS/PKG/999000A9/dopdf-7.exe",
+      "size": 4465104,
+      "sha256": "c06ec24f184d113e6f7b5e5dbf0fa2011a2cf17c3363227004c3ca46b6eea686"
+    },
+    {
+      "path": "SMS/PKG/999000AF/Copy_Java.vbs",
+      "size": 1620,
+      "sha256": "9afb37750b6b837eda5b2c00d7e180124859ee64e9b0c9cf3a24aeb4ed9ef817"
+    },
+    {
+      "path": "SMS/PKG/999000AF/jre-6u34-windows-i586.exe",
+      "size": 16992248,
+      "sha256": "31875151dc0c06ef7ea69b708a0a247b2c4591016a43ddc7b2805a10ffb9bf41"
+    },
+    {
+      "path": "SMS/PKG/999000AF/jre-6u34-windows-x64.exe",
+      "size": 17224184,
+      "sha256": "a6d7636f9480732bf55e277973eb6ec25408f09621049452eef28c6cffd05e11"
+    },
+    {
+      "path": "SMS/PKG/999000AF/Oracle/jvm.dll",
+      "size": 2314240,
+      "sha256": "f1b69c628fd12887133cc36c8ceca11e8bf2d7e0c7c48c887b94dbcb110d10a8"
+    },
+    {
+      "path": "SMS/PKG/999000AF/Oracle/security/cacerts",
+      "size": 7365,
+      "sha256": "aded1473150b135c7b397e26b13dc022674b21904f4928a77f09c8aff5f45eff"
+    },
+    {
+      "path": "SMS/PKG/999000AF/Oracle/security/certdb.txt",
+      "size": 9554,
+      "sha256": "58b8a44399e8f02085642a8bdc31621528c8d4dfd6843b8aa861993b24fe0453"
+    },
+    {
+      "path": "SMS/PKG/999000AF/Oracle/security/java.policy",
+      "size": 2734,
+      "sha256": "df0009d9627a0187811bf54b23f44a7db0eb4c25014e0828446f45d65bb48fa4"
+    },
+    {
+      "path": "SMS/PKG/999000AF/Oracle/security/java.security",
+      "size": 4054,
+      "sha256": "99fb757d26cb0ceddde1ddbf11dfa4b3dd07e373357e6aa883b0529988c4225b"
+    },
+    {
+      "path": "SMS/PKG/999000AF/Oracle/security/keystore",
+      "size": 6750,
+      "sha256": "f0ea0482be1edc8226002130224c491e6529b127a69b14753d8ba53e31604b32"
+    },
+    {
+      "path": "SMS/PKG/999000AF/Remove_All_Javas.cmd",
+      "size": 17912,
+      "sha256": "1eff6b9f2260bb8b69056ac933a5a2fe9dc7eab776312688734c3fdd3a71ff12"
+    },
+    {
+      "path": "SMS/PKG/999000B5/Copy_JInitiator.vbs",
+      "size": 1022,
+      "sha256": "a17555462f6b31cd30fc00a808b7629108a42d06e5f91c2ed858662045386339"
+    },
+    {
+      "path": "SMS/PKG/999000B5/jvm.dll",
+      "size": 2314240,
+      "sha256": "f1b69c628fd12887133cc36c8ceca11e8bf2d7e0c7c48c887b94dbcb110d10a8"
+    },
+    {
+      "path": "SMS/PKG/999000B5/Oracle_JInitiator.msi",
+      "size": 9567232,
+      "sha256": "f97907e7b5b661f882161ec42ef92ad0441f177d4241cdcc95b7b9ef3d642f24"
+    },
+    {
+      "path": "SMS/PKG/999000B5/security/cacerts",
+      "size": 7365,
+      "sha256": "aded1473150b135c7b397e26b13dc022674b21904f4928a77f09c8aff5f45eff"
+    },
+    {
+      "path": "SMS/PKG/999000B5/security/certdb.txt",
+      "size": 9554,
+      "sha256": "58b8a44399e8f02085642a8bdc31621528c8d4dfd6843b8aa861993b24fe0453"
+    },
+    {
+      "path": "SMS/PKG/999000B5/security/C\u00F3pia de java.policy",
+      "size": 2734,
+      "sha256": "df0009d9627a0187811bf54b23f44a7db0eb4c25014e0828446f45d65bb48fa4"
+    },
+    {
+      "path": "SMS/PKG/999000B5/security/C\u00F3pia de java.security",
+      "size": 4054,
+      "sha256": "99fb757d26cb0ceddde1ddbf11dfa4b3dd07e373357e6aa883b0529988c4225b"
+    },
+    {
+      "path": "SMS/PKG/999000B5/security/java.policy",
+      "size": 2734,
+      "sha256": "df0009d9627a0187811bf54b23f44a7db0eb4c25014e0828446f45d65bb48fa4"
+    },
+    {
+      "path": "SMS/PKG/999000B5/security/java.security",
+      "size": 4054,
+      "sha256": "99fb757d26cb0ceddde1ddbf11dfa4b3dd07e373357e6aa883b0529988c4225b"
+    },
+    {
+      "path": "SMS/PKG/999000B5/security/keystore",
+      "size": 6750,
+      "sha256": "f0ea0482be1edc8226002130224c491e6529b127a69b14753d8ba53e31604b32"
+    },
+    {
+      "path": "SMS/PKG/999000C6/ACSP_CNF.INI",
+      "size": 247,
+      "sha256": "453ff4fa19991f30c65d9be3fc1860812d374af0a1b2f31800695a96a1033e8a"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Add_Profile.cmd",
+      "size": 46,
+      "sha256": "096154e73c96e616ca6f90fef5471915d11bf8da71e602dcbada486b02faf3ac"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Add_Profile_Wireless.vbs",
+      "size": 198,
+      "sha256": "faf87e951203e6da92a7e52a8621c39195e79f960ce838dc349df6768889815a"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Ajuste_Pagina\u00E7\u00E3o.cmd",
+      "size": 232,
+      "sha256": "ab465e597fffa86ec603b111505a45d2b231156da1bb6610667e3be3638b0a33"
+    },
+    {
+      "path": "SMS/PKG/999000C6/AjusteLOJA.cmd",
+      "size": 117,
+      "sha256": "77ae5e3b6cdf1fe9e1095ad5aa2c3bfa86d92bb01b2b365859b5955f92eefd4a"
+    },
+    {
+      "path": "SMS/PKG/999000C6/ALTWFSTN.xml",
+      "size": 2332,
+      "sha256": "9bd5204279114e68a52d74273faa93c6ef26500c6dc138f2f8d6fbb415e25d22"
+    },
+    {
+      "path": "SMS/PKG/999000C6/ALTWFSTN_EC.xml",
+      "size": 2303,
+      "sha256": "6810a58dfccd9046436d600ab14bf118be06ff1ab21f43d3f688de0851909c08"
+    },
+    {
+      "path": "SMS/PKG/999000C6/backinfo/Back.vbs",
+      "size": 1960,
+      "sha256": "8a6f211042353901ceb59b79c61588bdb6890c9553dd5e5bca32898df5b4304d"
+    },
+    {
+      "path": "SMS/PKG/999000C6/backinfo/backinfo.bmp",
+      "size": 1415814,
+      "sha256": "1f73f82a795dba6d27fa10c819d1a27f5238225d31aac595d24ae6bd7450e06b"
+    },
+    {
+      "path": "SMS/PKG/999000C6/backinfo/BackInfo.exe",
+      "size": 110870,
+      "sha256": "4c8fd273d03037280d66c733fc76891f3407618369c3eec580006498508f6bb7"
+    },
+    {
+      "path": "SMS/PKG/999000C6/backinfo/BackInfo.ini",
+      "size": 5331,
+      "sha256": "ce02a1fe645e66cab1df2d142a7f5d39915480255a6797c1156b513f8dc62951"
+    },
+    {
+      "path": "SMS/PKG/999000C6/backinfo/Backinfo.lnk",
+      "size": 633,
+      "sha256": "c3313038a762a1c0f1707e65d70c52dbd2f321d8b745a8a26f33c21b72783616"
+    },
+    {
+      "path": "SMS/PKG/999000C6/backinfo/FixBackinfo.vbs",
+      "size": 1625,
+      "sha256": "f5a24928da7a8a42ec513ea2d6314078a80d5038b0c44880d152a83c7f3f6c78"
+    },
+    {
+      "path": "SMS/PKG/999000C6/backinfo/FreeName.exe",
+      "size": 119062,
+      "sha256": "b005a4b663806c351acf73c2afea263c01b176cb4e65bd308b779ad990e2fd25"
+    },
+    {
+      "path": "SMS/PKG/999000C6/backinfo/Service Manager.lnk",
+      "size": 1948,
+      "sha256": "869b174d3094d38389a33da789e3435d668c48cbc6c20e17b57a3fbcb0cc3d19"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Chave Oracle x64.reg",
+      "size": 68790,
+      "sha256": "f3dde16f1f8b4a552b342f9284f15856363954228a6ce3ed71f655ebbbabcfd9"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Chave Oracle x86.reg",
+      "size": 52488,
+      "sha256": "4d6c54b85e782ae2d4996c424c86a0a0fe0d800401558bd8094fb6573513b47c"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Connect_GG_Wks_User_Admin.vbs",
+      "size": 1263,
+      "sha256": "e03d5ac51669c45c6dce7506a61657d423a31328564f92fbea3b5009eb0e8bbf"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Connect_Wireless_ALTWFSTN.vbs",
+      "size": 1234,
+      "sha256": "d4461c67fb851a0d8c2aaffadf7cb83b606a5c579e81f7e82ac580e54e4c0cbe"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Copy_Oracle.vbs",
+      "size": 416,
+      "sha256": "bee2817c460ccbac17f96e0f13a163b37a44a2bcf28624fc13b9a7d95e2cb7f6"
+    },
+    {
+      "path": "SMS/PKG/999000C6/CopyLojas.vbs",
+      "size": 317,
+      "sha256": "2b15f802ac5add05acabe70046a53f6a6633500bdf868b70e0df3520d080fe12"
+    },
+    {
+      "path": "SMS/PKG/999000C6/CopyPontoRH.vbs",
+      "size": 262,
+      "sha256": "2b1534b63463326154804bd63a7839aa9b6d4ae4ebdfd6448d551d300d12a640"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Criacao_Atalho_Estacao_Troca.vbs",
+      "size": 608,
+      "sha256": "02162311847f698bbf5b41a1117d1f55044e3be34f9402a5f076172943ed1252"
+    },
+    {
+      "path": "SMS/PKG/999000C6/CRM.lnk",
+      "size": 864,
+      "sha256": "6d820369c24aa4f126aa098f7186e003070c167630ef45345ebf6b32d16d732c"
+    },
+    {
+      "path": "SMS/PKG/999000C6/HiddenE_Q.vbs",
+      "size": 1301,
+      "sha256": "e1ec2e6e76221f863e3ead9e58ec8bc7549b69721d83a45527d9e5cc043f1442"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Office.ico",
+      "size": 323718,
+      "sha256": "dbe90b6a5f4c93aa9472e263e021819d0e49704eb923c3d122a38bfac2255805"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Ora_dll/flagdll.txt",
+      "size": 1,
+      "sha256": "36a9e7f1c95b82ffb99743e0c5c4ce95d83c9a430aac59f84ef3cbfab6145068"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Ora_dll/MFC30.DLL",
+      "size": 322832,
+      "sha256": "62b5887cb717076b54d567c5b61b477d69abb7bd319ff8ea6a5db228c985d43c"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Ora_dll/MFC30DEU.DLL",
+      "size": 33280,
+      "sha256": "2a5b4108518367ad3870a2cca2000de56e1606a8ea8e03660b63d46581ad91c2"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Ora_dll/MFC30FRA.DLL",
+      "size": 32256,
+      "sha256": "99dc14833d7bf407ac204f8bd68d52b4066fb892a3b8591657f4c8a1fb798037"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Ora_dll/MFC30JPN.DLL",
+      "size": 24064,
+      "sha256": "06908d2505ede4a6c77a325b508e128599d6bf5b19bedf9177d13f34e5d8154b"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Ora_dll/MFC30U.DLL",
+      "size": 358912,
+      "sha256": "a0f86de17578b3ee37a4a9eddd0f680521e0a6a64acffa9f6b20c1eadbedd0c5"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Ora_dll/MFCANS32.DLL",
+      "size": 133904,
+      "sha256": "417a81fa32035008205cd8042f47f0bd82fc742d0461ae8d961f74f3436a7b33"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Ora_dll/MFCD30.DLL",
+      "size": 55808,
+      "sha256": "319ef354d4e75e2c15fc7dc80c4cd9f08599339d173a0aab11c80600f3f18309"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Ora_dll/MFCN30.DLL",
+      "size": 15872,
+      "sha256": "112b0b475fb1f4fe23f9e12492d34f54ac0c4a88e0a8a5e1aedd2bac264e98ab"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Ora_dll/MFCN30U.DLL",
+      "size": 15872,
+      "sha256": "e6c41dcc81e94cab06571772995f63ad2fcc8bd50ac4b5758b957591ca44dde3"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Ora_dll/MFCO30.DLL",
+      "size": 133392,
+      "sha256": "858ad793d9ad4446460217721f667c59399a5c0899fee6105438896e085076fe"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Ora_dll/MFCO30U.DLL",
+      "size": 152576,
+      "sha256": "c9e4adc9108d08ded7e7887d3cf74e6e7b87e7bff8c275a598dd6ec261e1a83f"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Ora_dll/MFCUIA32.DLL",
+      "size": 108032,
+      "sha256": "ab898efe41664f36b17bbea85e2ddfdd4e3fa321cec86c52998d9d47b6b45ee8"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Ora_dll/MFCUIW32.DLL",
+      "size": 109056,
+      "sha256": "58f385aceb85809a7343bf786b2459f49a31fe9b0baa84584952a783be46ae78"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Ora_dll/MSVCRT20.DLL",
+      "size": 253952,
+      "sha256": "254fb41d8e203e0bcecd2df9a2e2218a67f45b16c1e11c1d215606ced96c6282"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Ora_dll/msvcrt2x.dll",
+      "size": 254464,
+      "sha256": "744be9db6a377227c1a504c4ad0ab785e4de028adcda8eb49a09bbdcd3cc424d"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Ora_dll/OC30.DLL",
+      "size": 640512,
+      "sha256": "9fbe8f35fc0b150a57e2660a368a5fb0a2051561476e5c02f5fb51f733a18256"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Ora_dll/ODBC.DLL",
+      "size": 56240,
+      "sha256": "9315d1887a9b1605fe251727f2ec1efd679d342dddd005987a1646e2874c54ea"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Ora_dll/ODBCINST.DLL",
+      "size": 92576,
+      "sha256": "23b9c5cc50ed1492ec251a82d0c0703fda028dc427162e8427fe4386df05b836"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Ora_dll/SH31W32.DLL",
+      "size": 80624,
+      "sha256": "658cae5b658dacf962a3bed36cb792e342f1cfac0134f1e6bc9cc66c6077db4c"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Oracle Client (Notes).reg",
+      "size": 22096,
+      "sha256": "7e2cf2067efddce70fac86689801c219bd9985300de26c6ce5f12e4814fcb28b"
+    },
+    {
+      "path": "SMS/PKG/999000C6/OSDAppChooser.exe",
+      "size": 1731072,
+      "sha256": "725721518e0f939a786ef0b4bdd09d4345d5b907a690aa7ab34cce7013b8670b"
+    },
+    {
+      "path": "SMS/PKG/999000C6/OSDAppChooserConfig.xml",
+      "size": 3404,
+      "sha256": "349a650a71e0d29663a61f9dff85323bcbd394354018cf68f339273664642f74"
+    },
+    {
+      "path": "SMS/PKG/999000C6/OSDAppTree.exe",
+      "size": 1998336,
+      "sha256": "1179df27bb651494107f4f9ab0026a29f31401abc7aa35fe95787708a2a401f5"
+    },
+    {
+      "path": "SMS/PKG/999000C6/OSDAppTreeConfig.xml",
+      "size": 8022,
+      "sha256": "6812eb9a3e1ca08339484ff4f58d8eaf76d3d0b4673e97fe4006e0c6e2f6a590"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Ponto RH 6i.lnk",
+      "size": 650,
+      "sha256": "59c680272ac052a498779bfb4559ee11bcebc09b1a014d776daf8ae1cba14924"
+    },
+    {
+      "path": "SMS/PKG/999000C6/reg.vbs",
+      "size": 206,
+      "sha256": "86e82142b0217f21c934dc8834e74bb9bd2aabdcdf00954ecfecfe6e6c4947db"
+    },
+    {
+      "path": "SMS/PKG/999000C6/remove_from_collection.vbs",
+      "size": 2732,
+      "sha256": "b4070c69b3b16e8adb570cf81bca4824faef931dc0432ccf1d83dea1f38c0118"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Servico_SCCM.vbs",
+      "size": 193,
+      "sha256": "8f673a22fe8bdcab55d19bc5e45df8371b7b6bd505115b48667dc9c9b562fa1d"
+    },
+    {
+      "path": "SMS/PKG/999000C6/Set_Computer_Name.vbs",
+      "size": 194,
+      "sha256": "44ea33a3b041be208ba95e436a27c4f92aecf75f7bdc7391097a3df4336f50ee"
+    },
+    {
+      "path": "SMS/PKG/999000C6/SQL_Path.vbs",
+      "size": 672,
+      "sha256": "c3c949b2247e63c999f2d1f66632c96d94eed136d2613a45e973e07ff26ad789"
+    },
+    {
+      "path": "SMS/PKG/999000C6/SystemRestore.reg",
+      "size": 1574,
+      "sha256": "936446524724e6d7ae72cdc0d59a4ff45167178e399c8649e897380847fe2fb8"
+    },
+    {
+      "path": "SMS/PKG/9990013F/flashplayer14.exe",
+      "size": 18588336,
+      "sha256": "26bd5ddff8984057934c1443ea9b81acaac5b77a4f7fc4de76162ca9287eeda9"
+    },
+    {
+      "path": "SMS/PKG/9990013F/flashplayer14u.exe",
+      "size": 851120,
+      "sha256": "60b3b90bc36723d674261e4eb1b4553aa393c21a4cb80f05eee04d1cc72df23c"
+    },
+    {
+      "path": "SMS/PKG/99900161/Altsa_Sincronizador_Windows7.msi",
+      "size": 1301504,
+      "sha256": "845b19e56b7e60654424ac4aa14ae0d7e6cde889880ce558247ac474cdf191d5"
+    },
+    {
+      "path": "SMS/PKG/99900161/Remove_Sincronizador.cmd",
+      "size": 225,
+      "sha256": "95d6a8efacac604bb173f0029ea89134de95f62b672788728c8ab86d3f1c9654"
+    },
+    {
+      "path": "SMS/PKG/99900193/Altsa_Loja_Net.msi",
+      "size": 2914304,
+      "sha256": "53f0a33d5870c048fb300ce32bed53070c365c1122e18c49311aeef9dfd7b5da"
+    },
+    {
+      "path": "SMS/PKG/99900193/InstalarLojaNet.cmd",
+      "size": 730,
+      "sha256": "6224e1f2ee1a1d79b61240ab0d14d315d6846db5de85d87b7b418cc335f463b8"
+    },
+    {
+      "path": "SMS/PKG/99900194/Backup_SafeDOC.vbs",
+      "size": 787,
+      "sha256": "f14f8bbcacc6a032799cf59af4f5a81e6ca24b8ec1f257aa1b8e034c9df180b8"
+    },
+    {
+      "path": "SMS/PKG/99900194/Configure_New_SafeDOC.vbs",
+      "size": 434,
+      "sha256": "e22f14b1ba44c579a0220a1117443f8ce0a8511cc1a357b830f121b647a62e1b"
+    },
+    {
+      "path": "SMS/PKG/99900194/Dependencies/actmask34.exe",
+      "size": 11733904,
+      "sha256": "f1cf9174397c87c84ab13987605ccf539a4e3c314c10a02907ee16f8a65d4f6b"
+    },
+    {
+      "path": "SMS/PKG/99900194/Dependencies/dpfp161.msi",
+      "size": 7954944,
+      "sha256": "734e695bb68872258aa6c254b7366008f1d013c1014573eccc6f39a6cc8ed8a6"
+    },
+    {
+      "path": "SMS/PKG/99900194/Dependencies/dpfp161_x64.msi",
+      "size": 11646464,
+      "sha256": "5c60ca8b07fc687fc3d739c673cab185f0b3c7ca7783641a9c918d5d36e3eb4b"
+    },
+    {
+      "path": "SMS/PKG/99900194/Dependencies/readme.txt",
+      "size": 1003,
+      "sha256": "87ddf61fb859ce95939fc0e297cbc61e8a004b54d88036a4f59a9454c103612d"
+    },
+    {
+      "path": "SMS/PKG/99900194/qd1.dll",
+      "size": 491792,
+      "sha256": "c163526f0da8f17b2a3f10d4f45d528724f830163d00ae7646bb631ba1947960"
+    },
+    {
+      "path": "SMS/PKG/99900194/Remove_SafeDoc.cmd",
+      "size": 292,
+      "sha256": "3d0d4c7fc8b5ffcaa5b4f999aac8dba3a526acb0f403a6fc3d37e2c6d3a58d40"
+    },
+    {
+      "path": "SMS/PKG/99900194/Restore_SafeDOC.vbs",
+      "size": 722,
+      "sha256": "e62ff019027939c13486e85f017ad58bd3aaaffe52c8781c411b43fa57804811"
+    },
+    {
+      "path": "SMS/PKG/99900194/sdc_setup_12_2_6_0_x86.exe",
+      "size": 7032542,
+      "sha256": "cc58a0b7461d9cc97e2f9d5675649179581d993b524e50b755320f2a9594842e"
+    },
+    {
+      "path": "SMS/PKG/999001C3/ccmsetup.cab",
+      "size": 9745,
+      "sha256": "bf7012951c6b3e8289937cbb5cf5a122635bf64b216d8548c34ec4cb41334e6d"
+    },
+    {
+      "path": "SMS/PKG/999001C3/ccmsetup.exe",
+      "size": 1790136,
+      "sha256": "99b8d520873a3515d132b1021dd28277d84fe76dd942cb26056ae8b08d33f234"
+    },
+    {
+      "path": "SMS/PKG/999001C3/ep_defaultpolicy.xml",
+      "size": 7708,
+      "sha256": "d076437ddb477c366c4ebe69912d0ca884bccb5c5a3c6fb7f8fe0d111730262f"
+    },
+    {
+      "path": "SMS/PKG/999001C3/hotfix/KB2938441/i386/configmgr2012ac-r2-kb2938441-i386.msp",
+      "size": 3960832,
+      "sha256": "4e8996d31d511c1dfd0fa131f337d218b8d9d4841a4e7bf10ab71b817b891ad9"
+    },
+    {
+      "path": "SMS/PKG/999001C3/hotfix/KB2938441/x64/configmgr2012ac-r2-kb2938441-x64.msp",
+      "size": 4956160,
+      "sha256": "37c9ec54525bfe0d12b704ce08906f2a6cfe7d560f79d0c30dff91fa300a1028"
+    },
+    {
+      "path": "SMS/PKG/999001C3/i386/client.msi",
+      "size": 29782016,
+      "sha256": "192fd07ecac24b270d93d19e7110227e5f9192168b66128110c0ef09f44c7c94"
+    },
+    {
+      "path": "SMS/PKG/999001C3/i386/microsoftpolicyplatformsetup.msi",
+      "size": 1798144,
+      "sha256": "c494b9091817a1329913ea0cb8bb893a3fa7c43d1bb23619291e8a3f3b095592"
+    },
+    {
+      "path": "SMS/PKG/999001C3/i386/msrdcoob_x86.exe",
+      "size": 543048,
+      "sha256": "c4fac31661c1cf2e858aa48f97f14382d36919bcb0de5a22e8a2dd810ecedde5"
+    },
+    {
+      "path": "SMS/PKG/999001C3/i386/msxml6.msi",
+      "size": 1521152,
+      "sha256": "efa48f8cab5a89b8e667ed3e10dfb71bddc02923d0f3757bd93ffabe6fb6c598"
+    },
+    {
+      "path": "SMS/PKG/999001C3/i386/ndp452-kb2901907-x86-x64-allos-enu.exe",
+      "size": 69999448,
+      "sha256": "6c2c589132e830a185c5f40f82042bee3022e721a216680bd9b3995ba86f3781"
+    },
+    {
+      "path": "SMS/PKG/999001C3/i386/silverlight.exe",
+      "size": 7018720,
+      "sha256": "bd7ec2cd5d5e31d39a183854c587681f49d1fc0de47ef79ab0ea6d509de64938"
+    },
+    {
+      "path": "SMS/PKG/999001C3/i386/vc50727_x86.exe",
+      "size": 2707352,
+      "sha256": "4ee4da0fe62d5fa1b5e80c6e6d88a4a2f8b3b140c35da51053d0d7b72a381d29"
+    },
+    {
+      "path": "SMS/PKG/999001C3/i386/vcredist_x86.exe",
+      "size": 6498200,
+      "sha256": "bbc26aca42cd311a0e1ea1356852f061d863af047f1891ac9952ab7e7cb8e04f"
+    },
+    {
+      "path": "SMS/PKG/999001C3/i386/wic_x86_enu.exe",
+      "size": 1227048,
+      "sha256": "196868b09d87ae04e4ab42b4a3e0abbb160500e8ff13deb38e2956ee854868b1"
+    },
+    {
+      "path": "SMS/PKG/999001C3/i386/windowsfirewallconfigurationprovider.msi",
+      "size": 543232,
+      "sha256": "22341181c1be57236527b97f60c58ef98fea0e3f0543540ef2ab135136754bb1"
+    },
+    {
+      "path": "SMS/PKG/999001C3/i386/windowsupdateagent30-x86.exe",
+      "size": 6776168,
+      "sha256": "b2512e0c2786f72ed41559580261c782a13fb5ea7fe23878873f83ecaeeec25f"
+    },
+    {
+      "path": "SMS/PKG/999001C3/scepinstall.exe",
+      "size": 28359824,
+      "sha256": "ae71ed1f26ed5cae468e556e2983d5237805a67808edfb058535d69f993e7597"
+    },
+    {
+      "path": "SMS/PKG/999001C3/wimgapi.msi",
+      "size": 786432,
+      "sha256": "dc6f50679b8b950bcc83bb3c1d4b7b5dfa750ef6a4dee7c4061b3ababf686383"
+    },
+    {
+      "path": "SMS/PKG/999001C3/x64/client.msi",
+      "size": 37294080,
+      "sha256": "c6bb2ce78f58c76d51c04638f22a0abc876824c16069b780a73e80d22382f584"
+    },
+    {
+      "path": "SMS/PKG/999001C3/x64/microsoftpolicyplatformsetup.msi",
+      "size": 2269184,
+      "sha256": "48d9df58b73ee28fe1f70ee4819f9145812cecd1cf38d90ad0fc3ef8fb5c2ec2"
+    },
+    {
+      "path": "SMS/PKG/999001C3/x64/msrdcoob_amd64.exe",
+      "size": 731976,
+      "sha256": "3d1f4aafcb178cb67a29d17e6601ee7c13dd7c066968e22710e972c93d48ed6f"
+    },
+    {
+      "path": "SMS/PKG/999001C3/x64/msxml6_x64.msi",
+      "size": 2664960,
+      "sha256": "945d8c535758d5178d4de9063cfcba7dfa96987eaa478e0c03ba646cc7ca772f"
+    },
+    {
+      "path": "SMS/PKG/999001C3/x64/vc50727_x64.exe",
+      "size": 3175832,
+      "sha256": "0551a61c85b718e1fa015b0c3e3f4c4eea0637055536c00e7969286b4fa663e0"
+    },
+    {
+      "path": "SMS/PKG/999001C3/x64/vcredist_x64.exe",
+      "size": 7188536,
+      "sha256": "e8f443960b2f4a588902c3ed1603b07e29366b35d6cd1f06bc2544345d270d72"
+    },
+    {
+      "path": "SMS/PKG/999001C3/x64/wic_x64_enu.exe",
+      "size": 1911592,
+      "sha256": "5822fecd69a90c2833965a25e8779000825d69cc8c9250933f0ab70df52171e1"
+    },
+    {
+      "path": "SMS/PKG/999001C3/x64/windowsfirewallconfigurationprovider.msi",
+      "size": 603136,
+      "sha256": "3bf0651fd4a01170925cef694468d4ef6f64d76fd3413debd14cb8de019aa10e"
+    },
+    {
+      "path": "SMS/PKG/999001C3/x64/windowsupdateagent30-x64.exe",
+      "size": 7749976,
+      "sha256": "d500a5b5945fafc6a52fb54b7169b62c6c1137e1694184ff2eff790aa1394ece"
+    },
+    {
+      "path": "SMS/PKG/999001CA/0x0404.ini",
+      "size": 10670,
+      "sha256": "60f176f3014342f48468ff7ea67280fa3a671c4721ebefe7b4ee789ff65c87df"
+    },
+    {
+      "path": "SMS/PKG/999001CA/0x0405.ini",
+      "size": 23310,
+      "sha256": "9302a3e694de8cc84947b41350a7f8ae0880e5d2f3fdbd67cd56444bf0bc3a43"
+    },
+    {
+      "path": "SMS/PKG/999001CA/0x0407.ini",
+      "size": 25860,
+      "sha256": "8b5d7bc395d0d6980299702d0573c6019fefea92eb98701d1894a5623b2691a0"
+    },
+    {
+      "path": "SMS/PKG/999001CA/0x0408.ini",
+      "size": 27384,
+      "sha256": "d9610bf29ee0e73843595f246a58699abe499b340ad9982831d068067161c120"
+    },
+    {
+      "path": "SMS/PKG/999001CA/0x0409.ini",
+      "size": 22492,
+      "sha256": "e994689a13b9448c074f9b471edeec9b524890a0d82925e98ab90b658016d8f3"
+    },
+    {
+      "path": "SMS/PKG/999001CA/0x040a.ini",
+      "size": 25140,
+      "sha256": "1739d42ed181f36ab4f524c01b57a4102c2f7510661d973a1077a4e88ac34b97"
+    },
+    {
+      "path": "SMS/PKG/999001CA/0x040c.ini",
+      "size": 26270,
+      "sha256": "b14d9d7afc505868407c425cb5a78c891baa8a6ac8eb35cfb3d71c71f5bee1fa"
+    },
+    {
+      "path": "SMS/PKG/999001CA/0x0410.ini",
+      "size": 25188,
+      "sha256": "2970bb63e5bc3de4c693de313d715c0c5f93bd35e18cdaec56954034cc7653a6"
+    },
+    {
+      "path": "SMS/PKG/999001CA/0x0411.ini",
+      "size": 14960,
+      "sha256": "e3b87e8b94ad50bbe21795b3408943f9a6d6f33813e96802962cb74b889edfe7"
+    },
+    {
+      "path": "SMS/PKG/999001CA/0x0412.ini",
+      "size": 14126,
+      "sha256": "316577cf74d3545d632b0de55513a3511d654849655157cb84821b871ec081e9"
+    },
+    {
+      "path": "SMS/PKG/999001CA/0x0415.ini",
+      "size": 24330,
+      "sha256": "81a521c602ea87abd9cb33cf8d53f38502cb7649bb2fdecf985e9c5fc4273f3e"
+    },
+    {
+      "path": "SMS/PKG/999001CA/0x0416.ini",
+      "size": 24142,
+      "sha256": "fd410ce6cea3fe21e0d45ba8a3a95459502275052c318971ecd548970dfccdcf"
+    },
+    {
+      "path": "SMS/PKG/999001CA/0x0419.ini",
+      "size": 23432,
+      "sha256": "79fe5a9a1dcd35ed68016fc5aa3720945f87a34c7b85f14763dc08f55796485e"
+    },
+    {
+      "path": "SMS/PKG/999001CA/0x041f.ini",
+      "size": 23034,
+      "sha256": "24291186fa6965adda3aadc800c5c35418f47b314fbc9dfa49a72f79cd4467fd"
+    },
+    {
+      "path": "SMS/PKG/999001CA/0x0421.ini",
+      "size": 24738,
+      "sha256": "557b4af37a697028e2fd9d91912988a029f50b7ca310374696205ff611d05b72"
+    },
+    {
+      "path": "SMS/PKG/999001CA/0x0424.ini",
+      "size": 23950,
+      "sha256": "65ab88b1fbcc351e29b73e5c0ed575b88b19a78067ffb99a4be4eb2aa57bec0d"
+    },
+    {
+      "path": "SMS/PKG/999001CA/0x0427.ini",
+      "size": 22492,
+      "sha256": "17632df0f0f0d6250c6f3605b812e3594c3ec5f825ad7b893d4a5955854567df"
+    },
+    {
+      "path": "SMS/PKG/999001CA/0x0804.ini",
+      "size": 10760,
+      "sha256": "b1422d24b8b703541404776badf70d377df435d519cc5fff2ee6666581ce407c"
+    },
+    {
+      "path": "SMS/PKG/999001CA/1028.mst",
+      "size": 183296,
+      "sha256": "4a5e1d526ba51ef834504174f157c9b6ea8a820eaecc2ee4bf10c3aa357042b0"
+    },
+    {
+      "path": "SMS/PKG/999001CA/1029.mst",
+      "size": 151040,
+      "sha256": "78040a252774cff3e421db9f308a370053aa4b50f0989c65807da1401e933898"
+    },
+    {
+      "path": "SMS/PKG/999001CA/1031.mst",
+      "size": 151040,
+      "sha256": "88d1b7ec3184f9e40c3c5ad3d7af6b2937fd4c33f86b0e9be05da925c5aee007"
+    },
+    {
+      "path": "SMS/PKG/999001CA/1032.mst",
+      "size": 406016,
+      "sha256": "ec9d6aff1f24602ff81e7fc54afc7b40a21128d832864a6d722e6b80a451d7cf"
+    },
+    {
+      "path": "SMS/PKG/999001CA/1033.mst",
+      "size": 152576,
+      "sha256": "a8633cc7e8e4d1cbb2b71f52afc4cbaed209b31d48588e3c1dff60666d1b73ed"
+    },
+    {
+      "path": "SMS/PKG/999001CA/1034.mst",
+      "size": 145920,
+      "sha256": "503c231fd71e4c7cb76a95d68439d2d7ba23a4365b0b14a4d3cd8f4b47254f58"
+    },
+    {
+      "path": "SMS/PKG/999001CA/1036.mst",
+      "size": 163328,
+      "sha256": "b7cead6f3b412c8d72a90beb6c76975abc4552a6aabd2fb7c0f27938153abe4d"
+    },
+    {
+      "path": "SMS/PKG/999001CA/1040.mst",
+      "size": 140288,
+      "sha256": "164c011eaa7b412a33262cd794bff972c23d56e49f0e8f81dbb132461fb8a108"
+    },
+    {
+      "path": "SMS/PKG/999001CA/1041.mst",
+      "size": 274432,
+      "sha256": "03ac05c60c5899109d4f43be2f5bcbe7ef22699e3e708cb6b1bff323b694905e"
+    },
+    {
+      "path": "SMS/PKG/999001CA/1042.mst",
+      "size": 224768,
+      "sha256": "38b34e84dd9d1e85bd500d21e3cda871a532880c63e047b88176f6d6502328eb"
+    },
+    {
+      "path": "SMS/PKG/999001CA/1045.mst",
+      "size": 147456,
+      "sha256": "27fa593dfd9fac672c86922e6a8687037ddb841c3b069a17d3aafc14547cf023"
+    },
+    {
+      "path": "SMS/PKG/999001CA/1046.mst",
+      "size": 4096,
+      "sha256": "9bc382877cbd765c55afea46758cbe0bd12eae70fc9d853c8e787d0e22861ecf"
+    },
+    {
+      "path": "SMS/PKG/999001CA/1049.mst",
+      "size": 345600,
+      "sha256": "ba44866cf5d90c7130ec0381778c0caaa5a087a4ff08f4e27600c301e0ff1acc"
+    },
+    {
+      "path": "SMS/PKG/999001CA/1055.mst",
+      "size": 152576,
+      "sha256": "4004a06c1006d986ff622e3de69da68c2e05eb65f7cc7ee7a63b48400a837e5f"
+    },
+    {
+      "path": "SMS/PKG/999001CA/1057.mst",
+      "size": 168448,
+      "sha256": "a68c109e45d2a99ad27db03cb361209a78c243ab85dd35490ed09ba7922e7f0b"
+    },
+    {
+      "path": "SMS/PKG/999001CA/1060.mst",
+      "size": 164864,
+      "sha256": "cf68fdba40843a55d0f5a0318b368fb4484f0907e4bc90d1484f0c4de53740ed"
+    },
+    {
+      "path": "SMS/PKG/999001CA/2052.mst",
+      "size": 180224,
+      "sha256": "9aa2c46b3b0f34ffb2c8c5afe814add1dc77ed48f0fe809c4ba85556e5c5f40e"
+    },
+    {
+      "path": "SMS/PKG/999001CA/Data1.cab",
+      "size": 267661816,
+      "sha256": "ed640ac412247e4e04ca868c3265990a99eb7a1df131b7f60d8795de0d9ad1a5"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/.keystore.JCEKS.IBM_J9_VM.install",
+      "size": 7175,
+      "sha256": "db38d3adb5b4b81aaf311208c5b542b1976d64098ddac276874a5506546af9d3"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/debug.options",
+      "size": 117,
+      "sha256": "897e5870bfe197f51bc64e05615a1460f3db295b03260cd11882d3d96a8d7afa"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/extras/presetfeeds.opml",
+      "size": 535,
+      "sha256": "2f1ddd84f2ee565191b9f0225ac7e89161f6f97fdbdfc901faa9e83908374e40"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install.properties",
+      "size": 2246,
+      "sha256": "e7bde2232131a25a7f09daa08181df8edc76a26bcb98be72ff807789d53178d6"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install.xml",
+      "size": 114203,
+      "sha256": "289fdc674b44325bc88436475f9716b162b123be8d481f52b1a576270ba950de"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_ar.properties",
+      "size": 5433,
+      "sha256": "c9a31c8f069d88829603ac9665680c7c8810c958163aa40816fee5f230ffe798"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_ca.properties",
+      "size": 2570,
+      "sha256": "695e72943606cfd95d39decc1ac893b5a4c82390dc57040d800a8770afd7d0bd"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_cs.properties",
+      "size": 2652,
+      "sha256": "570bb364bf7cf42ac6233cf968f39f8eba74c66f7f8cb814b532c1d4fb5b42b4"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_da.properties",
+      "size": 2399,
+      "sha256": "67d935929af8fb68c37f8cf379c4c1ea5c2227a465f6a41864e986dc15bf4f88"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_de.properties",
+      "size": 2490,
+      "sha256": "99a52a1c5bd269a034f8e455254b449dbbd310741d0c911168d52777f2127ded"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_el.properties",
+      "size": 8482,
+      "sha256": "eb4c4793b41561eacbdc6d643e9675017ea110a01f51c5a990461c2fe250cdec"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_en.properties",
+      "size": 2246,
+      "sha256": "e7bde2232131a25a7f09daa08181df8edc76a26bcb98be72ff807789d53178d6"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_es.properties",
+      "size": 2610,
+      "sha256": "10bd2cc5c295c1a8f521aa548fbdcb28eba8958038399a5e807c35d59fd90042"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_fi.properties",
+      "size": 2653,
+      "sha256": "1ef6f90e8394fa8c6399e0db09d13da38e13f0fe42c99712e92eb83b8ea74537"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_fr.properties",
+      "size": 2554,
+      "sha256": "56fa0823341801b59a07185fdb194260f1a72a77d10c10860dcaa5ebeeab5c6b"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_hu.properties",
+      "size": 2955,
+      "sha256": "2fdda2f6d564d982427f1f5bcf64864687029e0a1ecb47a0f28977fa26697918"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_it.properties",
+      "size": 2428,
+      "sha256": "0c553b1f00246202c0b5841aeca1a04c0ae67bd9052cd1879a389443fbde64a6"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_iw.properties",
+      "size": 4591,
+      "sha256": "14fdbed2187084bc57e2b58afa9d40ab56f535e1e92776234361e400d40e72ac"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_ja.properties",
+      "size": 3902,
+      "sha256": "ecaa6f4f2a644eb7d579796b4f6d15defed9e50209d0d99a3271d88e09f4e75d"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_kk.properties",
+      "size": 5013,
+      "sha256": "cc8a8460bab389e8ef0fdeccfa51351eda2a818f57e4e315b6e473706883b986"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_ko.properties",
+      "size": 3188,
+      "sha256": "5fd1ec925eebd419c6eb538659c2a838580fc93f320b62ab85ba3918b3c540f4"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_nl.properties",
+      "size": 2350,
+      "sha256": "c06ad50b4cbe5219b33188f95f2d4496d3252467527eeb7efbc16e9f38e64675"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_no.properties",
+      "size": 2326,
+      "sha256": "910db1a73e58e86aef493b57fe195ea00f007f916c0d8dd68aa2cc6301aadb34"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_pl.properties",
+      "size": 2635,
+      "sha256": "4c969be4515dbc3ce0e5a3d9857c28d1473e2a0b6324895b37cb14cbb5def84c"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_pt.properties",
+      "size": 2486,
+      "sha256": "3b873c902c4fea371fca525d8ad6cbeaf5dd82d22209ad76227abcc531dfd302"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_pt_BR.properties",
+      "size": 2457,
+      "sha256": "fe3d622ad508eb6176d17d5ab4d59cceef5433468ebe55197af4caa18dc739f0"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_ru.properties",
+      "size": 6327,
+      "sha256": "a4603e1b0d68bec80abf556db793da96d2d21b02799f224eb676b598a4c11c6a"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_sk.properties",
+      "size": 3004,
+      "sha256": "b1fe274110756894ab05cf9eb0b3f7330b93216d464e1394fdd8f7bad2adf04e"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_sl.properties",
+      "size": 2485,
+      "sha256": "8deb435ec30763f44469af1f315d96f9180d36ecc9b2ac810b86c1d27c356625"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_sv.properties",
+      "size": 2423,
+      "sha256": "8057503f4cc6a0fe658645e6c2fbce22d438d106d5b431e8b57b1dde647c9e24"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_th.properties",
+      "size": 5128,
+      "sha256": "8bd2aa2f3442018563f8c49b07268fa18efe132ef934863d48e529181a727a51"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_tr.properties",
+      "size": 2777,
+      "sha256": "0915af45f8e7b8de419825426cb4ce726d85360f7c4fd1642d28aed4b6a326c3"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_zh.properties",
+      "size": 2946,
+      "sha256": "8a53c5112f78c800435c6a588c22a976934da51dea7958525e5e3386c8e9e04c"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/install_zh_TW.properties",
+      "size": 2972,
+      "sha256": "75d209fd357cccad03bf01ee4b612cbcc341018acbc7dd2e55363c6dd81e6fe5"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/jvm.properties",
+      "size": 2440,
+      "sha256": "4b8ffe3a53a0a0d1afaa3e6bc9324299f8081f8b0962406196f4095778cce44c"
+    },
+    {
+      "path": "SMS/PKG/999001CA/deploy/plugin_customization.ini",
+      "size": 1218,
+      "sha256": "11723af790b6d753d1338f3a52b7a8176c0954c4069a34b8bd111c7431ef9638"
+    },
+    {
+      "path": "SMS/PKG/999001CA/IBM Notes 9.0.1 Social Edition.msi",
+      "size": 7244800,
+      "sha256": "35b4da301be00aa2f2f3cff16469b2a66e4e51e6e44360f8f9994eafc3cccb3e"
+    },
+    {
+      "path": "SMS/PKG/999001CA/IBMNotes.itw",
+      "size": 49152,
+      "sha256": "f3028325a18dafacf10959dcb6c85fb517e333925bc0b1a3b5f1dcb4cabf08d6"
+    },
+    {
+      "path": "SMS/PKG/999001CA/instmsiw.exe",
+      "size": 1822520,
+      "sha256": "b93fdcd1136faa9a8cb73a329b2f1f5f430a150ddcec35de916e3a1539f09351"
+    },
+    {
+      "path": "SMS/PKG/999001CA/license/eclipsemodssrc.zip",
+      "size": 772236,
+      "sha256": "3329ebe93dd73ac9de284e7078d4c4b7e1217477306d64d5559bd0a5d20bdf26"
+    },
+    {
+      "path": "SMS/PKG/999001CA/license/mozillamodssrc.zip",
+      "size": 1165182,
+      "sha256": "78220434a59eaa9716b94da80b913a6ed04c8cfd3183eaef126497794e5a42ee"
+    },
+    {
+      "path": "SMS/PKG/999001CA/readme.html",
+      "size": 12813,
+      "sha256": "6a187109d12a1515afa20fc6e6885524dd0b461942b19ac7c50fb8fdc5c6a99f"
+    },
+    {
+      "path": "SMS/PKG/999001CA/setup.bin",
+      "size": 1229904,
+      "sha256": "b0e5e2fefe3b4f071e1606a8ca7722f422973ec9b3e460239dfd5ec06607c27d"
+    },
+    {
+      "path": "SMS/PKG/999001CA/setup.exe",
+      "size": 2056272,
+      "sha256": "9061df26352a1a30458f7a1b6f00a26fd0edbc815690e07aa957f25ffa121581"
+    },
+    {
+      "path": "SMS/PKG/999001CA/Setup.ini",
+      "size": 5632,
+      "sha256": "931b2692455d39c52336d3e72f762e15b342a95175b3c7948311d189890c4274"
+    },
+    {
+      "path": "SMS/PKG/999001CA/updateSite.zip",
+      "size": 391262903,
+      "sha256": "3c942bf609eb3919baecc25cc509a7d8dc70bd67095a987cd77aade05d5a257b"
+    },
+    {
+      "path": "SMS/PKG/999001CA/Utility/NotesCustomizationKit_1_0.zip",
+      "size": 7195440,
+      "sha256": "434a6e60e3b136c2cd322898188a1d71d6814fb38228a6b9735523ca22320fc0"
+    },
+    {
+      "path": "SMS/PKG/99900239/Install_ORARRP.vbs",
+      "size": 759,
+      "sha256": "ef07d84ced9348224bcdf2db976bc15a223910615c1e7358ca32c1ac8605c225"
+    },
+    {
+      "path": "SMS/PKG/99900239/Install_ORARRP_Reg.vbs",
+      "size": 904,
+      "sha256": "cdbcdb042339b9851830c1f0108c30266ab7aaf8269b22aa4868af18f479e418"
+    },
+    {
+      "path": "SMS/PKG/99900239/Orarrp/orarrp.exe",
+      "size": 73728,
+      "sha256": "66e4d9e35cc7fd60060a2308accf4f6fb45c28dc305e73b362f67d83fdc4eeaa"
+    },
+    {
+      "path": "SMS/PKG/99900239/Orarrp/orarrp.ini",
+      "size": 201,
+      "sha256": "1c22637fd5214eb6407031ced255a4e144e7195dae7de31fbd5df7a39f37654d"
+    },
+    {
+      "path": "SMS/PKG/99900239/Orarrp/orarrp1.3.4.pdf",
+      "size": 177938,
+      "sha256": "58bf4c0d1af2d4a11bf70482e530eac4437d50cdb7d0d7f987cce7fb3e1bbef3"
+    },
+    {
+      "path": "SMS/PKG/99900239/Orarrp/Teste_De_Impressao.html",
+      "size": 108,
+      "sha256": "728fab72ec37e60dc12a1ea685f17effa02b7daf3e510cb12c95ac342ddb56da"
+    },
+    {
+      "path": "SMS/PKG/99900239/Orarrp/TesteImp.rrpa",
+      "size": 177938,
+      "sha256": "58bf4c0d1af2d4a11bf70482e530eac4437d50cdb7d0d7f987cce7fb3e1bbef3"
+    },
+    {
+      "path": "SMS/PKG/99900239/RRPP.reg",
+      "size": 2282,
+      "sha256": "0b5687ad5460a485ee8e9710413a994414268df10cb94bf900456b95ec5b4261"
+    },
+    {
+      "path": "SMS/PKG/99900270/89B6017F545355E6E73E79B7540AA843739ABCFCFC0B3402C208F6F6D0CD3B2C000.swm",
+      "size": 4294928584,
+      "sha256": "fe6da86d02f665b991f5edc0f7295ffe25ff2ecbf93e2be8c177b8e3794956df"
+    },
+    {
+      "path": "SMS/PKG/99900270/89B6017F545355E6E73E79B7540AA843739ABCFCFC0B3402C208F6F6D0CD3B2C001.swm",
+      "size": 2037271497,
+      "sha256": "656f2760e87e59bb9f2f1a8958628df22f2dbc7f05233f92db0954f0932a5b97"
+    },
+    {
+      "path": "sources/boot.wim",
+      "size": 266828977,
+      "sha256": "ade22fc0dcda3b00d71d63dfb1b42003310d23d14bd746d3a6e2ce0794352032"
+    },
+    {
+      "path": "VolumeId.xml",
+      "size": 372,
+      "sha256": "56ba3c7a5056741ce9071142636507c26f788890e30d2621e3ee02111cdce513"
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+[
+  {
+    "name": "PNB-STOREX-auto-install-2026.07.02",
+    "group": "PNB-STOREX",
+    "fileUrl": "https://mateweb.ddns.net/repositorio/PNB-STOREX/pnb-storex-auto-install-2026.07.02.iso",
+    "enabled": false,
+    "md5": "0870217b74d5d9f1172a828d69d529e9",
+    "sha256": "80f9bafbbd70916f92182b47d4aa75e9888f72284bd1076508b7ad4a6e33abc5",
+    "imageSizeBytes": 4777123840
+  },
+  {
+    "name": "PNB-WIN7-v4.60.06.26",
+    "group": "PNB-WIN7",
+    "fileUrl": "https://mateweb.ddns.net/repositorio/PNB_WIN7/PNB-WIN7-v4.60.06.26.TIBX",
+    "enabled": false,
+    "md5": "75954350d192b00f1c3bb24c8ab02cc0",
+    "sha256": "ecb75e9e8969327ada8318e9f3842348f17160c5053bda31ed8aa9a72c52ea0b",
+    "imageSizeBytes": 13811748864,
+    "description": "Imagem de sistema operacional (backup Acronis). Restauração com 2 pendrives: (1) o pendrive com a mídia Acronis (gravada em RAW/DD), para dar boot; (2) o pendrive com o TIBX (copiado em NTFS). Inicie pelo pendrive 1 e restaure a partir do arquivo no pendrive 2."
+  },
+  {
+    "name": "Win7-Pro-SP1-BrazilianPortuguese-x32",
+    "group": "WIN7",
+    "fileUrl": "https://mateweb.ddns.net/repositorio/Win7/Win7_Pro_SP1_BrazilianPortuguese_x32.iso",
+    "enabled": false,
+    "md5": "5cdf374623f6943c2affc0d3e7c449af",
+    "sha256": "2bf38bd96bc2b64491ea399b8aded282b72e13ef1d690adfb6e4ce2ce0dcfc0f",
+    "imageSizeBytes": 2434740224
+  },
+  {
+    "name": "Win7-Pro-SP1-BrazilianPortuguese-x64",
+    "group": "WIN7",
+    "fileUrl": "https://mateweb.ddns.net/repositorio/Win7/Win7_Pro_SP1_BrazilianPortuguese_x64.iso",
+    "enabled": false,
+    "md5": "809aaa7cae47679c3e980ed261708568",
+    "sha256": "0ee6a88e6aeb7044567da9bd292405092f5afcc0b5c5f85b31fa4f0a60435a6a",
+    "imageSizeBytes": 3193767936
+  },
+  {
+    "name": "Win7-Pro-SP1-BrazilianPortuguese-x64-usb3",
+    "group": "WIN7",
+    "fileUrl": "https://mateweb.ddns.net/repositorio/Win7/Win7_Pro_SP1_BrazilianPortuguese_x64_usb3.iso",
+    "enabled": false,
+    "md5": "4afeb3f23e5d007da3f7afa5a60ec06e",
+    "sha256": "01dcf9c72f49231855510f1d5964af2b765ca7e893c8ec2fa38de378b160bab2",
+    "imageSizeBytes": 3295037440
+  },
+  {
+    "name": "pnb7-staged",
+    "group": "WIN7-USB",
+    "fileUrl": "https://mateweb.ddns.net/repositorio/PNB_WIN7/pnb7-staged.tibx",
+    "md5": "9fab3b5f9fd42ac7dcc820913b03c175",
+    "sha256": "2390f97ebd234713241d02e288f32b157b525dcb784f0c92f29f1159bdef5601",
+    "imageSizeBytes": 13287460864,
+    "description": "Imagem de sistema operacional (backup Acronis). Restauração com 2 pendrives: (1) o pendrive com a mídia Acronis (gravada em RAW/DD), para dar boot; (2) o pendrive com o TIBX (copiado em NTFS). Inicie pelo pendrive 1 e restaure a partir do arquivo no pendrive 2."
+  },
+  {
+    "name": "pnb7-force",
+    "group": "WIN7-USB",
+    "fileUrl": "https://mateweb.ddns.net/repositorio/PNB_WIN7/pnb7-force.tibx",
+    "md5": "597599c1377740a0ca1ae5df3922b16b",
+    "sha256": "35a2b214fbd6203130b05ef381249f078ca0332f1f4153622ca94645906791f9",
+    "imageSizeBytes": 13288988672,
+    "description": "Imagem de sistema operacional (backup Acronis). Restauração com 2 pendrives: (1) o pendrive com a mídia Acronis (gravada em RAW/DD), para dar boot; (2) o pendrive com o TIBX (copiado em NTFS). Inicie pelo pendrive 1 e restaure a partir do arquivo no pendrive 2."
+  },
+  {
+    "name": "pnb7-force-usb",
+    "group": "WIN7-USB",
+    "fileUrl": "https://mateweb.ddns.net/repositorio/PNB_WIN7/pnb7-force-usb.tibx",
+    "md5": "84c81dd04cffcce258af3572ee615a49",
+    "sha256": "ccb78a3a9cb77d2a424067aad937f7d774d995ece15bce7a4acf4267a8c84b8c",
+    "imageSizeBytes": 13287473152,
+    "description": "Imagem de sistema operacional (backup Acronis). Restauração com 2 pendrives: (1) o pendrive com a mídia Acronis (gravada em RAW/DD), para dar boot; (2) o pendrive com o TIBX (copiado em NTFS). Inicie pelo pendrive 1 e restaure a partir do arquivo no pendrive 2."
+  }
+]

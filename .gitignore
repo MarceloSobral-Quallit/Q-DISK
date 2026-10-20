@@ -1,0 +1,74 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# qdisk — .gitignore
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Build outputs
+bin/
+obj/
+tools/log/
+__pycache__/
+*.py[cod]
+
+# Distribuição / release local
+dist/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userprefs
+
+# Certificados e assinatura digital
+# Todo o conteúdo de tools/certs/ é privado — apenas .gitkeep é versionado.
+tools/certs/*
+!tools/certs/.gitkeep
+!tools/certs/extract_cert_chain.ps1
+*.pfx
+*.p12
+*.cer
+*.spc
+*.pvk
+
+# Artefatos de publicação
+Publish/
+publish/
+
+# Pastas de ferramentas externas baixadas localmente
+# (rufus, etcher, rpi-imager, SDFormatter — fontes externas, não versionadas)
+temp/
+
+# OS
+Thumbs.db
+.DS_Store
+Desktop.ini
+
+# Logs locais
+*.log
+log/
+logs/
+
+# Sync local (contém remote, e-mail e active — dados de ambiente)
+config/github_sync.ini
+
+# Segredos locais (senhas de assinatura e de publicacao). Modelo: config/secret.md.example
+config/secret.md
+secret.txt
+
+# Publicação local do atualizador (pode conter credenciais)
+tools/utils/publish_update_package.ps1
+
+# Especstory (chat history local)
+.specstory/
+
+# Pacote do Claude Design: copias e artefatos gerados (o original esta em src/ e assets/)
+design/versao-alternativa/
+design/*.zip
+design/*.patch
+design/codigo-ui/
+design/telas/
+design/marca/
+
+# Capturas antes/depois do redesenho das telas (so locais desde 18/10/2026)
+design/comparacao/
+design/comparacao-arredondado/
+

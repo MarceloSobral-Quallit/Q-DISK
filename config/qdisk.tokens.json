@@ -1,0 +1,26 @@
+{
+  "profiles": [
+    {
+      "profile": "RD",
+      "displayName": "RD",
+      "internalId": "010911",
+      "catalogFile": "qdisk.rd.json"
+    },
+    {
+      "profile": "PNB",
+      "displayName": "PNB",
+      "internalId": "060171",
+      "catalogFile": "qdisk.pnb.json"
+    },
+    {
+      "profile": "DevTeam",
+      "displayName": "DevTeam",
+      "internalId": "270777",
+      "catalogFile": "qdisk.devteam.json"
+    }
+  ],
+  "downloader": {
+    "profile": "RD",
+    "baseDate": "1970-10-01"
+  }
+}

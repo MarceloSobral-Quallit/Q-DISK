@@ -1,0 +1,414 @@
+[
+  {
+    "imageScan": {
+      "engine": "Microsoft Defender (MpCmdRun -DisableRemediation)",
+      "scannedAtUtc": "2026-10-18T04:06:45Z",
+      "imageFileName": "Quallit_Boot.iso",
+      "imageSha256": "bca90812d7ead90d9089624bd71a26542d6ce17bb2616965d546ca7ee37845b2",
+      "threats": [
+        {
+          "name": "HackTool:Win32/ProductKey!MSR",
+          "path": "Programs\\ProduKey\\ProduKey.exe"
+        }
+      ],
+      "unclassified": [
+        "sources\\boot.wim->\\Windows\\System32\\dui70.dll"
+      ],
+      "systemToolCopies": [
+        "boot\\bootsect.exe",
+        "Programs\\AOMEI Partition Assistant\\bcdboot.exe",
+        "Programs\\AOMEI Partition Assistant\\ddm\\Help.exe",
+        "Programs\\Check Disk GUI\\chkdsk.exe",
+        "Programs\\EasyBCD\\bin\\bcdboot.exe",
+        "Programs\\EasyBCD\\bin\\bcdedit.exe",
+        "Programs\\EasyBCD\\bin\\bootsect.exe",
+        "Programs\\ExamDiff Pro\\Plug-Ins\\cURL\\curl.exe",
+        "Programs\\Malwarebytes Anti-Malware\\Chameleon\\Windows\\rundll32.exe",
+        "Programs\\Malwarebytes Anti-Malware\\Chameleon\\Windows\\svchost.exe",
+        "Programs\\Malwarebytes Anti-Malware\\Chameleon\\Windows\\winlogon.exe",
+        "Programs\\WinNTSetup\\Tools\\x64\\bcdboot.exe",
+        "Programs\\WinNTSetup\\Tools\\x64\\bcdedit.exe",
+        "Programs\\WinNTSetup\\Tools\\x64\\bootsect.exe"
+      ]
+    },
+    "name": "quallit-boot-sharepoint",
+    "group": "quallit-boot",
+    "fileUrl": "https://quallit.link/quallit-boot-sharepoint",
+    "fileName": "Quallit_Boot.iso",
+    "md5": "4a162f701f040ce6db78fb927a795b85",
+    "sha256": "bca90812d7ead90d9089624bd71a26542d6ce17bb2616965d546ca7ee37845b2",
+    "imageSizeBytes": 3105189888,
+    "usbIdentification": {
+      "schema": 1,
+      "mode": "logical",
+      "bootTargets": [
+        "bios",
+        "uefi"
+      ],
+      "fileCount": 5118,
+      "totalBytes": 3127119788,
+      "treeHash": "f7002dae52569c0d8c5ea648121a244b9f888b21c9e8a55da1d012e7f0e1446a",
+      "manifestUrl": "https://installer.quallit.com.br/qdisk/manifests/Quallit_Boot.manifest.json",
+      "manifestSha256": "327df05a2e6b9696e2baac6378742f39fa33ba5bb0a04d2b58f1fb5bb6a026c1",
+      "sentinelFiles": [
+        {
+          "path": "BOOTMGR",
+          "size": 413738,
+          "sha256": "4eeac11be050843d0d824850d8646b966ce45f23102ff955dbef81d52c82d693"
+        },
+        {
+          "path": "bootmgr.efi",
+          "size": 1541432,
+          "sha256": "01446fa0c905abb248178fe1b6b7e6208b792cdc5f39a328f19684612813e713"
+        },
+        {
+          "path": "efi/boot/bootx64.efi",
+          "size": 1557816,
+          "sha256": "cb959ca5b7a9fc5f104f485365aa2b23215ebb82ae43ff35c3bd55468c00ddd0"
+        },
+        {
+          "path": "boot/bcd",
+          "size": 24576,
+          "sha256": "407870620994ce72f3a787e7b03c93805e432ff91dd4a496ef1129ee34c772f4"
+        },
+        {
+          "path": "sources/boot.wim",
+          "size": 1141523270,
+          "sha256": "d8c63dba9ed70c39fdfc43d01365e88e58e7f6e51ca889b9f7e813487e9c6993"
+        }
+      ],
+      "technicalAnalysis": {
+        "largestFile": {
+          "path": "sources/boot.wim",
+          "size": 1141523270,
+          "sha256": "d8c63dba9ed70c39fdfc43d01365e88e58e7f6e51ca889b9f7e813487e9c6993"
+        },
+        "hasFilesOver4Gb": false,
+        "recommendedMethod": "logical-fat32",
+        "alternativeMethods": [],
+        "reasons": [
+          "ISO nao hibrida (area de sistema sem MBR de boot): gravada como RAW/DD nao deve dar boot."
+        ],
+        "analysisEngine": "core-1",
+        "imageBootTargets": [
+          "bios",
+          "uefi"
+        ],
+        "methods": [
+          {
+            "method": "logical-fat32",
+            "bootTargets": [
+              "bios",
+              "uefi"
+            ],
+            "transformsContent": false
+          }
+        ]
+      }
+    },
+    "usbWritePolicy": {
+      "imageSha256": "bca90812d7ead90d9089624bd71a26542d6ce17bb2616965d546ca7ee37845b2",
+      "preferredMethod": "logical-fat32",
+      "preferredBootTargets": [
+        "bios",
+        "uefi"
+      ],
+      "allowedMethods": [
+        "logical-fat32"
+      ],
+      "preserveSourceImage": true,
+      "allowContentTransformations": false,
+      "note": "ISO nao hibrida (area de sistema sem MBR de boot): gravada como RAW/DD nao deve dar boot.",
+      "volumeLabel": "Q_BOOT"
+    },
+    "description": "Pendrive de manutenção (WinPE) com ferramentas de disco, backup e recuperação."
+  },
+  {
+    "imageScan": {
+      "engine": "Microsoft Defender (MpCmdRun -DisableRemediation)",
+      "scannedAtUtc": "2026-10-18T04:06:45Z",
+      "imageFileName": "Quallit_Boot.iso",
+      "imageSha256": "bca90812d7ead90d9089624bd71a26542d6ce17bb2616965d546ca7ee37845b2",
+      "threats": [
+        {
+          "name": "HackTool:Win32/ProductKey!MSR",
+          "path": "Programs\\ProduKey\\ProduKey.exe"
+        }
+      ],
+      "unclassified": [
+        "sources\\boot.wim->\\Windows\\System32\\dui70.dll"
+      ],
+      "systemToolCopies": [
+        "boot\\bootsect.exe",
+        "Programs\\AOMEI Partition Assistant\\bcdboot.exe",
+        "Programs\\AOMEI Partition Assistant\\ddm\\Help.exe",
+        "Programs\\Check Disk GUI\\chkdsk.exe",
+        "Programs\\EasyBCD\\bin\\bcdboot.exe",
+        "Programs\\EasyBCD\\bin\\bcdedit.exe",
+        "Programs\\EasyBCD\\bin\\bootsect.exe",
+        "Programs\\ExamDiff Pro\\Plug-Ins\\cURL\\curl.exe",
+        "Programs\\Malwarebytes Anti-Malware\\Chameleon\\Windows\\rundll32.exe",
+        "Programs\\Malwarebytes Anti-Malware\\Chameleon\\Windows\\svchost.exe",
+        "Programs\\Malwarebytes Anti-Malware\\Chameleon\\Windows\\winlogon.exe",
+        "Programs\\WinNTSetup\\Tools\\x64\\bcdboot.exe",
+        "Programs\\WinNTSetup\\Tools\\x64\\bcdedit.exe",
+        "Programs\\WinNTSetup\\Tools\\x64\\bootsect.exe"
+      ]
+    },
+    "name": "quallit-boot-dropbox",
+    "group": "quallit-boot",
+    "fileUrl": "https://quallit.link/quallit-boot-dropbox",
+    "fileName": "Quallit_Boot.iso",
+    "md5": "4a162f701f040ce6db78fb927a795b85",
+    "sha256": "bca90812d7ead90d9089624bd71a26542d6ce17bb2616965d546ca7ee37845b2",
+    "imageSizeBytes": 3105189888,
+    "usbIdentification": {
+      "schema": 1,
+      "mode": "logical",
+      "bootTargets": [
+        "bios",
+        "uefi"
+      ],
+      "fileCount": 5118,
+      "totalBytes": 3127119788,
+      "treeHash": "f7002dae52569c0d8c5ea648121a244b9f888b21c9e8a55da1d012e7f0e1446a",
+      "manifestUrl": "https://installer.quallit.com.br/qdisk/manifests/Quallit_Boot.manifest.json",
+      "manifestSha256": "327df05a2e6b9696e2baac6378742f39fa33ba5bb0a04d2b58f1fb5bb6a026c1",
+      "sentinelFiles": [
+        {
+          "path": "BOOTMGR",
+          "size": 413738,
+          "sha256": "4eeac11be050843d0d824850d8646b966ce45f23102ff955dbef81d52c82d693"
+        },
+        {
+          "path": "bootmgr.efi",
+          "size": 1541432,
+          "sha256": "01446fa0c905abb248178fe1b6b7e6208b792cdc5f39a328f19684612813e713"
+        },
+        {
+          "path": "efi/boot/bootx64.efi",
+          "size": 1557816,
+          "sha256": "cb959ca5b7a9fc5f104f485365aa2b23215ebb82ae43ff35c3bd55468c00ddd0"
+        },
+        {
+          "path": "boot/bcd",
+          "size": 24576,
+          "sha256": "407870620994ce72f3a787e7b03c93805e432ff91dd4a496ef1129ee34c772f4"
+        },
+        {
+          "path": "sources/boot.wim",
+          "size": 1141523270,
+          "sha256": "d8c63dba9ed70c39fdfc43d01365e88e58e7f6e51ca889b9f7e813487e9c6993"
+        }
+      ],
+      "technicalAnalysis": {
+        "largestFile": {
+          "path": "sources/boot.wim",
+          "size": 1141523270,
+          "sha256": "d8c63dba9ed70c39fdfc43d01365e88e58e7f6e51ca889b9f7e813487e9c6993"
+        },
+        "hasFilesOver4Gb": false,
+        "recommendedMethod": "logical-fat32",
+        "alternativeMethods": [],
+        "reasons": [
+          "ISO nao hibrida (area de sistema sem MBR de boot): gravada como RAW/DD nao deve dar boot."
+        ],
+        "analysisEngine": "core-1",
+        "imageBootTargets": [
+          "bios",
+          "uefi"
+        ],
+        "methods": [
+          {
+            "method": "logical-fat32",
+            "bootTargets": [
+              "bios",
+              "uefi"
+            ],
+            "transformsContent": false
+          }
+        ]
+      }
+    },
+    "usbWritePolicy": {
+      "imageSha256": "bca90812d7ead90d9089624bd71a26542d6ce17bb2616965d546ca7ee37845b2",
+      "preferredMethod": "logical-fat32",
+      "preferredBootTargets": [
+        "bios",
+        "uefi"
+      ],
+      "allowedMethods": [
+        "logical-fat32"
+      ],
+      "preserveSourceImage": true,
+      "allowContentTransformations": false,
+      "note": "ISO nao hibrida (area de sistema sem MBR de boot): gravada como RAW/DD nao deve dar boot.",
+      "volumeLabel": "Q_BOOT"
+    },
+    "description": "Pendrive de manutenção (WinPE) com ferramentas de disco, backup e recuperação."
+  },
+  {
+    "name": "acronis-sharepoint",
+    "group": "quallit-acronis",
+    "fileUrl": "https://quallit.link/acronis-sharepoint",
+    "fileName": "Acronis-2021.iso",
+    "md5": "3551a54047db3bd459a6e4dbdb88823c",
+    "sha256": "a907788710997da7b413d49c8ab124019e836ca6552341e92a54b3d346472059",
+    "imageSizeBytes": 723386368,
+    "usbIdentification": {
+      "schema": 1,
+      "mode": "logical",
+      "bootTargets": [
+        "uefi"
+      ],
+      "fileCount": 71,
+      "totalBytes": 722386396,
+      "treeHash": "57a28ce228f57f4cefb251322bee74de4db86bbaa5807bfd54f2fc0521428d06",
+      "manifestUrl": "https://installer.quallit.com.br/qdisk/manifests/Acronis-2021.manifest.json",
+      "manifestSha256": "2d36b339c613e5d709d77a074861c75da565c0e0e384b9d9aaece073fc7f806c",
+      "sentinelFiles": [
+        {
+          "path": "efi/boot/bootx64.efi",
+          "size": 3774832,
+          "sha256": "f8d4667d0001680e1849e4c9d6f50ca39c068fae2749d8171f34d9949a4c3384"
+        }
+      ],
+      "technicalAnalysis": {
+        "largestFile": {
+          "path": "dat11.dat",
+          "size": 109938959,
+          "sha256": "ff49f350bd97342a89d2f3104d3d8965ec4f508cac071adc804087a70776e951"
+        },
+        "hasFilesOver4Gb": false,
+        "recommendedMethod": "raw",
+        "alternativeMethods": [
+          "logical-fat32"
+        ],
+        "reasons": [
+          "ISO hibrida: RAW/DD com indicio de boot BIOS + UEFI (confirmar com teste de boot).",
+          "Boot BIOS por carregador proprio (Syslinux/GRUB/Bootwiz): a copia logica nao preserva o boot BIOS."
+        ],
+        "analysisEngine": "core-1",
+        "imageBootTargets": [
+          "bios",
+          "uefi"
+        ],
+        "methods": [
+          {
+            "method": "logical-fat32",
+            "bootTargets": [
+              "uefi"
+            ],
+            "transformsContent": false
+          },
+          {
+            "method": "raw",
+            "bootTargets": [
+              "bios",
+              "uefi"
+            ],
+            "transformsContent": false
+          }
+        ]
+      }
+    },
+    "usbWritePolicy": {
+      "imageSha256": "a907788710997da7b413d49c8ab124019e836ca6552341e92a54b3d346472059",
+      "preferredMethod": "raw",
+      "preferredBootTargets": [
+        "bios",
+        "uefi"
+      ],
+      "allowedMethods": [
+        "logical-fat32",
+        "raw"
+      ],
+      "preserveSourceImage": true,
+      "allowContentTransformations": false,
+      "note": "ISO hibrida: RAW/DD com indicio de boot BIOS + UEFI (confirmar com teste de boot). Boot BIOS por carregador proprio (Syslinux/GRUB/Bootwiz): a copia logica nao preserva o boot BIOS."
+    },
+    "description": "Mídia de boot do Acronis para restaurar imagens TIBX"
+  },
+  {
+    "name": "acronis-dropbox",
+    "group": "quallit-acronis",
+    "fileUrl": "https://quallit.link/acronis-dropbox",
+    "fileName": "Acronis-2021.iso",
+    "md5": "3551a54047db3bd459a6e4dbdb88823c",
+    "sha256": "a907788710997da7b413d49c8ab124019e836ca6552341e92a54b3d346472059",
+    "imageSizeBytes": 723386368,
+    "usbIdentification": {
+      "schema": 1,
+      "mode": "logical",
+      "bootTargets": [
+        "uefi"
+      ],
+      "fileCount": 71,
+      "totalBytes": 722386396,
+      "treeHash": "57a28ce228f57f4cefb251322bee74de4db86bbaa5807bfd54f2fc0521428d06",
+      "manifestUrl": "https://installer.quallit.com.br/qdisk/manifests/Acronis-2021.manifest.json",
+      "manifestSha256": "2d36b339c613e5d709d77a074861c75da565c0e0e384b9d9aaece073fc7f806c",
+      "sentinelFiles": [
+        {
+          "path": "efi/boot/bootx64.efi",
+          "size": 3774832,
+          "sha256": "f8d4667d0001680e1849e4c9d6f50ca39c068fae2749d8171f34d9949a4c3384"
+        }
+      ],
+      "technicalAnalysis": {
+        "largestFile": {
+          "path": "dat11.dat",
+          "size": 109938959,
+          "sha256": "ff49f350bd97342a89d2f3104d3d8965ec4f508cac071adc804087a70776e951"
+        },
+        "hasFilesOver4Gb": false,
+        "recommendedMethod": "raw",
+        "alternativeMethods": [
+          "logical-fat32"
+        ],
+        "reasons": [
+          "ISO hibrida: RAW/DD com indicio de boot BIOS + UEFI (confirmar com teste de boot).",
+          "Boot BIOS por carregador proprio (Syslinux/GRUB/Bootwiz): a copia logica nao preserva o boot BIOS."
+        ],
+        "analysisEngine": "core-1",
+        "imageBootTargets": [
+          "bios",
+          "uefi"
+        ],
+        "methods": [
+          {
+            "method": "logical-fat32",
+            "bootTargets": [
+              "uefi"
+            ],
+            "transformsContent": false
+          },
+          {
+            "method": "raw",
+            "bootTargets": [
+              "bios",
+              "uefi"
+            ],
+            "transformsContent": false
+          }
+        ]
+      }
+    },
+    "usbWritePolicy": {
+      "imageSha256": "a907788710997da7b413d49c8ab124019e836ca6552341e92a54b3d346472059",
+      "preferredMethod": "raw",
+      "preferredBootTargets": [
+        "bios",
+        "uefi"
+      ],
+      "allowedMethods": [
+        "logical-fat32",
+        "raw"
+      ],
+      "preserveSourceImage": true,
+      "allowContentTransformations": false,
+      "note": "ISO hibrida: RAW/DD com indicio de boot BIOS + UEFI (confirmar com teste de boot). Boot BIOS por carregador proprio (Syslinux/GRUB/Bootwiz): a copia logica nao preserva o boot BIOS."
+    },
+    "description": "Mídia de boot do Acronis para restaurar imagens TIBX"
+  }
+]

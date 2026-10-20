@@ -1,0 +1,449 @@
+{
+  "schema": 1,
+  "generatedAtUtc": "2026-07-26T17:36:07Z",
+  "image": {
+    "fileName": "Acronis-2021.iso",
+    "sizeBytes": 723386368,
+    "md5": "3551a54047db3bd459a6e4dbdb88823c",
+    "sha256": "a907788710997da7b413d49c8ab124019e836ca6552341e92a54b3d346472059"
+  },
+  "logical": {
+    "fileCount": 71,
+    "totalBytes": 722386396,
+    "treeHash": "57a28ce228f57f4cefb251322bee74de4db86bbaa5807bfd54f2fc0521428d06",
+    "sentinelFiles": [
+      {
+        "path": "efi/boot/bootx64.efi",
+        "size": 3774832,
+        "sha256": "f8d4667d0001680e1849e4c9d6f50ca39c068fae2749d8171f34d9949a4c3384"
+      }
+    ],
+    "unhashedFiles": [],
+    "analysis": {
+      "largestFile": {
+        "path": "dat11.dat",
+        "size": 109938959,
+        "sha256": "ff49f350bd97342a89d2f3104d3d8965ec4f508cac071adc804087a70776e951"
+      },
+      "hasFilesOver4Gb": false,
+      "bootArtifacts": {
+        "biosBootmgr": false,
+        "uefiBootx64": true,
+        "bootBcd": false,
+        "bootWim": false
+      },
+      "filesystemCompatibility": {
+        "fat32": true,
+        "ntfs": true
+      },
+      "recommendedMethod": "raw",
+      "alternativeMethods": [
+        "logical-fat32"
+      ],
+      "bootTargets": [
+        "uefi"
+      ],
+      "reasons": [
+        "ISO hibrida: RAW/DD com indicio de boot BIOS \u002B UEFI (confirmar com teste de boot).",
+        "Boot BIOS por carregador proprio (Syslinux/GRUB/Bootwiz): a copia logica nao preserva o boot BIOS."
+      ],
+      "analysisEngine": "core-1",
+      "imageBootTargets": [
+        "bios",
+        "uefi"
+      ],
+      "methods": [
+        {
+          "method": "logical-fat32",
+          "bootTargets": [
+            "uefi"
+          ],
+          "transformsContent": false
+        },
+        {
+          "method": "raw",
+          "bootTargets": [
+            "bios",
+            "uefi"
+          ],
+          "transformsContent": false
+        }
+      ],
+      "fat32MarginBytes": 4185028336,
+      "bootloaders": {
+        "biosElTorito": true,
+        "uefiElTorito": true,
+        "bootmgr": false,
+        "efiBootx64": true,
+        "efiBootia32": true,
+        "syslinux": false,
+        "grub": false,
+        "acronisBootwiz": true
+      },
+      "isoHybrid": {
+        "mbr": true,
+        "gpt": false,
+        "mbrPartitionTypes": [
+          "0xef"
+        ]
+      }
+    }
+  },
+  "files": [
+    {
+      "path": "bootmenu.exe",
+      "size": 31997,
+      "sha256": "2a8a7c60f76efbfaca04d52eee3db1308d13c0b32ba4869c6577ea5104e54e09"
+    },
+    {
+      "path": "bootmenu.xml",
+      "size": 1772,
+      "sha256": "fd6925c6a56cbedd51c4b4f17de8a424cf10f09961cecb307c1f2de90d178d8d"
+    },
+    {
+      "path": "bootwiz.cfg",
+      "size": 627,
+      "sha256": "22453b599029875c2ea060d435e55ba3c8e854ea9579dac52610709f75ab2d01"
+    },
+    {
+      "path": "bootwiz.sys",
+      "size": 26624,
+      "sha256": "df124a57e541cf9224897b1ea05021fc432cba442c98e6c17d3012abaa07d69a"
+    },
+    {
+      "path": "C1.png",
+      "size": 1501,
+      "sha256": "46d2925f6c62548dd8af85124789d2006af11b6f94386ddb2d78176ef3b5755f"
+    },
+    {
+      "path": "C2.png",
+      "size": 1500,
+      "sha256": "dce3b94ad0d00b7efd38ef72e7760ba292e038d1194849399b012054618a6f34"
+    },
+    {
+      "path": "C3.png",
+      "size": 1501,
+      "sha256": "46d2925f6c62548dd8af85124789d2006af11b6f94386ddb2d78176ef3b5755f"
+    },
+    {
+      "path": "C4.png",
+      "size": 1500,
+      "sha256": "dce3b94ad0d00b7efd38ef72e7760ba292e038d1194849399b012054618a6f34"
+    },
+    {
+      "path": "cpp.so",
+      "size": 4917695,
+      "sha256": "744b5b65dc8710696c735218d6a6f6fc97f86f613acc22833c7fa2240e8daa4a"
+    },
+    {
+      "path": "dat10.dat",
+      "size": 3905536,
+      "sha256": "501056a88b06ffa0fe83ac2b9fd90a899a2cfaa386be9c0d1edb6efa2fb80788"
+    },
+    {
+      "path": "dat11.dat",
+      "size": 109938959,
+      "sha256": "ff49f350bd97342a89d2f3104d3d8965ec4f508cac071adc804087a70776e951"
+    },
+    {
+      "path": "dat12.dat",
+      "size": 480,
+      "sha256": "6d2ec743476a94aebeb044e365cc75189a7dd089ec2dc534b559c9b4547ce7fb"
+    },
+    {
+      "path": "dat14.dat",
+      "size": 3905536,
+      "sha256": "501056a88b06ffa0fe83ac2b9fd90a899a2cfaa386be9c0d1edb6efa2fb80788"
+    },
+    {
+      "path": "dat15.dat",
+      "size": 109938959,
+      "sha256": "ff49f350bd97342a89d2f3104d3d8965ec4f508cac071adc804087a70776e951"
+    },
+    {
+      "path": "dat16.dat",
+      "size": 298,
+      "sha256": "c8b197113dc3c9c75bab47cf06fd4c7a7ab36f8c20ffe3fd9dfe372044ec0f99"
+    },
+    {
+      "path": "dat2.dat",
+      "size": 3006688,
+      "sha256": "9e0f94094ba3b17510e38611824d70d498863a2de5726eb76a36dd349682365e"
+    },
+    {
+      "path": "dat3.dat",
+      "size": 107289537,
+      "sha256": "e0098298b0dad104bda4801346d530406f12b85ae0e35966139f6ed7ca9682d0"
+    },
+    {
+      "path": "dat4.dat",
+      "size": 480,
+      "sha256": "6d2ec743476a94aebeb044e365cc75189a7dd089ec2dc534b559c9b4547ce7fb"
+    },
+    {
+      "path": "dat6.dat",
+      "size": 3006688,
+      "sha256": "9e0f94094ba3b17510e38611824d70d498863a2de5726eb76a36dd349682365e"
+    },
+    {
+      "path": "dat7.dat",
+      "size": 107289537,
+      "sha256": "e0098298b0dad104bda4801346d530406f12b85ae0e35966139f6ed7ca9682d0"
+    },
+    {
+      "path": "dat8.dat",
+      "size": 298,
+      "sha256": "c8b197113dc3c9c75bab47cf06fd4c7a7ab36f8c20ffe3fd9dfe372044ec0f99"
+    },
+    {
+      "path": "efi/boot/bootia32.efi",
+      "size": 3544432,
+      "sha256": "5c7d1f2f572c8a97260208f63fab1a9667472387fcf8e3b3e89772b22df87f69"
+    },
+    {
+      "path": "efi/boot/bootia32.xml",
+      "size": 807,
+      "sha256": "48b8d585e1ca85abf5a7fab7d51d069f70443c3784c0877a6d7570c04b880918"
+    },
+    {
+      "path": "efi/boot/bootx64.efi",
+      "size": 3774832,
+      "sha256": "f8d4667d0001680e1849e4c9d6f50ca39c068fae2749d8171f34d9949a4c3384"
+    },
+    {
+      "path": "efi/boot/bootx64.xml",
+      "size": 833,
+      "sha256": "687c683f50357f9bfe307b4315609849362185c2906647e50c86c0a9581c9b78"
+    },
+    {
+      "path": "fox.so",
+      "size": 2114436,
+      "sha256": "b30618c08100a09a5525f67e92d0061a7170be94368f970fcdcd3f5946575739"
+    },
+    {
+      "path": "graphapi.so",
+      "size": 1663283,
+      "sha256": "a7d7face8012f6e5fa9ad8edff52238f7a597ccf5e3591b197f101ca53ce3154"
+    },
+    {
+      "path": "i18n",
+      "size": 18,
+      "sha256": "1a58b25fce69377e930a367f90ce2f949344a9f4ad19e87687989f3d66ae305e"
+    },
+    {
+      "path": "icon_continue_48.png",
+      "size": 7691,
+      "sha256": "d5fdf3d5ee6fbe2b5042a173b46dbf833aee3dd877161e6eba17e275d173328c"
+    },
+    {
+      "path": "icu38.so",
+      "size": 1780416,
+      "sha256": "37fef5c3637ea8ea6c5a91e0e553ab790fcf7b9c65219736d300e6804514b673"
+    },
+    {
+      "path": "icudt38.so",
+      "size": 4220320,
+      "sha256": "a40d5bf6240be53a927f3b6a203820639cd298e2f8e68ad9787bfb2e63cbeb44"
+    },
+    {
+      "path": "libc.so",
+      "size": 355172,
+      "sha256": "6712da16f5cdeb5679c7b8a29d57a7b0ae8b8ceb784a0cfa9bee580da3a9b233"
+    },
+    {
+      "path": "libgcc_s.so",
+      "size": 355246,
+      "sha256": "97b3728cfc0543608054a7651ea405e490587e3cc1673505cc176f939f9f9daa"
+    },
+    {
+      "path": "menulogo.png",
+      "size": 23450,
+      "sha256": "28436beaf386b631db630fc2919ff3b36c0c77a2c4b72f1e32bea53fdffeec14"
+    },
+    {
+      "path": "mouse.com",
+      "size": 4850,
+      "sha256": "a68e5a6da1d9b722214ee37710c001acf4e96893b57b8fb018cdf73a14ba7f22"
+    },
+    {
+      "path": "osfiles.so",
+      "size": 102876,
+      "sha256": "470544fc45a2f31bde6e26e1e76dcbb9bef51ee2a8a361bec3a90adcafb75fd5"
+    },
+    {
+      "path": "Recovery Manager/bootmenu_logo.png",
+      "size": 23450,
+      "sha256": "28436beaf386b631db630fc2919ff3b36c0c77a2c4b72f1e32bea53fdffeec14"
+    },
+    {
+      "path": "Recovery Manager/bootwiz.bin",
+      "size": 26624,
+      "sha256": "df124a57e541cf9224897b1ea05021fc432cba442c98e6c17d3012abaa07d69a"
+    },
+    {
+      "path": "Recovery Manager/bootwiz32.efi",
+      "size": 3544432,
+      "sha256": "5c7d1f2f572c8a97260208f63fab1a9667472387fcf8e3b3e89772b22df87f69"
+    },
+    {
+      "path": "Recovery Manager/bootwiz64.efi",
+      "size": 3774832,
+      "sha256": "f8d4667d0001680e1849e4c9d6f50ca39c068fae2749d8171f34d9949a4c3384"
+    },
+    {
+      "path": "Recovery Manager/cpp.so",
+      "size": 4917695,
+      "sha256": "744b5b65dc8710696c735218d6a6f6fc97f86f613acc22833c7fa2240e8daa4a"
+    },
+    {
+      "path": "Recovery Manager/fox.so",
+      "size": 2114436,
+      "sha256": "b30618c08100a09a5525f67e92d0061a7170be94368f970fcdcd3f5946575739"
+    },
+    {
+      "path": "Recovery Manager/gen_bootmenu.bin",
+      "size": 31997,
+      "sha256": "2a8a7c60f76efbfaca04d52eee3db1308d13c0b32ba4869c6577ea5104e54e09"
+    },
+    {
+      "path": "Recovery Manager/graphapi.so",
+      "size": 1663283,
+      "sha256": "a7d7face8012f6e5fa9ad8edff52238f7a597ccf5e3591b197f101ca53ce3154"
+    },
+    {
+      "path": "Recovery Manager/icu38.so",
+      "size": 1780416,
+      "sha256": "37fef5c3637ea8ea6c5a91e0e553ab790fcf7b9c65219736d300e6804514b673"
+    },
+    {
+      "path": "Recovery Manager/icudt38.so",
+      "size": 4220320,
+      "sha256": "a40d5bf6240be53a927f3b6a203820639cd298e2f8e68ad9787bfb2e63cbeb44"
+    },
+    {
+      "path": "Recovery Manager/kernel.dat",
+      "size": 3006688,
+      "sha256": "9e0f94094ba3b17510e38611824d70d498863a2de5726eb76a36dd349682365e"
+    },
+    {
+      "path": "Recovery Manager/kernel64.dat",
+      "size": 3905536,
+      "sha256": "501056a88b06ffa0fe83ac2b9fd90a899a2cfaa386be9c0d1edb6efa2fb80788"
+    },
+    {
+      "path": "Recovery Manager/libc.so",
+      "size": 355172,
+      "sha256": "6712da16f5cdeb5679c7b8a29d57a7b0ae8b8ceb784a0cfa9bee580da3a9b233"
+    },
+    {
+      "path": "Recovery Manager/libgcc_s.so",
+      "size": 355246,
+      "sha256": "97b3728cfc0543608054a7651ea405e490587e3cc1673505cc176f939f9f9daa"
+    },
+    {
+      "path": "Recovery Manager/mouse.com",
+      "size": 4850,
+      "sha256": "a68e5a6da1d9b722214ee37710c001acf4e96893b57b8fb018cdf73a14ba7f22"
+    },
+    {
+      "path": "Recovery Manager/osfiles.so",
+      "size": 102876,
+      "sha256": "470544fc45a2f31bde6e26e1e76dcbb9bef51ee2a8a361bec3a90adcafb75fd5"
+    },
+    {
+      "path": "Recovery Manager/ramdisk_merged.dat",
+      "size": 107289537,
+      "sha256": "e0098298b0dad104bda4801346d530406f12b85ae0e35966139f6ed7ca9682d0"
+    },
+    {
+      "path": "Recovery Manager/ramdisk_merged.sgn",
+      "size": 241,
+      "sha256": "6c4dca1be04d9744b0d9d5928fd746fa96b83b7fa541ba30adc9dc66c871ac14"
+    },
+    {
+      "path": "Recovery Manager/ramdisk_merged64.dat",
+      "size": 109938959,
+      "sha256": "ff49f350bd97342a89d2f3104d3d8965ec4f508cac071adc804087a70776e951"
+    },
+    {
+      "path": "Recovery Manager/ramdisk_merged64.sgn",
+      "size": 241,
+      "sha256": "41cd217a6f78039062edd8fad121f9f4533786114b18e24a1520b088fbb38c27"
+    },
+    {
+      "path": "Recovery Manager/resource.so",
+      "size": 154960,
+      "sha256": "30be6cbe98ab4b9f8308a7ef9fb68812d6d63d99d3883ce4a54cec15919ac1a8"
+    },
+    {
+      "path": "Recovery Manager/splash.run",
+      "size": 22322,
+      "sha256": "575bf4a8074d37153e765e8d054c4bdc263b800e8a5cd06f8d8336f085418319"
+    },
+    {
+      "path": "Recovery Manager/threads.so",
+      "size": 33272,
+      "sha256": "12c55d77fd6db677436117f188f877751f217ec3911ed9075133b283a5a32c45"
+    },
+    {
+      "path": "Recovery Manager/ti_boot.so",
+      "size": 1812076,
+      "sha256": "1d3c5c20ef52275cb2e47ff46a6b02565608b056d9a152c627256ab63f36eb47"
+    },
+    {
+      "path": "resource.so",
+      "size": 154960,
+      "sha256": "30be6cbe98ab4b9f8308a7ef9fb68812d6d63d99d3883ce4a54cec15919ac1a8"
+    },
+    {
+      "path": "sgn13.sgn",
+      "size": 241,
+      "sha256": "41cd217a6f78039062edd8fad121f9f4533786114b18e24a1520b088fbb38c27"
+    },
+    {
+      "path": "sgn17.sgn",
+      "size": 241,
+      "sha256": "41cd217a6f78039062edd8fad121f9f4533786114b18e24a1520b088fbb38c27"
+    },
+    {
+      "path": "sgn5.sgn",
+      "size": 241,
+      "sha256": "6c4dca1be04d9744b0d9d5928fd746fa96b83b7fa541ba30adc9dc66c871ac14"
+    },
+    {
+      "path": "sgn9.sgn",
+      "size": 241,
+      "sha256": "6c4dca1be04d9744b0d9d5928fd746fa96b83b7fa541ba30adc9dc66c871ac14"
+    },
+    {
+      "path": "SPL1.EXE",
+      "size": 22322,
+      "sha256": "575bf4a8074d37153e765e8d054c4bdc263b800e8a5cd06f8d8336f085418319"
+    },
+    {
+      "path": "SPL2.EXE",
+      "size": 22322,
+      "sha256": "575bf4a8074d37153e765e8d054c4bdc263b800e8a5cd06f8d8336f085418319"
+    },
+    {
+      "path": "SPL3.EXE",
+      "size": 22322,
+      "sha256": "575bf4a8074d37153e765e8d054c4bdc263b800e8a5cd06f8d8336f085418319"
+    },
+    {
+      "path": "SPL4.EXE",
+      "size": 22322,
+      "sha256": "575bf4a8074d37153e765e8d054c4bdc263b800e8a5cd06f8d8336f085418319"
+    },
+    {
+      "path": "threads.so",
+      "size": 33272,
+      "sha256": "12c55d77fd6db677436117f188f877751f217ec3911ed9075133b283a5a32c45"
+    },
+    {
+      "path": "ti_boot.so",
+      "size": 1812076,
+      "sha256": "1d3c5c20ef52275cb2e47ff46a6b02565608b056d9a152c627256ab63f36eb47"
+    }
+  ]
+}

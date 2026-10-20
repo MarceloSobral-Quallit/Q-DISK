@@ -1,0 +1,223 @@
+<#
+Example publish script for the qdisk update package.
+
+Copy this file to tools\publish_update_package.ps1 and configure local credentials.
+Do not commit tools\publish_update_package.ps1.
+#>
+
+[CmdletBinding()]
+param(
+    [string]$LocalUpdateDir = '',
+    [string]$HostName = 'mateweb.ddns.net',
+    [int]$Port = 2222,
+    [string]$UserName = 'qdisk-update',
+    [string]$RemotePath = '/store/repositorio/qdisk',
+    [string]$SshPassword = '',
+    [string]$EnvFile,
+    [switch]$DryRun
+)
+
+$ErrorActionPreference = 'Stop'
+
+$scriptRoot = if (-not [string]::IsNullOrWhiteSpace($PSScriptRoot)) {
+    $PSScriptRoot
+} else {
+    Split-Path -Parent $MyInvocation.MyCommand.Path
+}
+
+if ([string]::IsNullOrWhiteSpace($LocalUpdateDir)) {
+    $LocalUpdateDir = Join-Path $scriptRoot '..\dist\update'
+}
+
+function Resolve-CommandPath {
+    param([string[]]$Names)
+    foreach ($name in $Names) {
+        $cmd = Get-Command $name -ErrorAction SilentlyContinue
+        if ($cmd) { return $cmd.Source }
+    }
+    return $null
+}
+
+function Copy-ToPayload {
+    param(
+        [Parameter(Mandatory)] [string]$Source,
+        [Parameter(Mandatory)] [string]$Destination
+    )
+    Copy-Item -LiteralPath $Source -Destination $Destination -Force
+}
+
+function Import-DotEnvFile {
+    param([string]$Path)
+    if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path -LiteralPath $Path)) {
+        return $false
+    }
+
+    foreach ($line in Get-Content -LiteralPath $Path) {
+        $trimmed = $line.Trim()
+        if ([string]::IsNullOrWhiteSpace($trimmed) -or $trimmed.StartsWith('#')) {
+            continue
+        }
+
+        $name, $value = $trimmed -split '=', 2
+        if ([string]::IsNullOrWhiteSpace($name) -or $null -eq $value) {
+            continue
+        }
+
+        $name = $name.Trim()
+        $value = $value.Trim().Trim('"').Trim("'")
+        if ([string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($name, 'Process'))) {
+            [Environment]::SetEnvironmentVariable($name, $value, 'Process')
+        }
+    }
+    return $true
+}
+
+function Test-PublishedFile {
+    param(
+        [Parameter(Mandatory)] [string]$Url,
+        [long]$ExpectedLength = 0
+    )
+
+    try {
+        $response = Invoke-WebRequest -Uri $Url -Method Head -UseBasicParsing -TimeoutSec 30
+    } catch {
+        $response = Invoke-WebRequest -Uri $Url -Method Get -UseBasicParsing -TimeoutSec 30
+    }
+
+    if ($response.StatusCode -lt 200 -or $response.StatusCode -ge 300) {
+        throw "Arquivo publicado nao acessivel: $Url HTTP $($response.StatusCode)"
+    }
+
+    if ($ExpectedLength -gt 0) {
+        $lengthHeader = $response.Headers['Content-Length']
+        if ($lengthHeader) {
+            $remoteLength = [long]($lengthHeader | Select-Object -First 1)
+            if ($remoteLength -ne $ExpectedLength) {
+                throw "Tamanho remoto divergente para $Url. Esperado=$ExpectedLength Remoto=$remoteLength"
+            }
+        }
+    }
+
+    Write-Host "OK remoto: $Url" -ForegroundColor Green
+}
+
+$candidateEnvFiles = @()
+if (-not [string]::IsNullOrWhiteSpace($EnvFile)) {
+    $candidateEnvFiles += $EnvFile
+}
+$candidateEnvFiles += @(
+    (Join-Path $scriptRoot '.env'),
+    (Join-Path $scriptRoot 'publish_update.env'),
+    (Join-Path $scriptRoot '..\.env'),
+    (Join-Path $scriptRoot '..\config\publish_update.env')
+)
+
+foreach ($candidate in $candidateEnvFiles) {
+    if (Import-DotEnvFile -Path $candidate) {
+        Write-Host "Variaveis carregadas de: $candidate" -ForegroundColor Cyan
+        break
+    }
+}
+
+if (-not [string]::IsNullOrWhiteSpace($env:QUALLIT_UPDATE_HOST)) { $HostName = $env:QUALLIT_UPDATE_HOST }
+if (-not [string]::IsNullOrWhiteSpace($env:QUALLIT_UPDATE_PORT)) { $Port = [int]$env:QUALLIT_UPDATE_PORT }
+if (-not [string]::IsNullOrWhiteSpace($env:QUALLIT_UPDATE_USER)) { $UserName = $env:QUALLIT_UPDATE_USER }
+if (-not [string]::IsNullOrWhiteSpace($env:QUALLIT_UPDATE_REMOTE_PATH)) { $RemotePath = $env:QUALLIT_UPDATE_REMOTE_PATH }
+if (-not [string]::IsNullOrWhiteSpace($env:QUALLIT_UPDATE_SSH_PASSWORD)) { $SshPassword = $env:QUALLIT_UPDATE_SSH_PASSWORD }
+
+$localDir = Resolve-Path -LiteralPath $LocalUpdateDir
+$manifestName = 'qdisk.update.json'
+$manifest = Join-Path $localDir $manifestName
+if (-not (Test-Path -LiteralPath $manifest)) {
+    throw "Manifesto nao encontrado: $manifest. Execute tools\build_release_dotnet_4.py antes."
+}
+
+$manifestJson = Get-Content -LiteralPath $manifest -Raw | ConvertFrom-Json
+$artifactName = [string]$manifestJson.fileName
+if ([string]::IsNullOrWhiteSpace($artifactName)) {
+    throw "Campo fileName ausente no $manifestName."
+}
+
+$artifact = Join-Path $localDir $artifactName
+if (-not (Test-Path -LiteralPath $artifact)) {
+    throw "Instalador/executavel nao encontrado: $artifact"
+}
+
+$catalogNames = @(
+    'qdisk.pnb.json',
+    'qdisk.rd.json',
+    'qdisk.tools.json',
+    'qdisk.devteam.json'
+)
+$catalogSourceDir = Join-Path $scriptRoot '..\config'
+$catalogFiles = @()
+foreach ($catalogName in $catalogNames) {
+    $catalog = Join-Path $localDir $catalogName
+    if (-not (Test-Path -LiteralPath $catalog)) {
+        $catalog = Join-Path $catalogSourceDir $catalogName
+    }
+    if (-not (Test-Path -LiteralPath $catalog)) {
+        throw "Catalogo oficial nao encontrado: $catalogName"
+    }
+    $catalogFiles += Get-Item -LiteralPath $catalog
+}
+
+$payloadDir = Join-Path $env:TEMP ('quallit-update-publish-' + [guid]::NewGuid().ToString('N'))
+New-Item -ItemType Directory -Path $payloadDir | Out-Null
+
+try {
+    Copy-ToPayload -Source $manifest -Destination (Join-Path $payloadDir $manifestName)
+    Copy-ToPayload -Source $artifact -Destination (Join-Path $payloadDir $artifactName)
+    foreach ($catalog in $catalogFiles) {
+        Copy-ToPayload -Source $catalog.FullName -Destination (Join-Path $payloadDir $catalog.Name)
+    }
+
+    $payloadFiles = Get-ChildItem -LiteralPath $payloadDir -File
+    Write-Host 'Arquivos preparados para publicacao:' -ForegroundColor Cyan
+    $payloadFiles | Select-Object Name, Length | Format-Table -AutoSize
+
+    $target = "$UserName@$HostName`:$RemotePath/"
+    Write-Host "Destino: $target" -ForegroundColor Cyan
+
+    if ($DryRun) {
+        Write-Host 'DryRun ativo: nenhum arquivo foi enviado.' -ForegroundColor Yellow
+        return
+    }
+
+    $pscp = Resolve-CommandPath @('pscp.exe', 'pscp')
+    $scp = Resolve-CommandPath @('scp.exe', 'scp')
+
+    if ($pscp) {
+        $arguments = @('-P', [string]$Port)
+        if (-not [string]::IsNullOrWhiteSpace($SshPassword)) {
+            Write-Warning 'Usando senha com pscp -pw. Isto pode expor a senha na lista de processos durante a publicacao.'
+            $arguments += @('-pw', $SshPassword)
+        }
+        $arguments += @((Join-Path $payloadDir '*'), $target)
+        & $pscp @arguments
+        if ($LASTEXITCODE -ne 0) { throw "pscp falhou com codigo $LASTEXITCODE." }
+    } elseif ($scp) {
+        $sourcePattern = Join-Path $payloadDir '*'
+        & $scp -P $Port $sourcePattern $target
+        if ($LASTEXITCODE -ne 0) { throw "scp falhou com codigo $LASTEXITCODE." }
+    } else {
+        throw 'Nenhum cliente scp encontrado. Instale PuTTY/pscp ou OpenSSH Client.'
+    }
+
+    Write-Host 'Publicacao concluida.' -ForegroundColor Green
+    $publicBaseUrl = "https://$HostName/repositorio/qdisk"
+    $manifestUrl = "$publicBaseUrl/$manifestName"
+    $artifactUrl = "$publicBaseUrl/$artifactName"
+    Write-Host "Manifesto direto esperado: $manifestUrl"
+    Write-Host "Arquivo direto esperado   : $artifactUrl"
+
+    Write-Host 'Verificando arquivos publicados...' -ForegroundColor Cyan
+    Test-PublishedFile -Url $manifestUrl -ExpectedLength (Get-Item -LiteralPath $manifest).Length
+    Test-PublishedFile -Url $artifactUrl -ExpectedLength (Get-Item -LiteralPath $artifact).Length
+    foreach ($catalog in $catalogFiles) {
+        Test-PublishedFile -Url "$publicBaseUrl/$($catalog.Name)" -ExpectedLength $catalog.Length
+    }
+}
+finally {
+    Remove-Item -LiteralPath $payloadDir -Recurse -Force -ErrorAction SilentlyContinue
+}

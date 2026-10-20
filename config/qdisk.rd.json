@@ -1,0 +1,42 @@
+[
+  {
+    "name": "rd-linux-atual-sharepoint",
+    "group": "rd-linux",
+    "fileUrl": "https://quallit.link/rd-linux-atual-sharepoint",
+    "fileName": "RD-LINUX-V30-R318.TIBX",
+    "md5": "bcc631d26a6fa98c2301dacc3374dce1",
+    "sha256": "4a26dd61cd68b0d8d7daeeff3d84cb475da30de3ded43f42b3ea66f2da10cc65",
+    "imageSizeBytes": 7209635840,
+    "description": "Imagem de sistema operacional (backup Acronis). Restauração com 2 pendrives: (1) o pendrive com a mídia Acronis (gravada em RAW/DD), para dar boot; (2) o pendrive com o TIBX (copiado em NTFS). Inicie pelo pendrive 1 e restaure a partir do arquivo no pendrive 2."
+  },
+  {
+    "name": "rd-linux-atual-dropbox",
+    "group": "rd-linux",
+    "fileUrl": "https://quallit.link/rd-linux-atual-dropbox",
+    "fileName": "RD-LINUX-V30-R318.TIBX",
+    "md5": "bcc631d26a6fa98c2301dacc3374dce1",
+    "sha256": "4a26dd61cd68b0d8d7daeeff3d84cb475da30de3ded43f42b3ea66f2da10cc65",
+    "imageSizeBytes": 7209635840,
+    "description": "Imagem de sistema operacional (backup Acronis). Restauração com 2 pendrives: (1) o pendrive com a mídia Acronis (gravada em RAW/DD), para dar boot; (2) o pendrive com o TIBX (copiado em NTFS). Inicie pelo pendrive 1 e restaure a partir do arquivo no pendrive 2."
+  },
+  {
+    "name": "rd-win-atual-sharepoint",
+    "group": "rd-win",
+    "fileUrl": "https://quallit.link/rd-win-atual-sharepoint",
+    "fileName": "RD-WIN-V90-05-26.TIBX",
+    "md5": "8e2347a02e9d78f6d4770ece1f3b39ad",
+    "sha256": "e7ea00ca96c3e3e67c12f54f9569d1dd1d0e237b878c6d842c6a15a7f855b8ca",
+    "imageSizeBytes": 20818337792,
+    "description": "Imagem de sistema operacional (backup Acronis). Restauração com 2 pendrives: (1) o pendrive com a mídia Acronis (gravada em RAW/DD), para dar boot; (2) o pendrive com o TIBX (copiado em NTFS). Inicie pelo pendrive 1 e restaure a partir do arquivo no pendrive 2."
+  },
+  {
+    "name": "rd-win-atual-dropbox",
+    "group": "rd-win",
+    "fileUrl": "https://quallit.link/rd-win-atual-dropbox",
+    "fileName": "RD-WIN-V90-05-26.TIBX",
+    "md5": "8e2347a02e9d78f6d4770ece1f3b39ad",
+    "sha256": "e7ea00ca96c3e3e67c12f54f9569d1dd1d0e237b878c6d842c6a15a7f855b8ca",
+    "imageSizeBytes": 20818337792,
+    "description": "Imagem de sistema operacional (backup Acronis). Restauração com 2 pendrives: (1) o pendrive com a mídia Acronis (gravada em RAW/DD), para dar boot; (2) o pendrive com o TIBX (copiado em NTFS). Inicie pelo pendrive 1 e restaure a partir do arquivo no pendrive 2."
+  }
+]
