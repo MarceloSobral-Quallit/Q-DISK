@@ -1,12 +1,19 @@
 # Quallit NetSpeedTest
 
-Bancada para evoluir o **Teste de velocidade** do qdisk. É uma cópia da tela do app principal (`src/qdisk.UI/Views/SpeedTestView.vb`), com o mesmo tema e o mesmo tamanho de janela (800 × 650). A diferença está no modelo de medição: em vez de baixar amostras de poucos MiB, mede a vazão sustentada por tempo fixo, com 1, 4 e 8 conexões, pelo mesmo caminho do download real. Se os resultados forem aprovados, o modelo vai para o app principal.
+Bancada do **Teste de velocidade** do qdisk. Mede a vazão das origens de download (Dropbox e SharePoint) por tempo fixo, com 1, 4 e 8 conexões, pelo mesmo caminho do download real, sem gravar nada em disco.
+
+A bancada compila os mesmos arquivos da aba Teste de velocidade do app:
+
+- medição: `src/qdisk.Core/Services/NetSpeedTestService.vb` (referência ao projeto `qdisk.Core`);
+- cartões das origens e gráfico: `src/qdisk.UI/Theme/UiSpeedTest.vb`, junto com o resto de `src/qdisk.UI/Theme/*.vb`, incluídos como arquivos ligados no `.vbproj`.
+
+Em relação à aba do app, a bancada acrescenta as opções **Link final** e **Trocar lenta** (veja abaixo) e lê os catálogos por conta própria, sem token.
 
 ## Como executar
 
-É um aplicativo autônomo, como o GUI_ADM: um exe só, que já traz o .NET, os ícones e o logo, e roda em qualquer Windows x64 sem instalar nada. Não entra no instalador nem na atualização online.
+Executável único autônomo para Windows x64 (`win-x64`, `SelfContained`, `PublishSingleFile`): traz o .NET, os ícones e o logo dentro do exe e não precisa de nada instalado. Não faz parte do instalador do qdisk (`tools/installer/qdisk.iss`).
 
-- **Pelo pipeline:** o passo 6 do `tools/build_release_dotnet_4.py` gera `dist\NetSpeedTest\Quallit.NetSpeedTest.exe`, com a versão do projeto (`Directory.Build.props`, mostrada no título da janela). Os passos 7 e 8 assinam e verificam o exe junto com o app principal e o GUI_ADM, e o passo 9 o inclui no ZIP de distribuição.
+- **Pelo pipeline:** o passo 6 do `tools/build_release_dotnet_4.py` ("Compilar GUI_ADM e NetSpeedTest") gera `dist\NetSpeedTest\Quallit.NetSpeedTest.exe` com a versão do projeto (`Directory.Build.props`), mostrada no título da janela. Os passos 7 e 8 assinam e verificam o exe junto com os demais executáveis, e o passo 9 o inclui no ZIP de distribuição (o ZIP leva todo o conteúdo de `dist\`).
 - **Só a bancada:**
 
   ```powershell
@@ -15,55 +22,42 @@ Bancada para evoluir o **Teste de velocidade** do qdisk. É uma cópia da tela d
 
 - **Durante o desenvolvimento:** `dotnet build tools\Quallit.NetSpeedTest\Quallit.NetSpeedTest.vbproj -c Release` e abrir `tools\Quallit.NetSpeedTest\bin\Release\net8.0-windows\win-x64\Quallit.NetSpeedTest.exe`.
 
-Não pede token. Ao abrir, a bancada lê os 4 catálogos publicados (RD, PNB, DevTeam e Ferramentas) no servidor principal. Se o principal falhar, lê do mateweb (`/qdisk/`).
+Ao abrir, a bancada lê 4 catálogos publicados (`qdisk.quallit.rd.json`, `qdisk.quallit.pnb.json`, `qdisk.quallit.devteam.json` e `qdisk.quallit.tools.json`) no servidor principal (`primary.baseUrl` de `config/qdisk.endpoints.json`). Para cada catálogo que falhar no principal, tenta o fallback (`fallback.publicBaseUrl`). Entram os itens habilitados, com link, sem repetir o mesmo link.
 
 ## O que a tela mostra
 
-- **Origens:** Dropbox e SharePoint, um cartão para cada. A caixa no título liga ou desliga a origem. Os itens são classificados pelo sufixo do nome (`-dropbox`, `-sharepoint`) ou pelo link (`-db`, `-sp`). O item padrão é o maior da origem, e pode ser trocado na lista.
+Janela de 800 × 650 (mesmo tamanho e mínimo da janela do app), com o tema do app.
+
+- **Origens:** um cartão para Dropbox e outro para SharePoint. A caixa no título liga ou desliga a origem.
+  - Classificação do item: Dropbox se o nome termina em `dropbox` ou `-db`, ou se o link termina em `-db` ou contém `dropbox`; SharePoint pela mesma regra com `sharepoint` e `-sp`. Os demais itens não aparecem.
+  - A lista vem do maior para o menor arquivo, e o maior fica selecionado; pode ser trocado na lista.
 - **Duração:** 10, 20 (padrão), 30 ou 60 s por medição.
-- **Conexões:** 1, 4 e 8. Cada quantidade é uma medição separada.
+- **Conexões:** 1, 4 e 8 (todas marcadas por padrão). Cada quantidade é uma medição separada.
 - **Link final:**
-  - desmarcado (padrão): cada conexão pede o link tirado da página do quallit.link (por exemplo `www.dropbox.com/...`) e segue os redirecionamentos sozinha;
-  - marcado: todas as conexões pedem o link final já resolvido (`uc…dl.dropboxusercontent.com`), como o app principal faz hoje (`SegmentedDownloadService.ResolveFinalUrlAsync`).
-- **Progresso durante a medição:**
-  - velocidade do último segundo e média, atualizadas a cada 250 ms;
-  - conexões ativas e MiB lidos;
-  - gráfico por segundo: os 2 primeiros segundos em cinza, a linha tracejada é a média sustentada;
+  - desmarcado (padrão): cada conexão pede o link tirado da página do atalho (por exemplo `www.dropbox.com/...`) e segue os redirecionamentos HTTP;
+  - marcado: todas as conexões pedem o link final, já depois dos redirecionamentos (por exemplo `uc…dl.dropboxusercontent.com`).
+- **Trocar lenta** (desmarcado por padrão): liga a troca de conexão lenta descrita no modelo de medição.
+- **Durante a medição:**
+  - velocidade do último segundo e média até o momento, atualizadas a cada 250 ms;
+  - conexões ativas, MiB lidos e, quando houver, o número de trocas de conexão lenta;
+  - gráfico por segundo: os 2 primeiros segundos em cinza e a linha tracejada com a média sustentada;
   - a linha da tabela em medição fica destacada;
-  - barras "Medição atual" e "Teste completo" e uma linha de status.
-- **Resultado:**
-  - por origem, a tabela tem média, mínimo–máximo, conexões ativas e tempo até o 1º byte para 1, 4 e 8 conexões;
-  - a melhor quantidade de conexões fica em verde, e o rodapé do cartão dá a recomendação (por exemplo "8 conexões: +114% sobre 1 conexão" ou "Várias conexões não ajudam nesta origem");
+  - barras "Medição atual" e "Teste completo", uma linha de status e o log.
+- **Resultado por origem:**
+  - tabela com MiB/s (média sustentada), mín–máx, conexões ativas e tempo até o 1º byte para cada quantidade de conexões;
+  - a melhor quantidade fica em verde, e o rodapé do cartão traz a recomendação, por exemplo "8 conexões: +114% sobre 1 conexão", "Ganho pequeno com 4 conexões (+6%)" ou "Várias conexões não ajudam nesta origem.";
   - a origem mais rápida recebe o selo **Melhor**.
-- **Exportar CSV:** uma linha por medição, inclusive os MiB/s de cada segundo e o modo de link. Separador `;`, UTF-8.
+- **Exportar CSV** (botão com ícone, à direita): uma linha por medição, com data, origem, item, arquivo, host, conexões, status, médias, 1º byte, conexões ativas, bytes, segundos, MiB/s de cada segundo, modo de link, troca ligada e número de trocas, e observações. Separador `;`, UTF-8 com BOM.
 
-## Modelo de medição (`src/qdisk.Core/Services/NetSpeedTestService.vb`)
+## Modelo de medição (`NetSpeedTestService.vb`)
 
-1. **Resolução do link:** igual ao download real. O atalho quallit.link devolve uma página com `redirect("...")`, o endereço é extraído com as mesmas expressões do teste de velocidade anterior (parecidas com as do `DownloadService`), e depois o `HttpClient` segue os redirecionamentos.
-2. **Medição com N > 1:** antes, um `Range: bytes=0-0` precisa responder 206 com `Content-Range`. Senão o resultado é "Range não suportado". Cada conexão pede `bytes=início-`, com o início em `i × tamanho / N`.
-3. **Leitura:** as conexões leem durante o tempo escolhido e nada é gravado em disco. Os bytes são somados em baldes de 1 segundo.
-4. **Média sustentada:** média dos baldes sem os 2 primeiros segundos (abertura das conexões e aceleração do TCP). Se o arquivo terminar antes do tempo, contam só os segundos completos.
-5. **Conexões ativas:** conexões que receberam pelo menos 1 MiB. Uma conexão que cai é registrada nas observações e não anula a medição.
-6. **Isolamento:** cada medição usa um `HttpClient` novo (uma conexão já aquecida não favorece a seguinte). Os cookies são compartilhados, porque o SharePoint pode exigir o cookie do redirecionamento.
+1. **Resolução do link:** o link do catálogo é pedido; enquanto a resposta for HTML (até 4 respostas), o endereço do arquivo é extraído da página (`redirect("...")`, `window.location.replace("...")` ou `href="https://..."`, só HTTPS) e pedido em seguida. O `HttpClient` segue os redirecionamentos HTTP. O resultado tem o link de origem (tirado da página) e o link final (depois dos redirecionamentos).
+2. **Novas tentativas:** respostas 429 ou 503 são repetidas até 3 tentativas, esperando o `Retry-After` (no máximo 10 s) ou 2 s e 4 s.
+3. **Medição com N > 1:** antes, um pedido `Range: bytes=0-0` precisa responder 206 com `Content-Range` e tamanho total; senão o resultado é "Range não suportado". Cada conexão pede `bytes=início-`, com início em `i × tamanho / N`, e precisa receber 206. Com 1 conexão (e sem troca), o arquivo é pedido sem `Range`.
+4. **Leitura:** as conexões leem até acabar o tempo escolhido; nada é gravado em disco. Os bytes são somados em baldes de 1 segundo.
+5. **Média sustentada:** média dos baldes sem os 2 primeiros segundos (`WarmupSeconds`). Se a leitura parar antes do tempo, contam só os segundos completos; mínimo e máximo saem dos mesmos baldes.
+6. **Conexões ativas:** as que receberam pelo menos 1 MiB. Uma conexão que cai é registrada nas observações e não anula a medição; a medição só falha se nenhum byte chegar.
+7. **Isolamento:** cada medição usa um `HttpClient` novo, para que uma conexão já aberta não favoreça a medição seguinte. Os cookies são compartilhados entre as medições, porque o SharePoint pode exigir o cookie recebido no redirecionamento.
+8. **Troca de conexão lenta** (`SlowConnectionPolicy`): com a troca ligada, toda conexão pede `Range` a partir da posição atual. Se a vazão de uma conexão ficar abaixo de 1 MiB/s numa janela de 3 s, ela é fechada e reaberta do mesmo ponto. A janela dobra a cada troca seguida (até 60 s) e volta a 3 s depois de uma janela rápida, e há no máximo uma troca por segundo somando as conexões da medição.
 
-O serviço fica no Core e os cartões e o gráfico em `src/qdisk.UI/Theme/UiSpeedTest.vb`; a bancada e a aba Teste de velocidade do app usam os mesmos arquivos.
-
-## Resultados de 16/10/2026 (rede da Quallit, 20 s por medição)
-
-Itens: `rd-win-atual-dropbox` e `rd-win-atual-sharepoint` (19,4 GiB). Médias sustentadas em MiB/s, tiradas do log da bancada.
-
-| Origem | Link | 1 conexão | 4 conexões | 8 conexões |
-|---|---|---|---|---|
-| Dropbox | origem (padrão) | 23,7 | 43,7 (4/4 ativas) | **50,8** (8/8 ativas) |
-| Dropbox | final (como o app) | 403 Forbidden ¹ | 46,8 (1/4 ativas, 3 com 403) ¹ | Range não suportado ¹ ² |
-| SharePoint | origem (padrão) | 12,2 | 16,4 | **21,8** (8/8 ativas) |
-| SharePoint | final (como o app) | 0,39 ² | 17,3 | 18,5 (8/8 ativas) |
-
-¹ Primeira rodada, com a versão inicial da bancada (sem a correção da tela ao vivo). Os valores são do log.
-² A segunda rodada com link final repetiu "Range não suportado" no Dropbox com 8 conexões. Nela, o Dropbox com 4 conexões deu 48,3.
-
-O que os números indicam (para validar com mais rodadas antes de mudar o app):
-
-- **Dropbox:** pedir o link final já resolvido explica as falhas do app (403 e "RangeNaoSuportado", que leva ao fallback de 1 conexão). Com o link de origem, as 8 conexões funcionaram.
-- **SharePoint:** com várias conexões ficou bem mais rápido do que com 1 nas duas rodadas. Hoje o app só usa várias conexões no Dropbox (`SegmentedDownloadService.IsEligibleOrigin`).
-- **Variação:** o SharePoint com 1 conexão variou muito entre as rodadas (0,39 a 12,2 MiB/s). Uma medição curta, como a do teste atual do app (amostras de 1 a 25 MiB), não representa a origem.
+Na aba Teste de velocidade do app, as conexões sempre pedem o link de origem, e a troca de conexão lenta é ligada automaticamente quando o host final é do `sharepoint.com`.
