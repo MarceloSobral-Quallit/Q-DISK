@@ -1,397 +1,634 @@
 # Documentação técnica — qdisk
 
-Guia para quem for manter o projeto: como está organizado, onde fica cada coisa, como compilar, testar e publicar,
-e como fazer as tarefas mais comuns. Revisado contra o código em 19/10/2026 (versão 3.12.10.26). Os fluxos de uso
-estão em [`FLUXOS_APP.md`](FLUXOS_APP.md) (app) e [`FLUXOS_GUI_ADM.md`](FLUXOS_GUI_ADM.md) (administrador de
-catálogos); o que está em aberto, em [`pendencias.md`](pendencias.md); o histórico de versões, em
-[`RoadMap.md`](RoadMap.md); os resultados dos testes reais, em [`RESULTADOS_TESTES.md`](RESULTADOS_TESTES.md).
-Também reúne catálogos e servidores (§11), atualização online (§12), método de gravação por imagem (§13) e a regra
-do token para o site (§14).
+Guia do desenvolvedor do qdisk (versão 0.00.10.26, definida em [`Directory.Build.props`](../Directory.Build.props)):
+como o repositório está organizado, onde fica cada coisa, como compilar, testar, publicar e fazer as tarefas mais
+comuns. Os fluxos de uso estão em [`FLUXOS_APP.md`](FLUXOS_APP.md) (app) e [`FLUXOS_QDisk_Adm.md`](FLUXOS_QDisk_Adm.md)
+(administrador de catálogos).
 
-## 1. Regras do projeto
+Regra do projeto: a documentação reflete o código. Antes de afirmar algo (comando, flag, caminho, comportamento),
+confirme no código ou rodando; o que não foi confirmado é dito como não confirmado.
 
-- **A documentação reflete o código.** Antes de afirmar algo (comando, flag, caminho, comportamento), confirme no
-  código ou rodando. O que não foi confirmado é dito como não confirmado.
-- **Comportamento se valida pelo próprio aplicativo** (telas, botões, CLIs oficiais), com os logs do app. Script
-  externo serve para diagnóstico; não certifica o app.
-- **Cada etapa verificada vira commit**; experimentos em branch própria.
-- `docs/pendencias.md` é a lista viva do que falta (com índice no topo); o concluído vai para o histórico.
-- Segredos nunca no Git: `config/secret.md` (modelo em `config/secret.md.example`).
+## Sumário
 
+1. [Visão geral](#visao-geral)
+2. [Estrutura do repositório](#estrutura)
+3. [Arquitetura](#arquitetura)
+4. [Pastas de dados em runtime](#runtime)
+5. [Configuração](#configuracao)
+6. [Catálogos e manifestos](#catalogos)
+7. [Servidores e endpoints](#servidores)
+8. [Compilar e rodar](#compilar)
+9. [Testes unitários](#testes)
+10. [Pipeline de release](#pipeline)
+11. [Instalador](#instalador)
+12. [Atualização online](#update-online)
+13. [Métodos de gravação USB](#metodos-gravacao)
+14. [Token do dia](#regra-token)
+15. [Tarefas comuns](#tarefas)
+16. [Pontos de atenção](#atencao)
+
+<a id="visao-geral"></a>
+## 1. Visão geral
+
+O qdisk é um aplicativo Windows (WinForms, .NET 8, VB.NET) para técnicos: baixa imagens ISO e backups Acronis TIBX
+listados em catálogos JSON, confere a integridade (MD5/SHA-256), grava pendrives de boot (cópia lógica FAT32, UEFI:NTFS
+ou RAW/DD), copia backups TIBX para pendrive NTFS e identifica o conteúdo de um pendrive já gravado. O acesso é por um
+token de 6 dígitos que muda por dia e define o perfil (RD, PNB ou DevTeam), e com ele o catálogo exibido.
+
+O executável publicado é `qdisk.exe`, arquivo único (single-file, self-contained, win-x64). O nome exibido pelo
+programa (títulos de janela, mensagens, metadados do executável) é **Q-DISK**.
+
+Peças do repositório:
+
+| Peça | O que é |
+|---|---|
+| App (`src/`) | `qdisk.exe`, distribuído por instalador e atualizado online |
+| QDisk_Adm (`QDisk_Adm/`) | Administrador de catálogos em Python/Tkinter: edita os catálogos, gera manifestos USB, decide o método de gravação, publica e dispara o build completo |
+| Ferramentas (`tools/`) | Pipeline de release, instalador, helper de manifesto, bancada de velocidade, utilitários |
+
+<a id="estrutura"></a>
 ## 2. Estrutura do repositório
+
+### Solução e projetos ([`qdisk.sln`](../qdisk.sln))
+
+| Projeto | Linguagem / alvo | Saída | Referências |
+|---|---|---|---|
+| [`src/qdisk.UI`](../src/qdisk.UI/qdisk.UI.vbproj) | VB.NET, `net8.0-windows`, WinForms | `qdisk.exe` (`AssemblyName` `qdisk`, `RootNamespace` `qdisk.UI`) | Core, Infrastructure; pacotes `DiscUtils` 0.16.13 e `System.Management` 8.0.0 |
+| [`src/qdisk.Core`](../src/qdisk.Core/qdisk.Core.vbproj) | VB.NET, `net8.0` | biblioteca `qdisk.Core` | pacote `DiscUtils` 0.16.13; `InternalsVisibleTo` `qdisk.Tests` |
+| [`src/qdisk.Infrastructure`](../src/qdisk.Infrastructure/qdisk.Infrastructure.vbproj) | VB.NET, `net8.0` | biblioteca `qdisk.Infrastructure` (`UpdateClient`) | Core |
+| [`tests/qdisk.Tests`](../tests/qdisk.Tests/qdisk.Tests.csproj) | C#, `net8.0`, xUnit 2.5.3 | testes unitários | Core |
+| [`tools/Quallit.IsoManifestTool`](../tools/Quallit.IsoManifestTool/Quallit.IsoManifestTool.csproj) | C#, `net8.0`, console | `Quallit.IsoManifestTool.exe` (helper do QDisk_Adm) | Core; `DiscUtils` 0.16.13 |
+| [`tools/Quallit.NetSpeedTest`](../tools/Quallit.NetSpeedTest/Quallit.NetSpeedTest.vbproj) | VB.NET, `net8.0-windows` | `Quallit.NetSpeedTest.exe` (bancada autônoma do Teste de velocidade) | Core; compila os arquivos de `src/qdisk.UI/Theme/*.vb` por link |
+
+[`Directory.Build.props`](../Directory.Build.props) vale para todos os projetos: versão (`Version`,
+`AssemblyVersion`, `FileVersion`, `InformationalVersion`), metadados do executável (`Product`/`Title` `Q-DISK`,
+`Company` `Quallit`, licença GPL-3.0-or-later), `PublishDir` = `dist\` e `QuallitBackupExcludePaths`
+(`temp;secret.txt;config/secret.md`, lido pelo pipeline para o backup ZIP).
+
+### Pastas
 
 | Pasta / arquivo | Conteúdo |
 |---|---|
-| `src/qdisk.UI/` | App WinForms (VB.NET, .NET 8): telas (`Views/`), tema, serviços de interface |
-| `src/qdisk.Core/` | Regras sem tela (VB.NET): catálogos, downloads, tokens, análise de ISO, layout de disco, verificações |
-| `src/qdisk.Infrastructure/` | `UpdateClient` (manifesto de atualização) |
-| `tests/qdisk.Tests/` | Testes unitários (C#, xUnit) sobre o Core |
-| `GUI_ADM/` | Administrador de catálogos (Python/Tkinter) e seu README |
-| `tools/build_release_dotnet_4.py` | Pipeline de release (17 etapas) |
-| `tools/Quallit.IsoManifestTool/` | Helper C# que gera o manifesto USB de uma ISO (usado pelo GUI_ADM) |
-| `tools/Quallit.NetSpeedTest/` | Bancada autônoma de velocidade de download (fora do instalador) |
-| `tools/installer/` | Script Inno Setup do instalador |
-| `tools/utils/` | Publicação de catálogos, verificadores de token, captura e imagens do manual, utilitários |
-| `tools/testes/teste_real/` | Roteiros de teste pela interface (UI Automation) e bancada de USB |
-| `tools/git/` | Sincronização com o GitHub e restauração de backup |
-| `config/` | Catálogos, manifestos USB, endpoints, tokens (fonte do que é embutido e publicado) |
-| `assets/` | Ícones, manual (`assets/manual/manual.html` + `images/`), imagem UEFI:NTFS |
-| `docs/` | Documentação; `docs/RESULTADOS_TESTES.md` reúne os resultados dos testes reais; `docs/arquivo/` o que é só histórico |
-| `design/` | Material de referência do redesenho das telas |
-| `dist/` (ignorada) | Saída do build: app, `ADM/` (GUI_ADM e helper), `NetSpeedTest/`, `update/` |
+| `src/qdisk.UI/` | `Program.vb` (entrada, `AppPaths`, extração dos recursos), `Views/` (telas), `Theme/` (tema e controles desenhados), `Services/` (atualização do app, aviso de imagens novas, setores de boot), `app.manifest` |
+| `src/qdisk.Core/` | Regras sem tela: `Services/`, `Models/`, `Interfaces/`, `TokenManager.vb` |
+| `src/qdisk.Infrastructure/` | [`UpdateClient.vb`](../src/qdisk.Infrastructure/UpdateClient.vb) |
+| `tests/qdisk.Tests/` | Testes xUnit sobre o Core |
+| `QDisk_Adm/` | [`catalog_admin.py`](../QDisk_Adm/catalog_admin.py), [`run_qdisk_adm.cmd`](../QDisk_Adm/run_qdisk_adm.cmd), [`README.md`](../QDisk_Adm/README.md); logs em `QDisk_Adm/log/` e `QDisk_Adm/log_debug/` (ignorados pelo Git) |
+| `tools/` | [`build_release_dotnet_4.py`](../tools/build_release_dotnet_4.py) (pipeline), `installer/` ([`qdisk.iss`](../tools/installer/qdisk.iss)), `utils/`, `git/`, `certs/`, os dois projetos acima; log do pipeline em `tools/log/` (ignorado) |
+| `tools/utils/` | `Build-OneFile-Sign_v4.bat` (atalho do pipeline), `generate_token_verifiers.py`, `publish_catalogs.ps1`, `validate_catalogs.ps1`, `generate_image_hashes.ps1`, `embed_manual_images.py`, `capturar_manual.ps1`, `publish_update_package.ps1.example` |
+| `tools/git/` | `github_sync.py` (commit/push conforme `config/github_sync.ini`), `restore_from_backup.ps1`, `git-details.txt` |
+| `tools/certs/` | Só `.gitkeep` e `extract_cert_chain.ps1` vão para o Git; o PFX de assinatura (`quallit_codesign.pfx`) fica local |
+| `config/` | Catálogos, manifestos USB, endpoints, tokens, modelos de segredos — fonte do que é embutido no app e publicado |
+| `assets/` | `favicon.ico`, `logo-quallit-512x512.png`, `APP_BG.jpg`, `run.gif`, `icons/`, `manual/` (`manual.html` + `images/`), `uefi-ntfs/` (`uefi-ntfs.img` + `ORIGEM.txt`) |
+| `design/` | Referência de design das telas ([`RESTRICOES_WINFORMS.md`](../design/RESTRICOES_WINFORMS.md), [`PEDIDO.md`](../design/PEDIDO.md)) |
+| `docs/` | Esta documentação e os fluxos |
+| `dist/` (ignorada) | Saída do pipeline: `qdisk.exe`, `Setup_qdisk_<versão>.exe`, `ADM/`, `NetSpeedTest/`, `update/` |
 
+Fim de linha ([`.gitattributes`](../.gitattributes)): texto com LF no repositório; `.vb`, `.vbproj`, `.csproj`, `.cs`,
+`.sln`, `.resx`, `.props`, `.manifest`, `.bat`, `.cmd`, `.ps1`, `.iss` com CRLF na cópia de trabalho; imagens de disco
+e executáveis binários; `config/manifests/*.manifest.json` com `-text` (sem conversão, porque o catálogo guarda o
+SHA-256 dos bytes exatos).
+
+<a id="arquitetura"></a>
 ## 3. Arquitetura
 
 ```mermaid
 flowchart LR
-    UI[qdisk.UI<br/>WinForms] --> Core[qdisk.Core]
+    UI["qdisk.UI<br/>(qdisk.exe)"] --> Core[qdisk.Core]
     UI --> Infra[qdisk.Infrastructure]
     Infra --> Core
-    Tests[Tests C#] --> Core
-    Tool[IsoManifestTool C#] --> Core
-    NST[NetSpeedTest VB] --> Core
-    ADM[GUI_ADM Python] -. executa .-> Tool
-    ADM -. publica .-> Srv[(installer.quallit.com.br<br/>mateweb.ddns.net)]
-    UI -. baixa catálogos, manifestos, atualização .-> Srv
+    Tests[qdisk.Tests] --> Core
+    Tool[Quallit.IsoManifestTool] --> Core
+    NST[Quallit.NetSpeedTest] --> Core
+    ADM[QDisk_Adm] -. executa .-> Tool
+    ADM -. publish_catalogs.ps1 / pipeline .-> Srv[("installer.quallit.com.br<br/>mateweb.ddns.net")]
+    UI -. catálogos, manifestos USB, atualização .-> Srv
 ```
 
-Regra: lógica que não depende de tela nem do Windows vai para o Core, com teste unitário. A
-`UsbBootView.vb` (~6.900 linhas) foi separada até onde compensava (P10, encerrada em 19/10/2026): o Core recebeu o
-layout de disco, a formatação FAT32, a gravação RAW, a partição UEFI:NTFS e as verificações, e o `OnBootClick` tem
-uma rotina por método. O que ficou na tela depende do Windows (cópia com progresso, desmontagem, montagem da ISO).
+Lógica que não depende de tela vai para o Core, com teste unitário. O que ficou na UI depende do Windows (diskpart,
+disco físico, montagem da ISO, cópia com progresso) ou é tela. A maior tela é
+[`UsbBootView.vb`](../src/qdisk.UI/Views/UsbBootView.vb), que atende "Copiar Backup TIBX" e "Gravar ISO Bootável".
 
-### Serviços do Core (`src/qdisk.Core/Services/`)
+Telas (menu lateral, [`MainForm.vb`](../src/qdisk.UI/Views/MainForm.vb)): Inicio, Downloads, Copiar Backup TIBX,
+Gravar ISO Bootável, Teste de velocidade, Logs, Configurações, Sobre, Manual. Antes delas,
+[`TokenPromptForm.vb`](../src/qdisk.UI/Views/TokenPromptForm.vb) pede o token.
+
+Inicialização ([`Program.vb`](../src/qdisk.UI/Program.vb)): instância única (mutex `Local\qdisk.SingleInstance`; se
+já houver outra, oferece encerrá-la) → extrai os recursos embutidos para `%LOCALAPPDATA%\qdisk\` → token (linha de
+comando ou tela) → `MainForm`. Ao exibir a janela, verifica atualização do app (se `AutoUpdateApp`) e depois as
+imagens baixadas com versão nova no catálogo (se `AutoValidateMd5OnStartup`).
+
+### Serviços do Core ([`src/qdisk.Core/Services/`](../src/qdisk.Core/Services))
 
 | Arquivo | Responsabilidade |
 |---|---|
-| `CatalogService.vb` | Carregar, validar e atualizar catálogos (principal → mateweb) |
-| `ManifestSources.vb` | URLs candidatas do manifesto USB (principal → mateweb) |
-| `DownloadService.vb`, `SegmentedDownloadService.vb`, `SlowConnectionPolicy.vb` | Download simples, em fragmentos e troca de conexão lenta |
+| `CatalogService.vb` | Carregar, validar, mesclar e atualizar catálogos (principal, depois fallback) |
+| `ManifestSources.vb` | URLs candidatas do manifesto USB (a do catálogo e o mesmo caminho no fallback) |
+| `EndpointConfig.vb`, `AppConfigSource.vb` | Endpoints e leitura da configuração embutida |
+| `UrlPolicy.vb` | Regra única de URL (só HTTPS) para catálogos, manifestos e redirecionamentos |
+| `HttpIdentity.vb` | User-Agent (`NONISV\|Quallit\|qdisk/<versão>` após o produto do cliente) |
+| `DownloadService.vb`, `SegmentedDownloadService.vb`, `SlowConnectionPolicy.vb` | Download simples; download em várias conexões (HTTP Range, restrito a Dropbox e SharePoint); troca de conexão lenta no SharePoint |
+| `DownloadOverwriteCheck.vb` | Aviso ao baixar imagem que já existe na pasta |
+| `HashService.vb` | MD5 e SHA-256 de arquivos |
 | `NetSpeedTestService.vb` | Medição do Teste de velocidade |
-| `TokenValidationService.vb`, `TokenVerifiers.vb`, `TokenConfig.vb` (e `Core/TokenManager.vb`) | Token do dia, perfis e limite de tentativas |
-| `EndpointConfig.vb`, `AppConfigSource.vb` | Endpoints e configuração embutida |
-| `AuthenticodeVerifier.vb` | Assinatura do instalador de atualização |
-| `IsoAnalysisService.vb` | Análise da ISO (El Torito, carregadores, ISO híbrida) |
-| `UsbWriteMethodAdvisor.vb`, `UsbWritePolicyResolver.vb` | Método de gravação: análise local e política do catálogo |
-| `ImageGuidance.vb` | Descrição e "Como gravar" exibidos ao técnico |
-| `ImageUpdateCheck.vb` | Imagens baixadas com versão nova no catálogo (aviso na abertura) |
-| `DownloadOverwriteCheck.vb` | Aviso ao baixar imagem que já está na pasta (igual, versão nova ou sem verificação) |
-| `RawFileManifestVerifier.vb` | USB RAW identificado pelos arquivos: lê UDF/ISO9660 do disco físico e confere com o manifesto |
-| `UsbDiskLayout.vb` | MBR, scripts do diskpart, decisão de formatar para TIBX, rótulos, classificação de diferenças RAW |
+| `TokenValidationService.vb`, `TokenVerifiers.vb`, `TokenConfig.vb` (e `Core/TokenManager.vb`) | Token do dia, perfis, verificadores e limite de tentativas |
+| `AuthenticodeVerifier.vb` | Assinatura e assinante do instalador de atualização |
+| `AppVersionFormat.vb` | Exibição da versão com zeros (ex.: `0.00.10.26`) |
+| `IsoAnalysisService.vb` | Análise da ISO (El Torito, carregadores, área de sistema/ISO híbrida, arquivos > 4 GB) |
+| `UsbWriteMethodAdvisor.vb`, `UsbWritePolicyResolver.vb` | Método de gravação: regra pela análise e aplicação da política do catálogo |
+| `ImageGuidance.vb` | Descrição e orientação de gravação exibidas ao técnico |
+| `ImageUpdateCheck.vb` | Imagens baixadas cujo SHA-256 difere do catálogo atual |
+| `UsbDiskLayout.vb` | MBR, scripts do diskpart, rótulos de volume, decisão de formatar para TIBX |
 | `Fat32Layout.vb` | Formatação FAT32 nativa (geometria e setores) |
 | `RawImageTools.vb` | Ordem da gravação RAW, comparação imagem × disco, partição auxiliar UEFI:NTFS |
-| `UsbVerification.vb` | Manifesto USB, conferência contra o manifesto, verificação lógica, modo de boot |
-| `DiskSafety.vb` | Proteção do disco do sistema e confirmação reforçada |
-| `DefenderEvents.vb` | Eventos do Defender/ASR que explicam arquivo removido do USB |
+| `RawFileManifestVerifier.vb` | Identificação de USB RAW pelos arquivos (lê UDF/ISO9660 do disco físico) |
+| `UsbVerification.vb` | Manifesto USB, conferência contra o manifesto, verificação lógica |
+| `DiskSafety.vb` | Identidade do disco físico e travas contra apagar o disco errado |
+| `DefenderEvents.vb` | Eventos do Microsoft Defender que explicam arquivo removido do USB |
 | `LogService.vb`, `SettingsService.vb` | Log e configurações do técnico |
 
-## 4. Configuração
+Serviços da UI ([`src/qdisk.UI/Services/`](../src/qdisk.UI/Services)): `AppUpdateHelper.vb` (fluxo da atualização
+online), `ImageUpdateNotifier.vb` (aviso de imagens com versão nova), `RufusBootSectorWriter.vb` (MBR e setor de boot
+BootMgr derivados do Rufus/ms-sys; ver [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md)).
+
+<a id="runtime"></a>
+## 4. Pastas de dados em runtime
+
+Raiz: `%LOCALAPPDATA%\qdisk\` (`AppPaths.DataRoot`). O instalador põe o `qdisk.exe` nessa mesma pasta.
+
+| Caminho | Conteúdo | Quem grava |
+|---|---|---|
+| `%LOCALAPPDATA%\qdisk\app_version.txt` | Versão + MVID do executável que extraiu os recursos | `Program.EnsureAssetsExtracted` |
+| `%LOCALAPPDATA%\qdisk\Data\` | Catálogos (`qdisk.quallit.rd/pnb/devteam/tools.json`) e `manifests\PNB-WIN7-x64.manifest.json` | Extração dos recursos; atualização remota dos catálogos |
+| `%LOCALAPPDATA%\qdisk\config\` | `qdisk.endpoints.json` e `qdisk.tokens.app.json` (cópias extraídas), `settings.json`, `download_status.json`, `token_attempts.dat` | Extração; app |
+| `%LOCALAPPDATA%\qdisk\assets\` | Tudo de `assets/` exceto `manual/images` (o `manual.html` já traz as imagens embutidas) | Extração |
+| `%LOCALAPPDATA%\qdisk\manifests\` | Cache dos manifestos USB baixados | Identificação de USB |
+| `%LOCALAPPDATA%\qdisk\logs\app.log` | Log do app | `LogService` |
+| `%LOCALAPPDATA%\qdisk\debug_log\` | Log secundário `debug_<data>.log`, só gravado se a pasta existir (criar/apagar à mão) | `LogService` |
+| `%USERPROFILE%\Downloads\qdisk\` | Imagens baixadas (padrão de `ImageCacheDir`, ajustável em Configurações; sem perfil de usuário, `%LOCALAPPDATA%\qdisk\cache`) | Downloads |
+| `%TEMP%\qdisk\updates\` | Instalador baixado pela atualização online | `AppUpdateHelper` |
+
+Extração dos recursos: na abertura, se `app_version.txt` não tiver a versão + MVID do executável atual (ou faltar
+algum arquivo), o app regrava todos os recursos `_embedded\...` em `%LOCALAPPDATA%\qdisk\`. O MVID muda a cada build
+com conteúdo diferente, então um build local novo reextrai os catálogos de `config/` mesmo sem trocar a versão. Depois
+disso, a atualização remota substitui o catálogo local quando o remoto é válido e diferente.
+
+<a id="configuracao"></a>
+## 5. Configuração
 
 | Arquivo | Para quê | Embutido no app? | No Git? |
 |---|---|---|---|
-| `config/qdisk.{rd,pnb,devteam,tools}.json` | Catálogos publicados | sim (`Data\`) | sim |
-| `config/qdisk.devteam2.json` | Catálogo de teste do GUI_ADM | não | sim |
-| `config/manifests/*.manifest.json` | Manifestos USB (bytes exatos, `-text`) | só o da Win7 | sim |
-| `config/qdisk.endpoints.json` | Servidores e repositório do installer | sim | sim |
-| `config/qdisk.tokens.json` | IDs internos dos perfis (geram o token do site) | **não** | sim (repositório privado) |
-| `config/qdisk.tokens.app.json` | Verificadores PBKDF2 por dia (sem IDs) | sim | sim |
-| `config/secret.md` | Senhas de assinatura, SSH e backup | não | **não** (`.gitignore`) |
+| `config/qdisk.quallit.rd.json`, `qdisk.quallit.pnb.json`, `qdisk.quallit.devteam.json`, `qdisk.quallit.tools.json` | Catálogos (perfis RD, PNB, DevTeam e ferramentas) | sim (`Data\`) | sim |
+| `config/qdisk.quallit.devteam2.json` | Catálogo avulso; não é embutido nem publicado pelo pipeline | não | sim |
+| `config/manifests/*.manifest.json` | Manifestos USB (bytes exatos, `-text`) | só `PNB-WIN7-x64.manifest.json` | sim |
+| [`config/qdisk.endpoints.json`](../config/qdisk.endpoints.json) | Servidor principal, fallback (HTTP e SSH) e repositório do installer | sim (`config\`) | sim |
+| [`config/qdisk.tokens.json`](../config/qdisk.tokens.json) | IDs internos dos perfis (geram o token do site) e catálogo de cada perfil | **não** | sim |
+| `config/qdisk.tokens.app.json` | Perfis e verificadores PBKDF2 por dia, sem os IDs (gerado) | sim (`config\`) | sim |
+| [`config/secret.md.example`](../config/secret.md.example) → `config/secret.md` | Senhas: `SignPassword`, `SshPassword`, `BackupPassword` | não | só o modelo (`config/secret.md` está no `.gitignore`) |
+| [`config/github_sync.ini.example`](../config/github_sync.ini.example) → `config/github_sync.ini` | Remote, branch e permissão de publicação do `tools/git/github_sync.py` | não | só o modelo |
 
-Em Release o app lê endpoints e verificadores só do recurso embutido. Em Debug também procura
-`%LOCALAPPDATA%\qdisk\config\` e uma pasta `config\` acima do executável.
+**Release × Debug** ([`AppConfigSource.vb`](../src/qdisk.Core/Services/AppConfigSource.vb)): endpoints e tokens são
+lidos do recurso embutido `_embedded\config\<arquivo>`. Só quando o Core é compilado em Debug o app procura antes
+`%LOCALAPPDATA%\qdisk\config\<arquivo>` e depois uma pasta `config\` subindo a partir da pasta do executável. Se o
+arquivo faltar ou estiver inválido, valem os padrões do código (`EndpointConfig`, `TokenConfig`). URLs base que não são
+HTTPS voltam ao padrão.
 
-Cada build novo, ao abrir, extrai os recursos embutidos para `%LOCALAPPDATA%\qdisk\` (controle por
-versão + MVID em `app_version.txt`). Por isso o app compilado localmente usa os catálogos do repositório, mesmo
-antes de publicá-los.
+**`config/secret.md`**: uma linha `Chave: valor` por segredo (crases opcionais; valores `<...>` são ignorados).
+Variáveis de ambiente têm prioridade:
 
-### Item de catálogo
+| Chave | Variável | Usado por |
+|---|---|---|
+| `SignPassword` | `QUALLIT_SIGN_PASSWORD` | Pipeline (assinatura) |
+| `SshPassword` | `QUALLIT_UPDATE_SSH_PASSWORD` (ou `QUALLIT_PUBLISH_SSH_PASSWORD`) | Pipeline (fallback) e `publish_catalogs.ps1` |
+| `BackupPassword` | `QUALLIT_BACKUP_PASSWORD` | `tools/git/restore_from_backup.ps1` |
+
+**Configurações do técnico** (`%LOCALAPPDATA%\qdisk\config\settings.json`,
+[`AppSettings.vb`](../src/qdisk.Core/Models/AppSettings.vb)): verificações automáticas de MD5/SHA-256, desligar a
+reprodução automática durante operações de USB, `AutoUpdateApp`, `ImageCacheDir`, download em várias conexões
+(`EnableMultiConnectionDownload`, `MaxDownloadConnections` = 8) e exibição dos botões "Identificar USB" e "Validar
+Boot". O arquivo é criado com `AppSettings.CreateDefault()` na primeira leitura.
+
+<a id="catalogos"></a>
+## 6. Catálogos e manifestos
+
+### Quais catálogos o app usa
+
+O perfil do token define o catálogo (`catalogFile` em `qdisk.tokens.app.json`): RD → `qdisk.quallit.rd.json`, PNB →
+`qdisk.quallit.pnb.json`, DevTeam → `qdisk.quallit.devteam.json`. Downloads e Teste de velocidade mostram esse catálogo mesclado com
+`qdisk.quallit.tools.json`. A gravação USB procura a política de gravação nos quatro catálogos.
+
+### Formato
+
+Em `config/` cada catálogo é um array JSON de itens. O publicado (pipeline, etapa 13) é um objeto
+`{"build": {...}, "items": [...]}` com `build` = `product` (`Q-DISK`), `version`, `buildDateUtc`, `generatedBy`. O app
+aceita os dois.
 
 | Campo | Uso |
 |---|---|
-| `name`, `group`, `enabled` | Identificação e se aparece no app |
-| `fileUrl`, `fileName` | Origem (SharePoint, Dropbox ou mateweb) e nome local |
-| `md5`, `sha256`, `imageSizeBytes` | Integridade do download e identificação |
-| `description` | Texto exibido ao técnico (até 600 caracteres) |
-| `usbIdentification` | Resumo do manifesto USB (`treeHash`, sentinelas, `manifestUrl`, `manifestSha256`, análise) |
-| `usbWritePolicy` | Método de gravação decidido no GUI_ADM (preferido, permitidos, alvos de boot, `volumeLabel`) |
-| `imageScan` | Última verificação do Defender (só informativo para o GUI_ADM) |
+| `name`, `group` | Identificação (obrigatórios) |
+| `enabled` | `false` esconde o item no app (padrão `true`) |
+| `fileUrl` | Origem do download, obrigatória e HTTPS |
+| `fileName` | Nome local; extensão `.iso`, `.tibx` ou `.img` |
+| `md5`, `md5Url`, `sha256`, `sha256Url` | Integridade (opcionais; URLs só HTTPS) |
+| `imageSizeBytes` | Tamanho; obrigatório quando há `sha256` |
+| `description` | Texto exibido ao técnico |
+| `usbIdentification` | Resumo do manifesto USB (`mode` `logical` ou `raw`, ou lista `modes`) |
+| `usbWritePolicy` | Método de gravação decidido no QDisk_Adm (§13) |
+| `imageScan` | Última verificação no Microsoft Defender (gravada pelo QDisk_Adm) |
 
-Tabela das imagens e métodos: [§13](#metodos-gravacao). Endpoints e formato publicado: [§11](#catalogos).
+Validação do app ([`CatalogService.vb`](../src/qdisk.Core/Services/CatalogService.vb)) antes de usar ou substituir a
+cópia local: JSON válido; ao menos um item (exceto catálogo `devteam`); campos acima; para `usbIdentification`
+lógico: `treeHash` SHA-256, `manifestUrl`, `fileCount` > 0, `totalBytes` > 0, `manifestSha256` e sentinelas válidos;
+para `raw`: `imageSha256` igual ao `sha256` do item e `sizeBytes` igual a `imageSizeBytes`.
 
-## 5. Token de acesso
+Atualização remota: para cada catálogo, tenta a URL do principal e depois a do fallback; o primeiro remoto válido
+vence. O conteúdo só é gravado (via `.tmp` + `File.Replace`) se os itens normalizados diferirem do local. Ao atualizar
+pela tela Downloads com status visível, a URL recebe `?refresh=<guid>` para furar cache. Se nenhum remoto responder,
+segue o catálogo local. Páginas HTML de redirecionamento são seguidas até 3 níveis, só para HTTPS.
 
-O site gera o token do dia a partir do ID interno do perfil (regra em
-[§14](#regra-token)). O app não conhece os IDs: confere o token
-contra verificadores PBKDF2-SHA256 por perfil e por dia em `qdisk.tokens.app.json`, gerados por
-`tools/utils/generate_token_verifiers.py` (janela de hoje −2 a +730 dias). O pipeline regenera o arquivo em todo
-build (etapa 2) e o GUI_ADM ao mudar um ID. Se a janela vencer, o app pede atualização.
+### Manifestos USB
 
-## 6. Compilar e rodar
+Um manifesto (`config/manifests/<imagem>.manifest.json`) descreve a árvore de arquivos de uma ISO (`schema`, `image`
+com tamanho e hashes, `logical` com `fileCount`, `totalBytes`, `treeHash`, `sentinelFiles` e `analysis`). É gerado
+pelo QDisk_Adm (`Preparar ISO…` ou CLI) usando `Quallit.IsoManifestTool`, que aplica a mesma análise do Core. O
+catálogo guarda `manifestUrl` e `manifestSha256`; o app só aceita um manifesto cujo SHA-256 dos bytes confira.
+
+Ordem de busca no app (`UsbBootView.LoadUsbManifestAsync`): cache `%LOCALAPPDATA%\qdisk\manifests\` (se o hash
+confere) → `manifestUrl` → mesmo caminho no fallback (quando a URL começa pela base principal) → cópias locais
+(`Data\manifests\`, entre outras) com hash conferido.
+
+Ferramentas: validar um catálogo com `python .\QDisk_Adm\catalog_admin.py --validate .\config\qdisk.quallit.tools.json`;
+exportar o formato publicado com `--export-package <origem> <destino>`. Detalhes da CLI em
+[`QDisk_Adm/README.md`](../QDisk_Adm/README.md) e [`FLUXOS_QDisk_Adm.md`](FLUXOS_QDisk_Adm.md).
+
+<a id="servidores"></a>
+## 7. Servidores e endpoints
+
+[`config/qdisk.endpoints.json`](../config/qdisk.endpoints.json) (embutido no app; também lido pelo pipeline, pelo
+`publish_catalogs.ps1` e pelo QDisk_Adm):
+
+| Bloco | Valor atual | Uso |
+|---|---|---|
+| `primary.baseUrl` | `https://installer.quallit.com.br/qdisk/` | Origem principal do app |
+| `fallback.publicBaseUrl` | `https://mateweb.ddns.net/qdisk/` | Origem de fallback do app |
+| `fallback.host` / `port` / `user` | `mateweb.ddns.net` / `2205` / `qdisk-update` | Envio SSH do pipeline (etapa 16) |
+| `fallback.hostKey` | `SHA256:aBVNSji5CI6pD+nASIXNxUTkCP86DMktrg1LoLiVre4` | `-hostkey` do `pscp`/`plink` |
+| `fallback.remotePath` | `/store/sites/qdisk/www` | Pasta remota do envio SSH |
+| `installerGit.repositoryUrl` / `targetSubdir` | `https://github.com/quallitdesenv/quallit-installer.git` / `public/qdisk` | Repositório publicado em installer.quallit.com.br (etapa 14) |
+
+Arquivos esperados em cada origem: `qdisk.quallit.update.json`, `Setup_qdisk.update.exe`, `qdisk.quallit.pnb.json`, `qdisk.quallit.rd.json`,
+`qdisk.quallit.tools.json`, `qdisk.quallit.devteam.json` e `manifests/<imagem>.manifest.json`.
+
+| O app busca | Ordem |
+|---|---|
+| Catálogo do perfil e de ferramentas | principal → fallback → cópia local |
+| Manifesto de atualização | `<principal>qdisk.quallit.update.json` → `<fallback>qdisk.quallit.update.json` |
+| Manifesto USB | cache → `manifestUrl` → fallback → cópias locais |
+
+As imagens (ISO/TIBX) não ficam nesses servidores: cada item aponta para a própria origem em `fileUrl` (nos catálogos
+atuais, links `https://quallit.link/...` e `https://mateweb.ddns.net/...`).
+
+<a id="compilar"></a>
+## 8. Compilar e rodar
+
+Requisitos:
+
+| Para | Precisa |
+|---|---|
+| App, testes, helper, bancada | SDK .NET capaz de compilar `net8.0`/`net8.0-windows` (não há `global.json`; o pipeline só exige `dotnet` no PATH) |
+| QDisk_Adm | Python 3 com Tkinter |
+| Pipeline | Python 3.11 ou superior (usa `datetime.UTC`) com PyInstaller; Windows SDK (`signtool.exe`) e o PFX; Inno Setup 6 (`iscc.exe`); Git; PuTTY (`pscp`, `plink`) ou OpenSSH (`scp`) |
+| ISO limpa no QDisk_Adm | Windows ADK, Deployment Tools (`oscdimg.exe`) |
+
+Comandos:
 
 ```powershell
 dotnet build src\qdisk.UI -c Release
 .\src\qdisk.UI\bin\Release\net8.0-windows\win-x64\qdisk.exe
+.\src\qdisk.UI\bin\Release\net8.0-windows\win-x64\qdisk.exe --token=123456   # token pela linha de comando
 dotnet test tests\qdisk.Tests
-.\GUI_ADM\run_gui_adm.cmd
+.\QDisk_Adm\run_qdisk_adm.cmd                                                   # ou: python .\QDisk_Adm\catalog_admin.py
 ```
 
-Requisitos: .NET 8 SDK, Python 3.12 (GUI_ADM e pipeline), Windows SDK (signtool), Inno Setup 6 (instalador),
-Windows ADK Deployment Tools (`oscdimg`, só para gerar ISO limpa), PuTTY (`pscp`/`plink`) ou OpenSSH para o mateweb.
+Formatos aceitos do token na linha de comando: `--token=N`, `/token=N`, `--token N`, `/token N`. O token passa pelo
+mesmo limite de tentativas da tela.
+
+O projeto da UI fixa `RuntimeIdentifier` `win-x64`, `SelfContained` e `PublishSingleFile` para todas as compilações.
+O `app.manifest` é copiado para `obj/` e recebe a `FileVersion` antes de compilar (target
+`GenerateVersionedManifest`); ele pede `asInvoker`. Sem elevação, o app abre normalmente, mas os botões de gravação
+de ISO e "Zerar USB" ficam desabilitados e a tela USB mostra o aviso de Modo Administrador.
+
+Em Debug (`dotnet build src\qdisk.UI`), endpoints e tokens podem vir de `config\` do repositório (§5).
+
+<a id="testes"></a>
+## 9. Testes unitários
+
+```powershell
+dotnet test tests\qdisk.Tests
+```
+
+Projeto C# com xUnit sobre o Core (referência só a `qdisk.Core`; os tipos `Friend` são visíveis por
+`InternalsVisibleTo`). Cobre, entre outros: tokens e verificadores, catálogo, URLs, downloads (repetição, prazo de
+leitura, conexão lenta), Teste de velocidade, análise de ISO, método e política de gravação, layout de disco, FAT32,
+RAW, UEFI:NTFS, verificação de USB, identificação RAW pelos arquivos, proteção de disco, eventos do Defender,
+Authenticode, formato de versão, configurações padrão.
+
+O pipeline roda `dotnet test tests\qdisk.Tests -c Release -nologo -v q` na etapa 1; falha interrompe o build
+(`--no-tests` pula, só para diagnóstico).
 
 <a id="pipeline"></a>
-## 7. Release (pipeline)
+## 10. Pipeline de release
 
-`python tools/build_release_dotnet_4.py` (ou "Build completo" no GUI_ADM). Log em `tools/log/build_v4_*.log`.
-
-| # | Etapa | O que faz |
-|---|---|---|
-| 1 | Validar pré-requisitos | dotnet, signtool e PFX, props, iscc; **roda os testes unitários** (falha interrompe; `--no-tests` pula) |
-| 2 | Atualizar versão | `Major.Minor.MM.YY`: soma 1 no Minor e grava mês/ano atuais em `Directory.Build.props` e `version_info.txt`; regenera os verificadores do token |
-| 3 | Atualizar manual | Embute as 10 imagens no `manual.html` e atualiza versão e data |
-| 4 | Limpar artefatos | `dotnet clean` |
-| 5 | Publicar app | `dotnet publish` single-file, self-contained, win-x64 → `dist/` |
-| 6 | GUI_ADM e NetSpeedTest | PyInstaller → `dist/ADM/GUI_ADM.exe`; helper → `dist/ADM/`; bancada → `dist/NetSpeedTest/` |
-| 7 | Assinar | signtool com o PFX: app, GUI_ADM, NetSpeedTest e helper |
-| 8 | Verificar assinaturas | `Get-AuthenticodeSignature` e `signtool verify` |
-| 9 | Empacotar | ZIP de `dist/` em `../../PROJECT_RELEASE/` |
-| 10 | Instalador | Inno Setup → `dist/Setup_qdisk_<versão>.exe`, assinado |
-| 11 | Backup ZIP | Projeto inteiro em `../../PROJECT_BACKUP/` (sem `dist`, `bin`, `obj`, `temp`, `secret.txt` e `config/secret.md`) |
-| 12 | Limpar pós-build | Apaga `bin`/`obj` |
-| 13 | Pacote de atualização | `dist/update/`: instalador, `qdisk.update.json` e os 4 catálogos |
-| 14 | Git do installer | Copia para `quallit-installer/public/qdisk` (+ manifestos), commit e push |
-| 15 | Verificar installer remoto | Confere JSONs, instalador e manifestos em installer.quallit.com.br |
-| 16 | Fallback mateweb | `pscp`/`scp` + conferência por SSH e HTTP (falha só avisa) |
-| 17 | Git do projeto | `git add -A` (sem os segredos), commit `chore: sincroniza projeto <versão>` e push |
-
-- Segredos: `QUALLIT_SIGN_PASSWORD` ou `SignPassword` em `config/secret.md`; SSH: `SshPassword` ou
-  `QUALLIT_UPDATE_SSH_PASSWORD`. Sem senha de assinatura o build para (`--no-sign` pula a assinatura).
-- Valores de publicação: opção na linha de comando > variável de ambiente > `config/qdisk.endpoints.json` >
-  padrão do script.
-- Modos parciais: `--sign-only`, `--verify-only`, `--sync-only` (etapas 14–15), `--verify-installer`,
-  `--sync-project`, `--preview`; desligar etapas: `--no-bump-version`, `--no-installer`, `--no-backup`,
-  `--no-fallback-publish`, `--no-installer-git-publish`, `--no-project-git-publish`, `--no-push`, `--dry-run`.
-- Detalhes da atualização online: [§12](#update-online).
-
-## 8. Testes
-
-- **Unitários** (`tests/qdisk.Tests`, 204 em 19/10/2026): Core inteiro — tokens, downloads, catálogo,
-  política de gravação, layout de disco, FAT32, RAW, UEFI:NTFS, verificações, identificação RAW pelos arquivos. Rodam na etapa 1 do pipeline.
-- **Pela interface** (`tools/testes/teste_real/`, UI Automation; ver o README da pasta):
-  - `tests.ps1`: downloads reais de todos os catálogos.
-  - `bancada_usb.ps1 -OutDir tools\testes\saida\<data>-bancada -Title "<motivo>" [-Long]`: **apaga o pendrive
-    conectado**. Casos B0–B7 (login, política, RAW, cópia lógica, Zerar, TIBX, Quallit_Boot_clean, Win11 com `-Long`)
-    e rótulos. Rodar elevado. Recupera pendrive ejetado ("No Media" conta como ausente: `pnputil /scan-devices`, reinício
-    do disco USBSTOR e, se preciso, do dispositivo USB do próprio pendrive — nunca hub ou controladora) e para se o
-    app não terminar no prazo.
-- **Resultados:** todos os testes reais ficam num arquivo só, [`RESULTADOS_TESTES.md`](RESULTADOS_TESTES.md), uma
-  seção por teste. A bancada acrescenta a seção dela sozinha (índice + tabela); capturas e logs ficam em
-  `tools\testes\saida\` (local, fora do Git).
-- **Manual:** `tools/utils/capturar_manual.ps1 -OutDir <pasta>` refaz as 10 capturas (app sem Modo
-  Administrador, perfil RD); copie para `assets/manual/images` e o pipeline embute.
-
-## 9. Tarefas comuns
-
-**Publicar uma imagem nova no catálogo**
-1. Suba a ISO/TIBX na origem (SharePoint, Dropbox ou `\\192.168.10.5\store\TIBX\QUALLIT`, publicado em
-   `https://mateweb.ddns.net/tibx/QUALLIT/`).
-2. GUI_ADM: `Adicionar`, nome, grupo, URL e descrição; ISO → `Preparar ISO…` e revise `Editar…` (método e rótulo);
-   TIBX → `Hashes…`.
-3. Confira `PRONTO PARA PUBLICAR`, `Atualizar item`, `Validar`, salve e faça `Upload` (ou deixe para o próximo build).
-4. Teste pelo app (Downloads e gravação) antes de anunciar.
-
-**Lançar versão:** commits feitos → pipeline completo → conferir versão nos dois servidores
-(`qdisk.update.json`) → registrar no `RoadMap.md`.
-
-**Atualizar o manual:** editar `assets/manual/manual.html` (texto) e, se as telas mudaram, `capturar_manual.ps1`.
-
-**Mudar ID de perfil do token:** GUI_ADM → Configurações → Tokens; os verificadores são regenerados; publicar
-versão nova (o app embute os verificadores).
-
-**Trocar o certificado de assinatura (P5):** ver a pendência P5 — o atualizador hoje só aceita a impressão digital
-do certificado autoassinado atual.
-
-## 10. Pontos de atenção
-
-- `config/qdisk.tokens.json` (IDs dos perfis) está no Git: aceitável só enquanto o repositório for privado.
-- A senha do certificado autoassinado atual está no histórico do Git (arquivo `tools/certs/SIGN.TXT`, já fora do
-  Git). Resolve-se descartando esse certificado na troca pelo OV (P5).
-- O backup da etapa 11 inclui `tools/certs/*.pfx` e pastas locais grandes não versionadas (`design/versao-alternativa`).
-- Ao regerar um manifesto, atualize o `manifestSha256` em todos os itens que apontam para ele e publique catálogo e
-  manifesto juntos.
-- Regras ASR do Intune podem impedir o app de ler ferramentas copiadas para o pendrive (ex.: `dism.exe`,
-  `bootsect.exe`): a verificação fica "inconclusiva", não "falha".
-
-<a id="catalogos"></a>
-## 11. Catálogos e servidores
-
-Endpoints em `config/qdisk.endpoints.json` (embutido no app):
-
-| Origem | Base | Como é publicada |
-|---|---|---|
-| Principal | `https://installer.quallit.com.br/qdisk/` | Repositório Git `quallitdesenv/quallit-installer`, pasta `public/qdisk/` (etapa 14) |
-| Fallback | `https://mateweb.ddns.net/qdisk/` | `pscp`/`scp` para `mateweb.ddns.net` (etapa 16) |
-
-Arquivos em cada origem: `qdisk.update.json`, `Setup_qdisk.update.exe`,
-`qdisk.{pnb,rd,tools,devteam}.json` e `manifests/` (manifestos USB). O app tenta a principal e, sem
-resposta válida, o fallback; sem nenhum dos dois, segue com a última cópia local ou embutida. Os links curtos antigos
-`quallit.link/qdisk-*` não são mais origem do app.
-
-**Formato.** Em `config/` os catálogos são um array JSON de itens (campos na §4). Os publicados (`dist/update` e
-servidores) recebem metadados de build:
-
-```json
-{
-  "build": {
-    "product": "qdisk",
-    "version": "1.108.07.26",
-    "buildDateUtc": "2026-07-06T19:32:03Z",
-    "generatedBy": "tools/build_release_dotnet_4.py"
-  },
-  "items": []
-}
+```powershell
+python .\tools\build_release_dotnet_4.py            # build completo
+.\tools\utils\Build-OneFile-Sign_v4.bat              # mesmo comando, repassando os argumentos
 ```
 
-O app aceita os dois formatos (array e objeto com `items`). `md5`/`sha256` são opcionais enquanto a imagem não foi
-homologada; com `sha256`, `imageSizeBytes` é obrigatório. O catálogo `devteam` pode estar vazio (`[]`).
+O QDisk_Adm ("Build completo" → "Executar build completo") roda o `.bat` sem argumentos. Log completo em
+`tools/log/build_v4_<AAAAMMDD_HHMMSS>.log`; no fim o console mostra o resumo por etapa (OK, PULADO, AVISO, FALHOU).
 
-**Validar antes de publicar:** `.\tools\utils\validate_catalogs.ps1`. O app também valida o catálogo remoto antes
-de substituir a cópia local.
+Antes da etapa 1, sem senha de assinatura (e sem `--no-sign`) o build para.
+
+| # | Etapa | O que faz (conforme o código) |
+|---|---|---|
+| 1 | Validar pré-requisitos | `dotnet --version`; `signtool.exe` e PFX (`tools/certs/quallit_codesign.pfx` ou `QUALLIT_SIGN_PFX`), salvo `--no-sign`; `Directory.Build.props`; `iscc.exe` (ausente só avisa e pula a etapa 10); testes unitários. Qualquer falha encerra |
+| 2 | Atualizar versão | Formato `Major.Minor.MM.AA`: soma 1 no Minor (2 dígitos) e grava mês/ano atuais nas quatro tags de versão de `Directory.Build.props` e em `version_info.txt` (`--no-bump-version` pula). Em seguida, **sempre**, regenera `config/qdisk.tokens.app.json` com `tools/utils/generate_token_verifiers.py` |
+| 3 | Atualizar manual | Embute em base64 as 10 imagens de `assets/manual/images` nos `<img>` de `assets/manual/manual.html` (na ordem de `MANUAL_IMAGE_NAMES`) e atualiza versão e data (`version_info.txt`); imagem ausente → AVISO |
+| 4 | Limpar artefatos | `dotnet clean` de `src/qdisk.UI`, `src/qdisk.Core` e `src/qdisk.Infrastructure` (Release) |
+| 5 | Publicar app principal | `dotnet publish src/qdisk.UI -c Release -r win-x64 --self-contained true` single-file comprimido → `dist/qdisk.exe` (via `PublishDir`). Falha encerra |
+| 6 | Compilar QDisk_Adm e NetSpeedTest | PyInstaller `--onefile` → `dist/ADM/QDisk_Adm.exe` (com versão nos metadados); `dotnet publish` do helper → `dist/ADM/Quallit.IsoManifestTool.exe`; `dotnet publish` da bancada → `dist/NetSpeedTest/Quallit.NetSpeedTest.exe`. Exe em uso é renomeado para `.locked-<data>`. Falha encerra |
+| 7 | Assinar executáveis | `signtool sign /fd sha256 /f <pfx> /p *** /d "Q-DISK - Quallit Solucoes em TI" /du https://www.quallit.com.br`, com `/tr <timestamp> /td sha256` (padrão `http://timestamp.digicert.com`; `QUALLIT_SIGN_TIMESTAMP`; `--no-timestamp` tira). Assina app, QDisk_Adm, bancada e helper; até 5 tentativas se o arquivo estiver em uso. Falha marca FALHOU mas não encerra |
+| 8 | Verificar assinaturas | `Get-AuthenticodeSignature` e `signtool verify /pa /v` de cada exe (cadeia pública não confiável só avisa); pulada se a 7 não deu OK |
+| 9 | Empacotar distribuição | ZIP de `dist/` (sem `.pdb`, `.log`, `.xml`, `.zip`, `.locked-`) em `PROJECT_RELEASE/qdisk_release-<versão>-<AAAA-MM-DD>.zip`, dois níveis acima da raiz do projeto |
+| 10 | Gerar e assinar instalador | `iscc /DAppVersion=<versão> tools/installer/qdisk.iss` → `dist/Setup_qdisk_<versão>.exe`, assinado (salvo `--no-sign`) |
+| 11 | Backup ZIP | Projeto inteiro em `PROJECT_BACKUP/qdisk_backup-<versão>-<AAAA-MM-DD>.zip` (dois níveis acima da raiz), com prefixo `qdisk/`; exclui pastas `.git`, `obj`, `bin`, `__pycache__`, `node_modules` e os caminhos `dist`, `temp/bck`, `tools/log`, `temp`, `secret.txt`, `config/secret.md` |
+| 12 | Limpar pós-build | Apaga as pastas `obj` e `bin` dentro de `src/` |
+| 13 | Preparar pacote `dist/update` | Copia o instalador como `Setup_qdisk.update.exe` (sem instalador: `dist/qdisk.exe` como `qdisk.update.exe`); grava `qdisk.quallit.update.json`; grava os 4 catálogos no formato `build`/`items` |
+| 14 | Sincronizar Git installer | `git clone --depth 1` do repositório do installer numa pasta temporária (ou `--repository-dir`), esvazia `public/qdisk` (mantém `.gitkeep`), copia o pacote e `manifests/` (com `.gitattributes` `*.manifest.json -text`), commit `chore: publica pacote qdisk <versão>` e push. Falha encerra |
+| 15 | Verificar installer remoto | Em `primary.baseUrl` (até 5 tentativas, 10 s entre elas): JSONs por SHA-256 do conteúdo normalizado; instalador por `Content-Length` (ou SHA-256 com `--verify-installer-hash`); manifestos USB por SHA-256 dos bytes. Falha encerra |
+| 16 | Publicar fallback remoto | `pscp` (preferido, com `-hostkey` e `-pwfile`) ou `scp` para `<user>@<host>:<remotePath>/` e `.../manifests/`; confere tamanho e `sha256sum` por SSH (`plink`; sem `plink` ou sem senha só avisa) e por HTTP em `fallback.publicBaseUrl`. **Falha só avisa** |
+| 17 | Sincronizar Git projeto | `git status`; `git add -A`; tira do índice `secret.txt` e `config/secret.md`; commit `chore: sincroniza projeto <versão>`; push |
+
+`qdisk.quallit.update.json` gerado na etapa 13: `version`, `releaseDate`, `installerUrl` (padrão
+`https://installer.quallit.com.br/qdisk/Setup_qdisk.update.exe`; `--update-base-url` monta a partir de outra base),
+`sha256`, `mandatory`, `minimumSupportedVersion`, `notes` (padrão `["Atualizacao do Q-DISK."]`), `fileName`,
+`sizeBytes`, `build`.
+
+### Modos parciais
+
+| Opção | Executa |
+|---|---|
+| `--preview` (`--preview-steps`) | Só lista cada etapa como EXECUTAR ou PULAR, com o motivo |
+| `--verify-installer` (`--verify_installer`) | Só a etapa 15, contra `dist/update` |
+| `--sync-only` (`--sync_only`, `--sync-update`) | Etapas 14 e 15 com o `dist/update` existente |
+| `--sync-project` | Etapas 11 e 17 (com `--sync-only`, também 14 e 15) |
+| `--verify-only` | Só a verificação de assinatura de `dist/qdisk.exe` |
+| `--sign-only` | Etapas 7 e 8 sobre os exes já existentes em `dist/` (útil após trocar o certificado) |
+
+Desligar partes do build completo: `--no-sign`, `--no-tests`, `--no-bump-version`, `--no-timestamp`,
+`--no-installer`, `--no-backup`, `--no-post-clean`, `--no-update-package`, `--no-installer-git-publish`,
+`--no-verify-remote`, `--no-fallback-publish`, `--no-project-git-publish`, `--no-push` (commit sem push nas etapas 14
+e 17), `--dry-run` (nas etapas 14, 16 e 17 prepara e mostra, sem commit, push nem envio; as etapas de build rodam
+normalmente). Também há o painel `RUN_CONFIG` no topo do script (chaves `True`/`False`, todas ligadas exceto
+`previsualizar_etapas`). Verbosidade: `--show-progress`, `--show-full-info`, `--show-progress-bar`.
+
+Outras opções: `--local-update-dir`, `--update-installer-url`, `--update-base-url`, `--update-manifest-name`,
+`--update-artifact-name`, `--update-notes` (repetível), `--update-mandatory`, `--update-minimum-supported-version`,
+`--fallback-host`, `--fallback-port`, `--fallback-user`, `--fallback-remote-path`, `--fallback-host-key`,
+`--fallback-public-base-url`, `--fallback-password`, `--repository-url`, `--repository-dir`, `--branch`,
+`--target-subdir`, `--commit-message`, `--remote-base-url`, `--verify-attempts`, `--verify-delay-seconds`,
+`--env-file`.
+
+Origem dos valores de publicação: opção na linha de comando > variável de ambiente (`QUALLIT_UPDATE_*` /
+`QUALLIT_PUBLISH_*`, `QUALLIT_FALLBACK_PUBLIC_BASE_URL`, `QUALLIT_INSTALLER_REPO_URL`,
+`QUALLIT_INSTALLER_TARGET_SUBDIR`, `QUALLIT_INSTALLER_REMOTE_BASE_URL`) > `config/qdisk.endpoints.json` > padrões de
+`tools/utils/publish_update_package.ps1` (arquivo local, se existir) > padrão do script. Arquivos de variáveis lidos
+sem sobrescrever o ambiente: `--env-file`, `tools/.env`, `tools/publish_update.env`, `.env`,
+`config/publish_update.env`.
+
+<a id="instalador"></a>
+## 11. Instalador
+
+[`tools/installer/qdisk.iss`](../tools/installer/qdisk.iss) (Inno Setup 6), gerado na etapa 10 ou à mão com
+`iscc tools\installer\qdisk.iss` (sem `/DAppVersion`, a versão fica `0.0.00.00`; precisa de `dist\qdisk.exe`).
+
+- Por usuário, sem UAC (`PrivilegesRequired=lowest`); pasta fixa `{localappdata}\qdisk` (sem página de pasta).
+- Instala só `dist\qdisk.exe`. Atalho no Menu Iniciar (grupo `Quallit`) e, opcional, na Área de Trabalho.
+- Idiomas: português do Brasil e inglês. `CloseApplications=yes` (filtro `qdisk.exe`) para atualizar com o app aberto.
+- Saída: `dist\Setup_qdisk_<versão>.exe`, LZMA2.
+- `AppId` `{569DF4EF-80C4-4B84-BE36-04B8AEB69EC7}`: não alterar (identifica o produto para upgrade e desinstalação).
+- A desinstalação apaga `cache`, `assets` e `Data` dentro da pasta e preserva `config` e `logs`.
 
 <a id="update-online"></a>
 ## 12. Atualização online
 
-O pipeline completo (`python .\tools\build_release_dotnet_4.py` ou `.\tools\utils\Build-OneFile-Sign_v4.bat`) gera
-`dist/update` (instalador renomeado `Setup_qdisk.update.exe`, `qdisk.update.json` e os
-4 catálogos), envia ao Git `quallit-installer` com os manifestos (etapa 14), confere o servidor principal (15),
-publica no mateweb (16, falha só avisa) e sincroniza o Git do projeto (17). O app baixa o manifesto de atualização e
-só aceita o instalador assinado com o certificado esperado (`AuthenticodeVerifier`; ver P5 antes de trocar o
-certificado).
-
-Só publicar ou conferir, sem recompilar:
-
-```powershell
-python .\tools\build_release_dotnet_4.py --sync_only                 # etapas 14 e 15
-python .\tools\build_release_dotnet_4.py --sync_only --dry-run       # simula, sem commit/push
-python .\tools\build_release_dotnet_4.py --sync_only --no-push       # commit sem push
-python .\tools\build_release_dotnet_4.py --sync_only --no-verify-remote
-python .\tools\build_release_dotnet_4.py --verify_installer          # compara dist\update com o servidor
-python .\tools\build_release_dotnet_4.py --verify_installer --verify-installer-hash   # baixa o instalador e confere o SHA-256
+```mermaid
+sequenceDiagram
+    participant App as qdisk.exe
+    participant P as installer.quallit.com.br/qdisk
+    participant F as mateweb.ddns.net/qdisk
+    App->>P: GET qdisk.quallit.update.json
+    alt principal falhou
+        App->>F: GET qdisk.quallit.update.json
+    end
+    App->>App: version > versão atual?
+    App->>P: baixa installerUrl (HTTPS)
+    App->>App: confere sha256 do manifesto e Authenticode
+    App->>App: cmd: instalador /SILENT ... e reabre o app
 ```
 
-Conferência: JSONs por SHA-256 do conteúdo normalizado; instalador pelo `Content-Length` (ou SHA-256 completo com
-`--verify-installer-hash`). Esperado: `Verificacao concluida: dist\update corresponde ao conteudo remoto esperado.`
-Se divergir: o push para `quallit-installer` foi aceito? o servidor já sincronizou o commit? `dist/update` foi
-regerado depois da última mudança? o mateweb recebeu a mesma versão?
+[`UpdateClient`](../src/qdisk.Infrastructure/UpdateClient.vb) lê `qdisk.quallit.update.json` da base principal e, se falhar,
+da base de fallback (timeout HTTP de 20 s). Versão: `version` ou `latestVersion`. Instalador: com manifesto vindo do
+fallback e `fileName` preenchido, `<fallback>/<fileName>`; senão `installerUrl`, `downloadUrl` ou `url`; senão
+`<principal>/<fileName>`; senão `<principal>Setup_qdisk.update.exe`. A URL final tem de ser HTTPS.
+
+[`AppUpdateHelper`](../src/qdisk.UI/Services/AppUpdateHelper.vb) roda na abertura (se `AutoUpdateApp`) e pelo botão
+de Configurações, uma verificação por vez. Opções na janela: Baixar e instalar, Apenas baixar (salva onde o técnico
+escolher), Depois, Cancelar. Antes de executar ou entregar o instalador, exige:
+
+1. `sha256` no manifesto, igual ao SHA-256 do arquivo baixado;
+2. assinatura Authenticode íntegra ([`AuthenticodeVerifier`](../src/qdisk.Core/Services/AuthenticodeVerifier.vb);
+   raiz não confiável é aceita) **e** impressão digital do assinante em `TrustedSignerThumbprints` (hoje
+   `C991A7773B40EFEFC87359967882E53A3774E378`, `CN=Quallit Local Code Signing`, válido até 14/08/2027).
+
+Instalador recusado é apagado e não executado. Aceito: `cmd.exe /c start "" /wait "<instalador>" /SILENT
+/SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS && start "" "<qdisk.exe>"` e o app fecha. `mandatory` só aparece como
+texto na janela; `minimumSupportedVersion` não é usado pelo app.
+
+Publicar ou conferir sem recompilar:
+
+```powershell
+python .\tools\build_release_dotnet_4.py --sync-only                    # etapas 14 e 15
+python .\tools\build_release_dotnet_4.py --sync-only --dry-run          # prepara, sem commit/push
+python .\tools\build_release_dotnet_4.py --verify-installer             # compara dist\update com o principal
+python .\tools\build_release_dotnet_4.py --verify-installer --verify-installer-hash
+```
 
 <a id="metodos-gravacao"></a>
-## 13. Método de gravação por imagem
+## 13. Métodos de gravação USB
 
-Referência das imagens analisadas (helper `Quallit.IsoManifestTool`, regra do Core `UsbWriteMethodAdvisor`,
-`analysisEngine: core-1`, em 17/10/2026, sobre `C:\Users\MarceloSobral\Downloads\qdisk-ori`). A
-decisão vale pelo `usbWritePolicy` de cada item; se a imagem mudar (outro SHA-256), refazer no GUI_ADM.
+Métodos (`UsbWriteMethods`): `logical-fat32`, `uefi-ntfs`, `raw` e `fat32-split-wim` (altera a imagem; só aceito na
+política com `allowContentTransformations=true` e sem equivalente no app).
 
-| Imagem | Itens | Boot | ISO híbrida | Carregadores | Preferido | Permitidos | Observação |
-|---|---|---|---|---|---|---|---|
-| `Quallit_Boot.iso` | `quallit-boot-*` (tools) | BIOS + UEFI | não | bootmgr, EFI x64, GRUB, Bootwiz | `logical-fat32` | `logical-fat32` | RAW não dá boot (não híbrida). |
-| `PNB-WIN7-x64.ISO` | `PNB-WIN7-X64-*` (pnb) | BIOS + UEFI | não | bootmgr, EFI x64 e ia32 | `logical-fat32` | `logical-fat32` | Maior `.swm` a 38.711 bytes do limite de 4 GB. |
-| `PNB-Win11-x64.iso` | `PNB-Win11-x64-*` (pnb) | BIOS + UEFI | não | bootmgr, EFI x64 | `uefi-ntfs` (só UEFI) | `uefi-ntfs` | `install.wim` > 4 GB; dividir alteraria a imagem. |
-| `PNB-Storex-05-26.iso` | `PNB-STOREX-atual-*` (pnb) | só BIOS | sim (MBR, 0x17) | isolinux | `raw` | `raw` | Cópia lógica não preserva o boot (o app não instala Syslinux). |
-| `Acronis-2021.iso` | `acronis-*` (tools) | BIOS + UEFI | sim (MBR, EFI 0xEF) | Bootwiz, EFI x64 e ia32 | `raw` | `raw`, `logical-fat32` (só UEFI) | Cópia lógica perde o boot BIOS. |
+| Método da política | No app | O que faz |
+|---|---|---|
+| `logical-fat32` | BIOS (cópia FAT32 + MBR/PBR BootMgr) ou UEFI (cópia FAT32) | Formata FAT32 e copia os arquivos da ISO; verificável por manifesto |
+| `uefi-ntfs` | UEFI:NTFS | Partição 1 NTFS com os arquivos da ISO + partição 2 tipo `0xEF` com `assets/uefi-ntfs/uefi-ntfs.img` (Rufus); só UEFI |
+| `raw` | RAW/DD | Cópia byte a byte da imagem para o disco físico (corpo primeiro, o primeiro 1 MiB por último) |
 
-Fora dos catálogos (só análise): `STOREX_CENTOS_V3_10_10_26.iso` (só BIOS, híbrida 0x17, isolinux → `raw`) e
-`STOREX_UBUNTU_V11_10_10_26.iso` (BIOS + UEFI, MBR protetor + GPT, GRUB → `raw`; `logical-fat32` só UEFI).
+Decisão ([`UsbWritePolicyResolver`](../src/qdisk.Core/Services/UsbWritePolicyResolver.vb)): o app acha o item do
+catálogo pelo nome registrado no download ou por `fileName` + tamanho (itens com o mesmo arquivo precisam ter a mesma
+política) e aplica `usbWritePolicy` se ela for coerente (`allowedMethods` conhecidos, `preferredMethod` entre eles),
+for da mesma imagem (`imageSha256` = `sha256` do item) e o tamanho da ISO local conferir. Caso contrário o app usa a
+análise local ([`UsbWriteMethodAdvisor`](../src/qdisk.Core/Services/UsbWriteMethodAdvisor.vb)), que é a mesma regra
+usada pelo helper do QDisk_Adm. Ordem de preferência da regra quando atende todos os alvos de boot da imagem: cópia
+lógica, UEFI:NTFS, RAW.
 
-**Win11 (UEFI:NTFS):** layout do Rufus — partição NTFS com os arquivos da ISO sem dividir o `install.wim`
-(14.917.593.251 bytes) + partição FAT 0xEF com o carregador UEFI:NTFS assinado pela Microsoft. Alternativas
-descartadas: FAT32 com `install.wim` dividido (altera a imagem); FAT32 + NTFS sem carregador de terceiros (não
-confirmado que o Setup acha o `install.wim`); RAW (ISO não híbrida).
+Políticas nos catálogos atuais:
 
-**Rótulo do pendrive** (`usbWritePolicy.volumeLabel`): vale na cópia lógica e no UEFI:NTFS; no RAW fica o rótulo da
-ISO. Sem `volumeLabel`: rótulo da ISO; sem rótulo na ISO: `QDisk_` + nome do arquivo. FAT32 aceita 11 caracteres,
-NTFS 32. Hoje: Win11 `PNB_Win11`, Quallit_Boot `Q_BOOT`, Win7 o da ISO, Storex `CentOS_6.8_Final`, Acronis
-`ACRONIS_MEDIA`, TIBX `QDisk_TIBX`.
+| Imagem (`fileName`) | Catálogo | Preferido | Permitidos | Alvos do preferido | `volumeLabel` |
+|---|---|---|---|---|---|
+| `Quallit_Boot.iso` | tools | `logical-fat32` | `logical-fat32` | BIOS, UEFI | `Q_BOOT` |
+| `Acronis-2021.iso` | tools | `raw` | `logical-fat32`, `raw` | BIOS, UEFI | — |
+| `PNB-Storex-05-26.iso` | pnb | `raw` | `raw` | BIOS | — |
+| `PNB-WIN7-x64.ISO` | pnb | `logical-fat32` | `logical-fat32` | BIOS, UEFI | — |
+| `PNB-Win11-x64.iso` | pnb | `uefi-ntfs` | `uefi-ntfs` | UEFI | `PNB_Win11` |
+| `Quallit_Boot_clean.iso` | devteam | `logical-fat32` | `logical-fat32` | BIOS, UEFI | `Q_BOOT` |
 
-**TIBX:** não é gravado como imagem de boot; o arquivo é copiado para o USB formatado em **NTFS** (a mídia Acronis
-restaura de NTFS e não de exFAT; FAT32 não aceita arquivo acima de 4 GB). Sem `usbWritePolicy` (o GUI_ADM recusa
-política em item que não é ISO). Tamanhos: `RD-LINUX-V30-R318.TIBX` 7.209.635.840; `RD-WIN-V90-05-26.TIBX`
-20.818.337.792; `PNB-WIN7-IMG.TIBX` e `WIN7-PNB-REG.TIBX` 13.763.194.880 bytes.
+Itens TIBX não têm política: o arquivo é copiado para um pendrive NTFS (a mídia Acronis restaura de NTFS e não de
+exFAT; FAT32 não aceita arquivo acima de 4 GB). Se o volume não estiver em NTFS, estiver em CDFS/UDF (gravação RAW) ou
+a partição não tiver espaço, o app formata (`TibxVolumeCheck`).
 
-**Confirmado e não confirmado:** alvos de boot, carregadores, área de sistema e tamanhos vêm da leitura das imagens.
-"ISO híbrida" é indício de que o RAW dá boot, não prova (boot real do Storex e do Acronis por RAW segue no destaque D
-de `pendencias.md`). Nas ISOs não híbridas a área de sistema está zerada, por isso `raw` não é permitido.
+Rótulo do pendrive (`UsbVolumeLabels`): `volumeLabel` da política; senão o rótulo da ISO; senão `QDisk_` + nome do
+arquivo. Só letras, dígitos, `_` e `-`; FAT32 em maiúsculas e até 11 caracteres, NTFS até 32. RAW mantém o rótulo da
+ISO. Cópia de TIBX: `QDisk_TIBX`.
 
-Refazer a análise:
+UEFI:NTFS: o diskpart cria a partição 1 com o tamanho do disco em MiB − 3 (ativa) e a partição 2 com `set id=ef`;
+grava `uefi-ntfs.img` na partição 2 e depois formata a 1 em NTFS. O app só usa a imagem se o SHA-256 for
+`72683fa1250eeea772d3399277b434d4e55ba8dd0dc926e52d817e701fc2eb9e` (constante `UefiNtfsImageSha256` em
+`UsbBootView.vb`; origem e licença em [`assets/uefi-ntfs/ORIGEM.txt`](../assets/uefi-ntfs/ORIGEM.txt)).
+
+Refazer a análise e as sugestões pela CLI do QDisk_Adm:
 
 ```powershell
-python .\GUI_ADM\catalog_admin.py --generate-missing-manifests .\config\qdisk.pnb.json --refresh --image-dir "<pasta das ISOs>" --out .\config\manifests --manifest-url-base "https://installer.quallit.com.br/qdisk/manifests"
-python .\GUI_ADM\catalog_admin.py --suggest-write-policies .\config\qdisk.pnb.json   # --apply grava; --overwrite substitui
+python .\QDisk_Adm\catalog_admin.py --generate-missing-manifests .\config\qdisk.quallit.pnb.json --refresh --image-dir "<pasta das ISOs>" --out .\config\manifests
+python .\QDisk_Adm\catalog_admin.py --suggest-write-policies .\config\qdisk.quallit.pnb.json            # --apply grava; --overwrite substitui
+python .\QDisk_Adm\catalog_admin.py --generate-manifest "<imagem.iso>" --out .\config\manifests  # ISO avulsa
 ```
 
-ISO avulsa: `--generate-manifest` (a análise sai em `logical.analysis`).
+Sem `--manifest-url-base`, a base do `manifestUrl` é `<primary.baseUrl>/manifests`.
 
 <a id="regra-token"></a>
-## 14. Regra do token para o site
+## 14. Token do dia
 
-Esta seção é a que vai para o desenvolvedor do site (envie só ela; o resto do documento é interno). O site gera, por
-dia, um token de 6 dígitos para cada perfil — RD, PNB e DevTeam — com a mesma regra e um `internal_id` fixo por perfil.
+### Regra (para o site que gera o token)
 
-**Timezone obrigatório: `America/Sao_Paulo`.** Em PHP, `date_default_timezone_set('America/Sao_Paulo');` antes de
-qualquer `date()`. Em UTC, depois das 21h no Brasil o site já usa a data do dia seguinte e o token é recusado.
+O site gera, por dia, um token de 6 dígitos para cada perfil, com a mesma regra e um ID interno fixo por perfil (os
+IDs estão em [`config/qdisk.tokens.json`](../config/qdisk.tokens.json)).
 
 | Parâmetro | Valor |
 |---|---|
 | Data base | `1970-10-01` |
-| `internal_id` RD | `010911` (inteiro `10911`) |
-| `internal_id` PNB | `060171` (inteiro `60171`) |
-| `internal_id` DevTeam | `270777` |
+| ID RD | `010911` (inteiro `10911`) |
+| ID PNB | `060171` (inteiro `60171`) |
+| ID DevTeam | `270777` |
 | Hash | MD5 |
-| Tamanho | 6 dígitos |
+| Fuso da data | `America/Sao_Paulo` |
 
-Algoritmo, por perfil: dias entre `1970-10-01` e a data alvo (no fuso acima); soma com o `internal_id`; MD5 da soma
-em texto decimal; remove o que não é dígito do hash hexadecimal; usa os 6 primeiros (completando com zeros à
-esquerda se faltar).
+Algoritmo, por perfil: dias entre `1970-10-01` e a data alvo; soma com o ID; MD5 da soma em texto decimal; remove do
+hexadecimal o que não é dígito; usa os 6 primeiros (completando com zeros à esquerda se faltar). Mesma conta em
+`site_token` de [`generate_token_verifiers.py`](../tools/utils/generate_token_verifiers.py).
+
+Exemplos (calculados com `site_token`): `2026-07-02` → RD `747080`, PNB `590568`, DevTeam `246768`; `2026-07-03` → RD
+`988225`, PNB `498989`, DevTeam `050394`.
+
+Implementação de referência em PHP (mesma lógica; não executada neste repositório):
 
 ```php
 <?php
 date_default_timezone_set('America/Sao_Paulo');
 
-function gerar_token_downloader(string $date, int $internalId): string
+function gerar_token(string $date, int $internalId): string
 {
-    $base = new DateTime('1970-10-01');
-    $target = new DateTime($date);
-    $days = $target->diff($base)->days;
-    $sum = $days + $internalId;
-    $digits = preg_replace('/[^0-9]/', '', md5((string)$sum));
+    $days = (new DateTime($date))->diff(new DateTime('1970-10-01'))->days;
+    $digits = preg_replace('/[^0-9]/', '', md5((string)($days + $internalId)));
     return str_pad(substr($digits, 0, 6), 6, '0', STR_PAD_LEFT);
 }
 
 $date = date('Y-m-d');
-echo "Token Downloader RD: " . gerar_token_downloader($date, 10911) . "\n";
-echo "Token Downloader PNB: " . gerar_token_downloader($date, 60171) . "\n";
-echo "Token DevTeam: " . gerar_token_downloader($date, 270777) . "\n";
+echo gerar_token($date, 10911), "\n";   // RD
+echo gerar_token($date, 60171), "\n";   // PNB
+echo gerar_token($date, 270777), "\n";  // DevTeam
 ```
 
-Configuração esperada no gerador dinâmico do site:
+### Como o app confere
 
-```php
-'downloader'    => ['name' => 'Token Downloader RD',  'enabled' => true, 'type' => 'internal_id', 'base_date' => '1970-10-01', 'internal_id' => 10911],
-'token_2'       => ['name' => 'Token Downloader PNB', 'enabled' => true, 'type' => 'internal_id', 'base_date' => '1970-10-01', 'internal_id' => 60171],
-'token_devteam' => ['name' => 'Token DevTeam',        'enabled' => true, 'type' => 'internal_id', 'base_date' => '1970-10-01', 'internal_id' => 270777],
-```
+O app não leva os IDs. Ele embute `config/qdisk.tokens.app.json`, gerado por `generate_token_verifiers.py` a partir
+de `config/qdisk.tokens.json`: para cada perfil e cada dia da janela (padrão: hoje −2 a +730 dias), o PBKDF2-SHA256
+(100.000 iterações, 16 bytes) do token daquele dia, com sal aleatório + `|<perfil>|<AAAA-MM-DD>`. Opções do gerador:
+`--days-back`, `--days-ahead`, `--iterations`, `--today`.
 
-Exemplos validados: `2026-07-02` → RD `747080`, PNB `590568`, DevTeam `246768`; `2026-07-03` → RD `988225`, PNB
-`498989`, DevTeam `050394` (se o site mostrar estes ainda em 02/07 no Brasil, está em UTC); `2026-07-06` → DevTeam
-`047708`.
+[`TokenValidationService`](../src/qdisk.Core/Services/TokenValidationService.vb): tira o que não é dígito, exige 6
+dígitos e compara (tempo constante) com o verificador da data local e, se diferente, da data UTC; o perfil é o que
+bater. Se a janela não cobre hoje, nenhum token valida e a tela pede para instalar a versão mais recente.
 
-Checklist antes de publicar no site: data do Brasil (não UTC); timezone definido antes de `date()`; IDs e data base
-como acima; token com exatamente 6 dígitos; os exemplos acima conferem.
+Limite de tentativas (`TokenAttemptLimiter`, estado em `%LOCALAPPDATA%\qdisk\config\token_attempts.dat`): 3 erros
+livres; depois espera de 30 s, dobrando a cada erro, até 15 min. Vale para a tela e para `--token`, também entre
+reinícios.
 
-**Como o app confere (desde a 3.07.10.26).** A regra do site não mudou, mas o app não conhece os `internal_id`: leva
-`config/qdisk.tokens.app.json`, com um verificador PBKDF2-SHA256 (100.000 iterações, sal aleatório) do token
-de cada perfil para cada dia de hoje −2 a +730 dias, gerado por `tools/utils/generate_token_verifiers.py` a partir de
-`config/qdisk.tokens.json` (os IDs, só no repositório privado e no GUI_ADM). O token digitado, só com os
-dígitos, é conferido contra o verificador de hoje (e da data UTC, quando diferente); o perfil é o que bater. Depois
-de 3 erros seguidos o app espera 30 s, 1 min, 2 min… até 15 min (vale para `--token` e entre reinícios; estado em
-`%LOCALAPPDATA%\qdisk\config\token_attempts.dat`). Se a janela vencer, o app pede atualização. Limite
-conhecido: com 6 dígitos, força bruta dedicada sobre o verificador de um dia ainda é possível; o ganho é que extrair
-o executável não entrega a regra para qualquer dia.
+Quem regenera os verificadores: a etapa 2 de todo build do pipeline e o QDisk_Adm ao salvar IDs alterados em
+Configurações.
+
+<a id="tarefas"></a>
+## 15. Tarefas comuns
+
+**Publicar uma imagem nova no catálogo**
+1. Suba a ISO/TIBX na origem e obtenha a URL HTTPS.
+2. No QDisk_Adm, abra o catálogo em `config/`, `Adicionar`, preencha nome, grupo, URL e descrição.
+3. ISO: `Preparar ISO…` (hashes, manifesto, sugestão de gravação, Defender) e revise em `Editar…`. TIBX: `Hashes…`.
+4. Confira `PRONTO PARA PUBLICAR`, `Atualizar item`, `Validar` e salve.
+5. Publique: `Upload` no QDisk_Adm (roda `tools\utils\publish_catalogs.ps1 -CatalogPath <catálogo> -Target
+   <destino>`, que envia o catálogo e os manifestos de `config/manifests/`) ou o build completo (etapas 13 a 16).
+   Para testar o envio sem publicar: `.\tools\utils\publish_catalogs.ps1 -CatalogPath .\config\qdisk.quallit.tools.json -DryRun`.
+6. Teste pelo app (Downloads e gravação).
+
+**Lançar versão:** commits feitos → `python .\tools\build_release_dotnet_4.py` → conferir `qdisk.quallit.update.json` nos dois
+servidores (a etapa 15 confere o principal; a 16, o fallback).
+
+**Atualizar o manual:** editar `assets/manual/manual.html`; para trocar capturas, substituir os PNGs de
+`assets/manual/images` com os mesmos nomes. A etapa 3 do pipeline (ou `python tools\utils\embed_manual_images.py`)
+embute as imagens.
+
+**Mudar o ID de um perfil:** QDisk_Adm → Configurações → Tokens (regera `qdisk.tokens.app.json`); atualizar o site com a
+mesma regra (§14); publicar versão nova, porque o app embute os verificadores.
+
+**Trocar o certificado de assinatura:** incluir a nova impressão digital em
+`AuthenticodeVerifier.TrustedSignerThumbprints`, publicar essa versão assinada com o certificado atual e só então
+assinar instaladores com o novo (`--sign-only` reassina os exes de `dist/`).
+
+**Regerar um manifesto USB:** gerar pelo QDisk_Adm, atualizar `manifestSha256` em todos os itens que apontam para ele e
+publicar catálogo e manifesto juntos (o app recusa manifesto com hash diferente do catálogo).
+
+**Atualizar `uefi-ntfs.img`:** trocar o arquivo, `ORIGEM.txt` e `UefiNtfsImageSha256` em `UsbBootView.vb`.
+
+<a id="atencao"></a>
+## 16. Pontos de atenção
+
+Comportamentos atuais do código que exigem cuidado:
+
+- **Dois conjuntos de valores do fallback SSH.** `config/qdisk.endpoints.json` tem porta `2205` e pasta
+  `/store/sites/qdisk/www`; os padrões embutidos em `build_release_dotnet_4.py`, `publish_catalogs.ps1`,
+  `publish_update_package.ps1.example` e no QDisk_Adm são porta `2222` e `/store/repositorio/qdisk` (e base pública
+  `https://<host>/repositorio/qdisk` quando falta `publicBaseUrl`). Como o arquivo de endpoints tem prioridade sobre
+  esses padrões, valem 2205 e `/store/sites/qdisk/www` enquanto ele estiver completo.
+- **`tools/utils/publish_catalogs.ps1` sem `-CatalogPath`** pega todo `qdisk.quallit.*.json` de `config/`, mas só
+  aceita `qdisk.quallit.(pnb|rd|tools|devteam).json`: com `qdisk.quallit.devteam2.json` na pasta, termina com
+  "Catalogo nao oficial para upload automatico". Passe `-CatalogPath` (o `Upload` do QDisk_Adm sempre passa o
+  catálogo aberto). `validate_catalogs.ps1` valida os cinco, inclusive o `devteam2`.
+- **`tools/utils/capturar_manual.ps1` não roda**: carrega uma biblioteca de UI Automation que não está no
+  repositório.
+- `config/qdisk.tokens.json` (IDs dos perfis) está no Git: aceitável só com o repositório privado.
+- O backup ZIP (etapa 11) não exclui `tools/certs/`, então leva o PFX e demais arquivos locais dessa pasta.
+- A etapa 12 limpa só `src/`; `bin`/`obj` de `tests/` e `tools/` ficam.
+- Regras ASR do Intune podem impedir o app de ler ferramentas copiadas para o pendrive (ex.: `bootsect.exe`); o
+  QDisk_Adm registra esses arquivos em `imageScan.systemToolCopies`.
