@@ -62,9 +62,6 @@
     <EmbeddedResource Include="..\..\config\qdisk.catalog.tools.json">
       <LogicalName>_embedded\Data\qdisk.catalog.tools.json</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\config\manifests\PNB-WIN7-x64.manifest.json">
-      <LogicalName>_embedded\Data\manifests\PNB-WIN7-x64.manifest.json</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="..\..\config\qdisk.endpoints.json">
       <LogicalName>_embedded\config\qdisk.endpoints.json</LogicalName>
     </EmbeddedResource>

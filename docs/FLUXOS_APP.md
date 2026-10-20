@@ -87,7 +87,6 @@ flowchart TD
   | Recurso | Destino em `%LOCALAPPDATA%\qdisk\` |
   |---|---|
   | `config/qdisk.catalog.rd.json`, `qdisk.catalog.pnb.json`, `qdisk.catalog.devteam.json`, `qdisk.catalog.tools.json` | `Data\` |
-  | `config/manifests/PNB-WIN7-x64.manifest.json` | `Data\manifests\` |
   | `config/qdisk.endpoints.json`, `config/qdisk.tokens.app.json` | `config\` |
   | `assets/**` (exceto `assets/manual/images/`) | `assets\` |
 
@@ -880,7 +879,7 @@ A verificação compara só hashes já registrados; não lê as imagens. Sem ima
 |---|---|
 | `%LOCALAPPDATA%\qdisk\app_version.txt` | Versão e MVID da última extração |
 | `%LOCALAPPDATA%\qdisk\assets\` | Logo, fundo, ícones, `run.gif`, manual, `uefi-ntfs\uefi-ntfs.img` |
-| `%LOCALAPPDATA%\qdisk\Data\` | Catálogos (embutidos e baixados) e `manifests\` |
+| `%LOCALAPPDATA%\qdisk\Data\` | Catálogos (embutidos e baixados) |
 | `%LOCALAPPDATA%\qdisk\manifests\` | Cache dos manifestos de identificação de USB |
 | `%LOCALAPPDATA%\qdisk\config\settings.json` | Configurações |
 | `%LOCALAPPDATA%\qdisk\config\download_status.json` | Downloads, hashes registrados e histórico de gravação RAW/DD |

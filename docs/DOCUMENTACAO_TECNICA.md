@@ -159,7 +159,7 @@ Raiz: `%LOCALAPPDATA%\qdisk\` (`AppPaths.DataRoot`). O instalador põe o `qdisk.
 | Caminho | Conteúdo | Quem grava |
 |---|---|---|
 | `%LOCALAPPDATA%\qdisk\app_version.txt` | Versão + MVID do executável que extraiu os recursos | `Program.EnsureAssetsExtracted` |
-| `%LOCALAPPDATA%\qdisk\Data\` | Catálogos (`qdisk.catalog.rd/pnb/devteam/tools.json`) e `manifests\PNB-WIN7-x64.manifest.json` | Extração dos recursos; atualização remota dos catálogos |
+| `%LOCALAPPDATA%\qdisk\Data\` | Catálogos (`qdisk.catalog.rd/pnb/devteam/tools.json`) | Extração dos recursos; atualização remota dos catálogos |
 | `%LOCALAPPDATA%\qdisk\config\` | `qdisk.endpoints.json` e `qdisk.tokens.app.json` (cópias extraídas), `settings.json`, `download_status.json`, `token_attempts.dat` | Extração; app |
 | `%LOCALAPPDATA%\qdisk\assets\` | Tudo de `assets/` exceto `manual/images` (o `manual.html` já traz as imagens embutidas) | Extração |
 | `%LOCALAPPDATA%\qdisk\manifests\` | Cache dos manifestos USB baixados | Identificação de USB |
@@ -180,7 +180,7 @@ disso, a atualização remota substitui o catálogo local quando o remoto é vá
 |---|---|---|---|
 | `config/qdisk.catalog.rd.json`, `qdisk.catalog.pnb.json`, `qdisk.catalog.devteam.json`, `qdisk.catalog.tools.json` | Catálogos (perfis RD, PNB, DevTeam e ferramentas) | sim (`Data\`) | sim |
 | `config/qdisk.catalog.devteam2.json` | Catálogo avulso; não é embutido nem publicado pelo pipeline | não | sim |
-| `config/manifests/*.manifest.json` | Manifestos USB (bytes exatos, `-text`) | só `PNB-WIN7-x64.manifest.json` | sim |
+| `config/manifests/*.manifest.json` | Manifestos USB (bytes exatos, `-text`); o app os baixa dos servidores | não | sim |
 | [`config/qdisk.endpoints.json`](../config/qdisk.endpoints.json) | Servidor principal, fallback (HTTP e SSH) e repositório do installer | sim (`config\`) | sim |
 | [`config/qdisk.tokens.json`](../config/qdisk.tokens.json) | IDs internos dos perfis (geram o token do site) e catálogo de cada perfil | **não** | sim |
 | `config/qdisk.tokens.app.json` | Perfis e verificadores PBKDF2 por dia, sem os IDs (gerado) | sim (`config\`) | sim |
@@ -255,7 +255,8 @@ catálogo guarda `manifestUrl` e `manifestSha256`; o app só aceita um manifesto
 
 Ordem de busca no app (`UsbBootView.LoadUsbManifestAsync`): cache `%LOCALAPPDATA%\qdisk\manifests\` (se o hash
 confere) → `manifestUrl` → mesmo caminho no fallback (quando a URL começa pela base principal) → cópias locais
-(`Data\manifests\`, entre outras) com hash conferido.
+(`Data\manifests\`, entre outras) com hash conferido. O executável não leva manifestos embutidos: sem cache e sem
+acesso aos servidores, a identificação fica inconclusiva.
 
 Ferramentas: validar um catálogo com `python .\QDisk_Adm\catalog_admin.py --validate .\config\qdisk.catalog.tools.json`;
 exportar o formato publicado com `--export-package <origem> <destino>`. Detalhes da CLI em
