@@ -308,10 +308,10 @@ Janela **Configurações do projeto** com duas abas. **Salvar** grava as duas; *
 | URL principal | `primary.baseUrl` | `https://installer.quallit.com.br/qdisk/` |
 | URL pública fallback | `fallback.publicBaseUrl` | `https://mateweb.ddns.net/qdisk/` |
 | Host SSH fallback | `fallback.host` | `mateweb.ddns.net` |
-| Porta SSH fallback | `fallback.port` | `2222` |
-| Host key SSH fallback | `fallback.hostKey` | vazio |
+| Porta SSH fallback | `fallback.port` | `2205` |
+| Host key SSH fallback | `fallback.hostKey` | `SHA256:aBVNSji5CI6pD+nASIXNxUTkCP86DMktrg1LoLiVre4` |
 | Usuário SSH fallback | `fallback.user` | `qdisk-update` |
-| Caminho remoto fallback | `fallback.remotePath` | `/store/repositorio/qdisk` |
+| Caminho remoto fallback | `fallback.remotePath` | `/store/sites/qdisk/www` |
 | Repositório Git installer | `installerGit.repositoryUrl` | `https://github.com/quallitdesenv/quallit-installer.git` |
 | Subpasta Git installer | `installerGit.targetSubdir` | `public/qdisk` |
 

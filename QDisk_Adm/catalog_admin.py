@@ -77,10 +77,10 @@ ENDPOINT_DEFAULTS = {
     "primary.baseUrl": "https://installer.quallit.com.br/qdisk/",
     "fallback.publicBaseUrl": "https://mateweb.ddns.net/qdisk/",
     "fallback.host": "mateweb.ddns.net",
-    "fallback.port": "2222",
-    "fallback.hostKey": "",
+    "fallback.port": "2205",
+    "fallback.hostKey": "SHA256:aBVNSji5CI6pD+nASIXNxUTkCP86DMktrg1LoLiVre4",
     "fallback.user": "qdisk-update",
-    "fallback.remotePath": "/store/repositorio/qdisk",
+    "fallback.remotePath": "/store/sites/qdisk/www",
     "installerGit.repositoryUrl": "https://github.com/quallitdesenv/quallit-installer.git",
     "installerGit.targetSubdir": "public/qdisk",
 }
@@ -1207,7 +1207,7 @@ def suggest_write_policies_for_catalog(catalog_path: Path, apply: bool, overwrit
 
 def read_endpoint_base_urls() -> tuple[str, str]:
     primary_base_url = "https://installer.quallit.com.br/qdisk"
-    fallback_base_url = "https://mateweb.ddns.net/repositorio/qdisk"
+    fallback_base_url = "https://mateweb.ddns.net/qdisk"
     if not ENDPOINTS_FILE.exists():
         return primary_base_url, fallback_base_url
 

@@ -9,9 +9,9 @@ Do not commit tools\publish_update_package.ps1.
 param(
     [string]$LocalUpdateDir = '',
     [string]$HostName = 'mateweb.ddns.net',
-    [int]$Port = 2222,
+    [int]$Port = 2205,
     [string]$UserName = 'qdisk-update',
-    [string]$RemotePath = '/store/repositorio/qdisk',
+    [string]$RemotePath = '/store/sites/qdisk/www',
     [string]$SshPassword = '',
     [string]$EnvFile,
     [switch]$DryRun
@@ -205,7 +205,7 @@ try {
     }
 
     Write-Host 'Publicacao concluida.' -ForegroundColor Green
-    $publicBaseUrl = "https://$HostName/repositorio/qdisk"
+    $publicBaseUrl = "https://$HostName/qdisk"
     $manifestUrl = "$publicBaseUrl/$manifestName"
     $artifactUrl = "$publicBaseUrl/$artifactName"
     Write-Host "Manifesto direto esperado: $manifestUrl"

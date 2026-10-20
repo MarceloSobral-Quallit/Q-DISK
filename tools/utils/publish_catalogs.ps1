@@ -18,10 +18,10 @@ param(
     [ValidateSet('Fallback', 'InstallerGit', 'Both')]
     [string]$Target = 'Both',
     [string]$HostName = 'mateweb.ddns.net',
-    [int]$Port = 2222,
-    [string]$HostKey = '',
+    [int]$Port = 2205,
+    [string]$HostKey = 'SHA256:aBVNSji5CI6pD+nASIXNxUTkCP86DMktrg1LoLiVre4',
     [string]$UserName = 'qdisk-update',
-    [string]$RemotePath = '/store/repositorio/qdisk',
+    [string]$RemotePath = '/store/sites/qdisk/www',
     [string]$SshPassword = '',
     [string]$EnvFile,
     [string]$RepositoryUrl = 'https://github.com/quallitdesenv/quallit-installer.git',
@@ -435,7 +435,7 @@ if ($Target -eq 'Fallback' -or $Target -eq 'Both') {
         }
 
         if (-not $DryRun -and -not $NoVerifyRemote) {
-            $fallbackBaseUrl = if (-not [string]::IsNullOrWhiteSpace($endpointDefaults['FallbackPublicBaseUrl'])) { $endpointDefaults['FallbackPublicBaseUrl'] } else { "https://$HostName/repositorio/qdisk" }
+            $fallbackBaseUrl = if (-not [string]::IsNullOrWhiteSpace($endpointDefaults['FallbackPublicBaseUrl'])) { $endpointDefaults['FallbackPublicBaseUrl'] } else { "https://$HostName/qdisk" }
             Test-RemoteJsonFiles -Files $catalogFiles -BaseUrl $fallbackBaseUrl -Attempts 1 -DelaySeconds 0 -CacheBust $false
             if ($manifestFiles.Count -gt 0) {
                 Test-RemoteJsonFiles -Files $manifestFiles -BaseUrl ($fallbackBaseUrl.TrimEnd('/') + '/manifests') -Attempts 1 -DelaySeconds 0 -CacheBust $false

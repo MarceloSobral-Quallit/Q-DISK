@@ -84,10 +84,10 @@ USB_MANIFEST_SUBDIR = "manifests"
 USB_MANIFEST_NAME_RE = re.compile(r"^[A-Za-z0-9._-]+\.manifest\.json$")
 
 DEFAULT_FALLBACK_HOST = "mateweb.ddns.net"
-DEFAULT_FALLBACK_PORT = 2222
+DEFAULT_FALLBACK_PORT = 2205
 DEFAULT_FALLBACK_USER = "qdisk-update"
-DEFAULT_FALLBACK_REMOTE_PATH = "/store/repositorio/qdisk"
-DEFAULT_FALLBACK_HOST_KEY = ""
+DEFAULT_FALLBACK_REMOTE_PATH = "/store/sites/qdisk/www"
+DEFAULT_FALLBACK_HOST_KEY = "SHA256:aBVNSji5CI6pD+nASIXNxUTkCP86DMktrg1LoLiVre4"
 DEFAULT_INSTALLER_REPO_URL = "https://github.com/quallitdesenv/quallit-installer.git"
 DEFAULT_INSTALLER_TARGET_SUBDIR = "public/qdisk"
 
@@ -1305,7 +1305,7 @@ def publish_fallback(args: argparse.Namespace, log_file: Path | None) -> None:
             if rc != 0:
                 raise RuntimeError(f"Publicacao dos manifestos de USB no fallback falhou com codigo {rc}")
     verify_fallback_files_over_ssh(args, payload_files, used_password, log_file)
-    public_base = args.fallback_public_base_url or f"https://{args.fallback_host}/repositorio/qdisk"
+    public_base = args.fallback_public_base_url or f"https://{args.fallback_host}/qdisk"
     for path in payload_files:
         verify_remote_file(path, public_base, verify_hash=path.suffix.lower() == ".json", timeout=60, log_file=log_file)
     for path in usb_manifest_files():

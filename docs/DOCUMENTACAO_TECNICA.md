@@ -617,11 +617,6 @@ publicar catálogo e manifesto juntos (o app recusa manifesto com hash diferente
 
 Comportamentos atuais do código que exigem cuidado:
 
-- **Dois conjuntos de valores do fallback SSH.** `config/qdisk.endpoints.json` tem porta `2205` e pasta
-  `/store/sites/qdisk/www`; os padrões embutidos em `build_release_dotnet_4.py`, `publish_catalogs.ps1`,
-  `publish_update_package.ps1.example` e no QDisk_Adm são porta `2222` e `/store/repositorio/qdisk` (e base pública
-  `https://<host>/repositorio/qdisk` quando falta `publicBaseUrl`). Como o arquivo de endpoints tem prioridade sobre
-  esses padrões, valem 2205 e `/store/sites/qdisk/www` enquanto ele estiver completo.
 - **`tools/utils/publish_catalogs.ps1` sem `-CatalogPath`** pega todo `qdisk.catalog.*.json` de `config/`, mas só
   aceita `qdisk.catalog.(pnb|rd|tools|devteam).json`: com `qdisk.catalog.devteam2.json` na pasta, termina com
   "Catalogo nao oficial para upload automatico". Passe `-CatalogPath` (o `Upload` do QDisk_Adm sempre passa o
