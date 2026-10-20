@@ -6784,6 +6784,9 @@ Namespace Views
             Public Property IsoType As String = "Unknown"
             Public Property IsoTypeAnalyzedAt As String = ""
             Public Property IsoTypeAnalyzed As Boolean = False
+            ' Campos que esta tela nao usa voltam intactos ao gravar.
+            <System.Text.Json.Serialization.JsonExtensionData>
+            Public Property Extra As Dictionary(Of String, System.Text.Json.JsonElement)
         End Class
 
         Private Class CacheItem

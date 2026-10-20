@@ -1797,6 +1797,9 @@ Namespace Views
             Public Property UsbSha256 As String
             Public Property UsbVerified As Boolean
             Public Property UsbVerifiedAt As String
+            ' Campos que esta tela nao usa (por exemplo, o historico de gravacao do USB) voltam intactos ao gravar.
+            <System.Text.Json.Serialization.JsonExtensionData>
+            Public Property Extra As Dictionary(Of String, System.Text.Json.JsonElement)
         End Class
 
         Private Sub SuggestDownloadsIfMd5Mismatch()
