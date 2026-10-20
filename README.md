@@ -60,7 +60,7 @@ manifestos USB, decide o método de gravação de cada ISO, verifica as imagens 
 | [QDisk_Adm/README.md](QDisk_Adm/README.md) | Uso do QDisk_Adm, botão a botão e pela linha de comando |
 | [tools/Quallit.NetSpeedTest/README.md](tools/Quallit.NetSpeedTest/README.md) | Bancada do teste de velocidade |
 | [tools/git/README.md](tools/git/README.md) | Sincronização com o GitHub |
-| [design/RESTRICOES_WINFORMS.md](design/RESTRICOES_WINFORMS.md) | Restrições de design da interface |
+| [docs/RESTRICOES_WINFORMS.md](docs/RESTRICOES_WINFORMS.md) | Restrições de design da interface |
 | [docs/RoadMap.md](docs/RoadMap.md) | Histórico de versões |
 
 ## Início rápido (desenvolvimento)

@@ -80,8 +80,7 @@ Peças do repositório:
 | `tools/certs/` | Só `.gitkeep` e `extract_cert_chain.ps1` vão para o Git; o PFX de assinatura (`quallit_codesign.pfx`) fica local |
 | `config/` | Catálogos, manifestos USB, endpoints, tokens, modelos de segredos — fonte do que é embutido no app e publicado |
 | `assets/` | `favicon.ico`, `logo-quallit-512x512.png`, `APP_BG.jpg`, `run.gif`, `icons/`, `manual/` (`manual.html` + `images/`), `uefi-ntfs/` (`uefi-ntfs.img` + `ORIGEM.txt`) |
-| `design/` | Referência de design das telas ([`RESTRICOES_WINFORMS.md`](../design/RESTRICOES_WINFORMS.md), [`PEDIDO.md`](../design/PEDIDO.md)) |
-| `docs/` | Esta documentação e os fluxos |
+| `docs/` | Esta documentação, os fluxos e as restrições de design das telas ([`RESTRICOES_WINFORMS.md`](RESTRICOES_WINFORMS.md)) |
 | `dist/` (ignorada) | Saída do pipeline: `qdisk.exe`, `Setup_qdisk_<versão>.exe`, `ADM/`, `NetSpeedTest/`, `update/` |
 
 Fim de linha ([`.gitattributes`](../.gitattributes)): texto com LF no repositório; `.vb`, `.vbproj`, `.csproj`, `.cs`,

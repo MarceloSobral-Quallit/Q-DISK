@@ -60,18 +60,6 @@ tools/utils/publish_update_package.ps1
 # Especstory (chat history local)
 .specstory/
 
-# Pacote do Claude Design: copias e artefatos gerados (o original esta em src/ e assets/)
-design/versao-alternativa/
-design/*.zip
-design/*.patch
-design/codigo-ui/
-design/telas/
-design/marca/
-
-# Capturas antes/depois do redesenho das telas (so locais desde 18/10/2026)
-design/comparacao/
-design/comparacao-arredondado/
-
 
 # Configuracao local do Claude Code
 .claude/settings.local.json
