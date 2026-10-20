@@ -278,7 +278,7 @@ def print_header(args: argparse.Namespace, log_file: Path) -> None:
     print()
     for line in art:
         print(f"{Colors.BOLD}{line}{Colors.RESET}")
-    print(f"{Colors.CYAN}          Quallit  --  Build v4 + Publicacao + Verificacao{Colors.RESET}")
+    print(f"{Colors.CYAN}          Quallit  --  Q-Disk Build + Publicacao + Verificacao{Colors.RESET}")
     print(f"  Projeto          : {PROJECT_ROOT}")
     print(f"  Log              : {log_file}")
     print(f"  Verbosidade      : {verbosity_label(args)}")
