@@ -269,11 +269,11 @@ def log_step_summary(status: dict[int, str], duration: dict[int, float], log_fil
 
 def print_header(args: argparse.Namespace, log_file: Path) -> None:
     art = [
-        r"   ____        ____  _________ __ __",
-        r"  / __ \      / __ \/  _/ ___// //_/",
-        r" / / / /_____/ / / // / \__ \/ ,<",
-        r"/ /_/ /_____/ /_/ // / ___/ / /| |",
-        r"\___\_\    /_____/___//____/_/ |_|",
+        r"  ___        ____ ___ ____  _  __",
+        r" / _ \      |  _ \_ _/ ___|| |/ /",
+        r"| | | |_____| | | | |\___ \| ' /",
+        '| |_| |_____| |_| | | ___) | . \\',
+        ' \\__\\_\\     |____/___|____/|_|\\_\\',
     ]
     print()
     for line in art:
