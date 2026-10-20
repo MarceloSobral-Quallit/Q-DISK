@@ -72,3 +72,6 @@ design/marca/
 design/comparacao/
 design/comparacao-arredondado/
 
+
+# Configuracao local do Claude Code
+.claude/settings.local.json
