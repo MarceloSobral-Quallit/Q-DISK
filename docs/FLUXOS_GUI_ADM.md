@@ -1,135 +1,269 @@
-# Fluxos do GUI_ADM (administrador de catálogos)
+# Fluxos do administrador (GUI_ADM)
 
-O `GUI_ADM` (`GUI_ADM/catalog_admin.py`, Tkinter; compilado em `dist/ADM/GUI_ADM.exe` pelo pipeline) mantém os
-catálogos do app, gera os manifestos USB, decide o método de gravação de cada ISO, verifica as imagens no
-Microsoft Defender e publica. Tirado do código em 18/10/2026. Uso detalhado de cada botão:
-[`GUI_ADM/README.md`](../GUI_ADM/README.md). Fluxos do app: [`FLUXOS_APP.md`](FLUXOS_APP.md).
+Fluxos do GUI_ADM (`GUI_ADM/catalog_admin.py`), a ferramenta que mantém os catálogos `config/qdisk.quallit.*.json`,
+gera os manifestos USB em `config/manifests/`, decide o método de gravação de cada ISO, verifica as imagens no
+Microsoft Defender e publica. Uso botão a botão e linha de comando: [`GUI_ADM/README.md`](../GUI_ADM/README.md).
+Fluxos do app: [`FLUXOS_APP.md`](FLUXOS_APP.md).
+
+## Sumário
+
+1. [Visão geral](#1-visão-geral)
+2. [Início e pastas](#2-início-e-pastas)
+3. [Editar e salvar um catálogo](#3-editar-e-salvar-um-catálogo)
+4. [Cadastrar uma imagem TIBX](#4-cadastrar-uma-imagem-tibx)
+5. [Preparar uma ISO](#5-preparar-uma-iso)
+6. [Decidir o método de gravação](#6-decidir-o-método-de-gravação)
+7. [Defender e ISO limpa](#7-defender-e-iso-limpa)
+8. [Publicar (Upload)](#8-publicar-upload)
+9. [Configurações](#9-configurações)
+10. [Build completo](#10-build-completo)
+11. [Linha de comando em lote](#11-linha-de-comando-em-lote)
 
 ## 1. Visão geral
 
 ```mermaid
 flowchart LR
-    A[Abrir: run_gui_adm.cmd<br/>ou dist/ADM/GUI_ADM.exe] --> B[Lista os catálogos de config/<br/>e abre o primeiro]
+    A["Abrir: run_gui_adm.cmd,<br/>python catalog_admin.py<br/>ou dist/ADM/GUI_ADM.exe"] --> B["Abre o primeiro<br/>qdisk.quallit.*.json da pasta"]
     B --> C[Editar itens]
-    C --> D[Preparar ISO…]
-    C --> E[Hashes… para TIBX]
-    D & E --> F[Pronto para publicar ✓/✗]
-    F --> G[Atualizar item → Validar → Salvar]
-    G --> H[Upload: installer Git e/ou mateweb]
-    B --> I[Configurações: endpoints e IDs dos tokens]
-    B --> J[Build completo: pipeline de release]
+    C --> D["TIBX: Hashes…"]
+    C --> E["ISO: Preparar ISO…"]
+    D --> F[PRONTO PARA PUBLICAR]
+    E --> F
+    F --> G[Atualizar item, Validar, Salvar]
+    G --> H[Upload]
+    B --> I[Configurações]
+    B --> J[Build completo]
 ```
 
-- Raiz do projeto: a variável `QDISK_ROOT`; senão a pasta acima de `GUI_ADM/` (no exe, dois níveis
-  acima de `dist/ADM`). Catálogos: `QDISK_CONFIG_DIR`, senão `config/`.
-- Logs: `GUI_ADM/log/catalog_admin.log` e `GUI_ADM/log_debug/`.
-
-## 2. Abrir, editar e salvar um catálogo
+## 2. Início e pastas
 
 ```mermaid
 flowchart TD
-    A[Catálogo: pnb, rd, tools, devteam, devteam2] --> B[load_catalog:<br/>lista JSON = array; objeto com items = pacote publicado]
-    B --> C[Itens na lista; campos desconhecidos guardados em _extra]
-    C --> D{Ação}
-    D -- Adicionar --> E[Valida o item sozinho e acrescenta]
-    D -- Atualizar item --> F[Valida o catálogo inteiro e troca o item]
-    D -- Duplicar --> G[Cópia profunda com nome -copy único]
-    D -- Ativar/desativar --> H[enabled: false some do app]
-    D -- Remover --> I[Confirma e remove]
-    E & F & G & H & I --> J[Salvar: valida e grava<br/>array ou pacote build+items]
+    A[Início] --> B{QDISK_ROOT definida?}
+    B -- sim --> R[Raiz = QDISK_ROOT]
+    B -- não --> C{Executável?}
+    C -- "não (Python)" --> R1["Raiz = pasta acima de GUI_ADM"]
+    C -- "sim, em dist/ADM" --> R2[Raiz = dois níveis acima]
+    C -- "sim, em outra pasta" --> R3[Raiz = pasta acima da do .exe]
+    R & R1 & R2 & R3 --> D{QDISK_CONFIG_DIR definida?}
+    D -- sim --> E[Pasta dos catálogos = QDISK_CONFIG_DIR]
+    D -- não --> F["Pasta dos catálogos = raiz/config"]
+    E & F --> G["Lista qdisk.quallit.*.json e abre o primeiro<br/>em ordem alfabética"]
+    G --> H["Logs: pasta do programa/log<br/>e pasta do programa/log_debug"]
 ```
 
-Trocar de item com alterações não aplicadas aplica-as automaticamente (se não validarem, a seleção volta). Ao
-fechar, pergunta se salva; não fecha com hash, manifesto, upload, Defender ou build em andamento.
+Da pasta dos catálogos saem também `qdisk.endpoints.json`, `qdisk.tokens.json` e `manifests/`. A caixa
+**Catálogo** mostra cada arquivo pela identificação: `devteam`, `devteam2`, `pnb`, `rd`, `tools`.
 
-Validação (`validate_items`): `name` único e obrigatório, `group`, `fileUrl` http(s), `fileName` `.tibx`/`.iso`/`.img`,
-MD5 e SHA-256 no formato, `imageSizeBytes` com SHA-256, `usbIdentification` coerente, `usbWritePolicy` válida,
-descrição até 600 caracteres.
-
-## 3. Preparar uma ISO
+## 3. Editar e salvar um catálogo
 
 ```mermaid
 flowchart TD
-    A[Preparar ISO… com o item selecionado] --> B[Escolhe a ISO uma vez]
-    B --> C{Helper .NET existe?<br/>Quallit.IsoManifestTool.exe ou o projeto}
-    C -- sim --> D[Manifesto pelo helper: arquivos, SHA-256,<br/>treeHash, sentinelas, análise core-1]
-    C -- não --> E[Análise parcial em Python, sem sugestão de gravação]
-    D -- helper falhou --> X[Mostra o erro e para]
-    D & E --> F[config/manifests/nome.manifest.json<br/>+ usbIdentification no item]
-    F --> G[Preenche MD5, SHA-256, tamanho e fileName vazio]
-    G --> H{Política de gravação}
+    A[Catálogo aberto] --> B{Ação na lista}
+    B -- Adicionar --> C[Valida só o item do painel<br/>e acrescenta no fim]
+    B -- Selecionar item --> D[Painel carrega o item]
+    D --> E[Editar campos]
+    E --> F{Atualizar item}
+    F -- válido --> G[Item trocado na lista, em memória]
+    F -- inválido --> X[Mostra os erros]
+    B -- Duplicar --> H["Cópia completa abaixo,<br/>nome name-copy"]
+    B -- Ativar/desativar --> I[Inverte enabled]
+    B -- Remover --> J[Confirma e remove]
+    C & G & H & I & J --> K["Catálogo marcado como alterado (* no título)"]
+    K --> L[Salvar]
+    L --> M{Validação do catálogo}
+    M -- ok --> N{Formato build/items marcado?}
+    N -- não --> O["Grava array direto"]
+    N -- sim --> P["Grava build + items<br/>(product Q-DISK, versão, data)"]
+    M -- erro --> X
+```
+
+- Trocar de item, **Validar**, **Salvar**, **Upload**, **Preparar ISO…** e **Verificar no Defender** aplicam antes
+  as alterações pendentes do painel; se não validarem, a ação para.
+- Item inativo é gravado com `enabled: false` e continua no arquivo.
+- Só `qdisk.quallit.devteam.json` pode ser salvo sem itens.
+- Ao fechar com alterações: salvar e fechar, descartar e fechar, ou voltar. Com qualquer operação em andamento,
+  a janela não fecha.
+
+## 4. Cadastrar uma imagem TIBX
+
+```mermaid
+flowchart TD
+    A[Adicionar ou selecionar item] --> B["Hashes…"]
+    B --> C[Escolhe o arquivo]
+    C --> D{.tibx ou .iso?}
+    D -- não --> E[Pede confirmação]
+    D -- sim --> F
+    E -- sim --> F[Calcula MD5, SHA-256 e tamanho]
+    F --> G["Preenche fileName, hashes e Bytes;<br/>sugere Name se vazio"]
+    G --> H[Preencher Group, File URL e Descrição]
+    H --> I[Atualizar item]
+```
+
+TIBX não leva política de gravação: o painel mostra "Não se aplica: o TIBX é copiado para o USB (NTFS)".
+
+## 5. Preparar uma ISO
+
+```mermaid
+flowchart TD
+    A["Preparar ISO… com item selecionado"] --> B[Escolhe a ISO uma vez]
+    B --> C{Helper Quallit.IsoManifestTool}
+    C -- ".exe na pasta do programa<br/>ou em dist/ADM" --> D[Executa o helper]
+    C -- "só o projeto .csproj" --> D2[dotnet run do projeto]
+    C -- nenhum --> E["Análise parcial em Python<br/>(monta a ISO; python-fallback)"]
+    D & D2 --> OK{Sucesso?}
+    OK -- não --> X[Mostra o erro e para]
+    OK -- sim --> F
+    E --> F["manifests/nome.manifest.json<br/>+ usbIdentification no item"]
+    F --> G["MD5, SHA-256 e tamanho do manifesto;<br/>fileName se vazio"]
+    G --> H{Política de gravação do item}
     H -- não existe --> I[Sugere pela análise]
-    H -- de outra imagem --> J[Sugere de novo, mantendo o rótulo]
+    H -- de outra imagem --> J[Sugere de novo,<br/>mantendo o rótulo do pendrive]
     H -- desta imagem --> K[Mantém]
-    I & J & K --> L[Verifica no Defender sem remediação]
-    L --> M[imageScan no item; lista Pronto para publicar]
+    I & J & K --> L[Verificação no Defender da mesma ISO]
+    L --> M["PRONTO PARA PUBLICAR ✓/✗"]
+    M --> N["Revisar em Editar… e salvar"]
 ```
 
-- A URL do manifesto no item é a do servidor principal: `<primary.baseUrl>/manifests/<nome>.manifest.json`.
-- Sugestão de gravação (`suggest_write_policy`): só com análise `core-1`; método preferido e permitidos entre os que
-  não alteram a imagem; alvos de boot (`bios`, `uefi`).
-- Revisão em `Editar…` (janela Gravação USB): preferido, permitidos, "permitir alterar a imagem", motivo e
-  `Rótulo do pendrive` (só letras, dígitos, `_` e `-`; até 11 com FAT32, 32 com NTFS; não aceito em política só RAW).
-- TIBX: `Hashes…` calcula MD5, SHA-256 e tamanho; TIBX não tem política (é copiado como arquivo).
+- O `manifestUrl` gravado no item é `<primary.baseUrl>/manifests/<nome>.manifest.json`, com `primary.baseUrl` de
+  `qdisk.endpoints.json`.
+- O helper tem até `QUALLIT_ISO_MANIFEST_HELPER_TIMEOUT_SECONDS` (padrão 600 s) para terminar.
+- A análise parcial em Python não gera sugestão de gravação.
 
-## 4. Microsoft Defender e ISO limpa
+## 6. Decidir o método de gravação
 
 ```mermaid
 flowchart TD
-    A[Verificar no Defender] --> B[Monta a ISO só leitura]
-    B --> C[MpCmdRun -Scan -ScanType 3 -DisableRemediation]
-    C --> D["Ameaças, itens não classificados e .exe com nome de<br/>ferramenta do Windows (heurística da regra ASR)"]
-    D --> E[imageScan no item, válido para o SHA-256 atual]
-    E -- com ameaça --> F[Gerar ISO limpa…]
-    F --> G[Escolhe os arquivos a remover: ameaças já marcadas]
-    G --> H[robocopy sem os arquivos + oscdimg UDF,<br/>mesmo rótulo, boot BIOS e/ou UEFI]
-    H --> I[Nova ISO: publicar e usar Preparar ISO… nela]
+    A["Editar… (janela Gravação USB)"] --> B{Sugerir pela análise}
+    B --> C{Análise do manifesto}
+    C -- ausente --> X1[Gere o manifesto primeiro]
+    C -- "parcial (python-fallback)" --> X2[Gere de novo com o helper<br/>ou defina manualmente]
+    C -- "completa (core-1)" --> D{Recomendado preserva a imagem?}
+    D -- não --> X3[Sem sugestão]
+    D -- sim --> E["Preferido = recomendado;<br/>Permitidos = viáveis sem alterar a imagem;<br/>alvos de boot bios/uefi"]
+    E --> F[Ajustes manuais: preferido, permitidos,<br/>alterar a imagem, motivo, rótulo]
+    F --> G[Concluir]
+    G --> H[Atualizar item]
+    H --> I{Validação da política}
+    I -- ok --> J[usbWritePolicy no item]
+    I -- erro --> X4[Mostra os erros]
 ```
 
-O Upload pede confirmação quando algum item ativo tem ameaça na última verificação.
+Métodos: `logical-fat32` (Cópia lógica FAT32), `uefi-ntfs` (UEFI:NTFS), `raw` (RAW/DD) e `fat32-split-wim` (FAT32
+com split do WIM; altera a imagem e exige "Permitir alterar a imagem"). O **Rótulo do pendrive** aceita só letras,
+dígitos, `_` e `-`; até 11 caracteres com método FAT32 permitido, até 32 nos demais; não se aplica a política só
+`raw`. A política guarda o SHA-256 da imagem: se a imagem do item mudar, a coluna **Gravação** mostra
+`(outra imagem)` e a validação pede para refazer.
 
-## 5. Publicar (Upload)
+## 7. Defender e ISO limpa
 
 ```mermaid
 flowchart TD
-    A[Upload; Destino: ambos, só installer Git ou só mateweb] --> B[Valida o catálogo]
-    B --> C{Ameaça do Defender em item ativo?}
-    C -- sim --> D[Confirma]
-    C -- não --> E
-    D --> E{Catálogo alterado sem salvar?}
-    E -- sim --> F[Salvar / enviar o do disco / cancelar]
-    E -- não --> G
-    F --> G[tools/utils/publish_catalogs.ps1]
-    G --> H[mateweb: pscp ou scp do catálogo + manifestos, confere por HTTP]
-    G --> I[installer Git: clone, copia para public/qdisk,<br/>commit e push, confere installer.quallit.com.br]
+    A[Verificar no Defender] --> B[SHA-256 da ISO]
+    B --> C[Monta a ISO]
+    C --> D["MpCmdRun -Scan -ScanType 3<br/>-DisableRemediation"]
+    D --> E["imageScan no item: ameaças, Unknown,<br/>.exe com nome de ferramenta do Windows"]
+    E --> F{Ameaças?}
+    F -- não --> G[PRONTO PARA PUBLICAR: Defender sem ameaças]
+    F -- sim --> H["Gerar ISO limpa…"]
+    H --> I[Marca arquivos a remover:<br/>ameaças já marcadas]
+    I --> J[Escolhe a ISO original e o destino]
+    J --> K["robocopy sem os marcados<br/>+ oscdimg: UDF, mesmo rótulo,<br/>boot BIOS e/ou UEFI"]
+    K --> L[Mostra caminho e SHA-256]
+    L --> M["Publicar a ISO limpa, trocar File URL<br/>e rodar Preparar ISO… com ela"]
 ```
 
-- Vai o catálogo selecionado e **todos** os `config/manifests/*.manifest.json`.
-- Senha do SSH: `SshPassword` em `config/secret.md` ou variável de ambiente.
-- Para publicar o app junto, use o Build completo (pipeline).
+A ISO limpa exige `oscdimg.exe` (Windows ADK) e, na ISO, `boot\etfsboot.com` e/ou
+`efi\microsoft\boot\efisys.bin`.
 
-## 6. Configurações
+## 8. Publicar (Upload)
 
-Aba Endpoints: `config/qdisk.endpoints.json` (servidor principal, mateweb, repositório do installer). Aba
-Tokens: nome, ID interno de 6 dígitos e catálogo de cada perfil (RD, PNB, DevTeam), em
-`config/qdisk.tokens.json`. Mudou algum ID, regenera `config/qdisk.tokens.app.json` (verificadores
-PBKDF2 por dia, embutidos no app) com `tools/utils/generate_token_verifiers.py`.
+```mermaid
+flowchart TD
+    A["Upload (Destino: Both, InstallerGit ou Fallback)"] --> B{Catálogo salvo em arquivo?}
+    B -- não --> X1[Salve antes]
+    B -- sim --> C[Aplica alterações do painel e valida]
+    C --> D{Item ativo com ameaça<br/>na última verificação?}
+    D -- sim --> E[Confirma publicar mesmo assim]
+    D -- não --> F
+    E --> F{Alterações não salvas?}
+    F -- sim --> G["Salvar e enviar, enviar o do disco ou cancelar"]
+    F -- não --> H
+    G --> H[Confirma arquivo e destino]
+    H --> I["Copia os JSON para raiz/config<br/>se QDISK_CONFIG_DIR for outra pasta"]
+    I --> J[publish_catalogs.ps1 -CatalogPath -Target]
+    J --> K{"Catálogo oficial?<br/>qdisk.quallit.pnb/rd/tools/devteam.json"}
+    K -- não --> X2[Catalogo nao oficial para upload automatico]
+    K -- sim --> L["Catálogo + todos os manifests/*.manifest.json"]
+    L --> M["Fallback: pscp ou scp para user@host:remotePath;<br/>confere por HTTP em fallback.publicBaseUrl"]
+    L --> N["InstallerGit: clone, copia para targetSubdir,<br/>commit e push; confere em primary.baseUrl<br/>(até 5 tentativas, 10 s)"]
+    M & N --> O["Resumo na tela; saída completa no log_debug"]
+```
 
-## 7. Build completo
+`qdisk.quallit.devteam2.json` aparece na caixa **Catálogo** e pode ser editado, mas não é um dos nomes aceitos pelo
+script de publicação. Credenciais e destinos: variáveis `QUALLIT_UPDATE_*`, `QUALLIT_PUBLISH_*` e
+`QUALLIT_INSTALLER_*`, depois `config/qdisk.endpoints.json`; senha SSH também em `SshPassword` de
+`config/secret.md`.
 
-Janela única que roda `tools/utils/Build-OneFile-Sign_v4.bat` (= `python tools/build_release_dotnet_4.py`), mostra o
-console e o log `tools/log/build_v4_*.log`, e resume versão nova e as etapas de publicação. Pode ser cancelado
-(encerra a árvore de processos). Etapas do pipeline: [`DOCUMENTACAO_TECNICA.md`](DOCUMENTACAO_TECNICA.md#pipeline).
+## 9. Configurações
 
-## 8. Linha de comando
+```mermaid
+flowchart TD
+    A[Configurações] --> B[Aba Endpoints]
+    A --> C[Aba Tokens]
+    B --> D["URL principal, fallback SSH/HTTPS,<br/>repositório e subpasta do installer"]
+    C --> E["RD, PNB, DevTeam: nome, ID de 6 dígitos,<br/>catálogo .json; perfil e data base do downloader"]
+    D & E --> F{Salvar}
+    F -- inválido --> X[Mostra o erro]
+    F -- ok --> G[Grava qdisk.endpoints.json e qdisk.tokens.json]
+    G --> H{Tokens mudaram?}
+    H -- sim --> I["generate_token_verifiers.py<br/>→ config/qdisk.tokens.app.json"]
+    H -- não --> J[Fim]
+    I --> J
+```
 
-| Opção | Faz |
-|---|---|
-| `--validate CATALOGO` | Valida sem abrir a janela |
-| `--export-package ORIGEM DESTINO` | Grava no formato publicado `{build, items}` |
-| `--generate-manifest ISO` | Gera o manifesto de uma ISO e imprime o resumo |
-| `--generate-missing-manifests CATALOGO [--image-dir] [--out] [--refresh]` | Preenche manifestos que faltam pelas ISOs locais; `--refresh` reanalisa |
-| `--manifest-url-base URL` | Base do `manifestUrl` (padrão: a mesma da janela) |
-| `--suggest-write-policies CATALOGO [--apply] [--overwrite]` | Mostra ou grava as políticas sugeridas |
-| `--scan-iso ISO [--catalog C --item "a,b"]` | Verifica no Defender e grava `imageScan` nos itens |
-| `--clean-iso ISO --clean-out SAIDA --exclude ARQ…` | Gera a ISO limpa |
+Catálogos associados padrão: `qdisk.quallit.rd.json` (RD), `qdisk.quallit.pnb.json` (PNB) e
+`qdisk.quallit.devteam.json` (DevTeam). **Restaurar padrões** só preenche os valores padrão do código; nada é
+gravado sem **Salvar**.
+
+## 10. Build completo
+
+```mermaid
+flowchart TD
+    A[Build completo] --> B[Executar build completo]
+    B --> C[Confirma]
+    C --> D["Copia os JSON para raiz/config<br/>se QDISK_CONFIG_DIR for outra pasta"]
+    D --> E["cmd.exe /c tools/utils/Build-OneFile-Sign_v4.bat<br/>→ python tools/build_release_dotnet_4.py"]
+    E --> F["Console ao vivo<br/>+ log_debug/build_console_*.log"]
+    F --> G{Terminou}
+    G --> H["Resumo: código de saída, versão nova,<br/>Git installer, fallback, Git projeto"]
+    F -- Cancelar build --> K["taskkill /T /F"]
+```
+
+Etapas do pipeline: [`DOCUMENTACAO_TECNICA.md`](DOCUMENTACAO_TECNICA.md#pipeline).
+
+## 11. Linha de comando em lote
+
+```mermaid
+flowchart TD
+    A["python GUI_ADM/catalog_admin.py"] --> B{Opção}
+    B -- "--validate" --> V[Valida e sai com 0 ou 1]
+    B -- "--export-package" --> P["Valida e grava {build, items}"]
+    B -- "--generate-manifest" --> M[Manifesto de uma ISO + resumo]
+    B -- "--generate-missing-manifests" --> MM["Para cada item: acha a imagem em --image-dir,<br/>gera ou reaproveita o manifesto em --out;<br/>--refresh reanalisa as ISOs com usbIdentification"]
+    B -- "--scan-iso" --> S["Defender; com --catalog e --item<br/>grava imageScan"]
+    B -- "--clean-iso" --> CL["ISO sem os --exclude em --clean-out"]
+    B -- "--suggest-write-policies" --> W["Mostra sugestões;<br/>--apply grava; --overwrite substitui"]
+    B -- nenhuma --> GUI[Abre a janela]
+```
+
+Uma ação por execução, na ordem do diagrama de cima para baixo. Exemplo de preparo em lote de um catálogo de ISOs:
+
+```powershell
+python .\GUI_ADM\catalog_admin.py --generate-missing-manifests .\config\qdisk.quallit.pnb.json --refresh
+python .\GUI_ADM\catalog_admin.py --suggest-write-policies .\config\qdisk.quallit.pnb.json
+python .\GUI_ADM\catalog_admin.py --suggest-write-policies .\config\qdisk.quallit.pnb.json --apply --overwrite
+python .\GUI_ADM\catalog_admin.py --validate .\config\qdisk.quallit.pnb.json
+```
+
+Opções e exemplos completos: [`GUI_ADM/README.md`](../GUI_ADM/README.md#linha-de-comando).
