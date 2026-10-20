@@ -628,7 +628,10 @@ flowchart TD
     B -- "não" --> B1["'A imagem da particao auxiliar UEFI:NTFS nao foi encontrada<br/>ou nao confere...' Reinstale o aplicativo."]
     B -- "sim" --> C{"Confirmação (ISO, destino)"}
     C -- "Sim" --> D["Proteções 8.3; AutoPlay desligado, se configurado"]
-    D --> E{"USB ≥ 1024 MB?"}
+    D --> D1{"'Validar hash antes da gravação ISO' ligada?"}
+    D1 -- "sim" --> D2["Confere o SHA-256 da ISO com o registrado no download"]
+    D1 -- "não" --> E{"USB ≥ 1024 MB?"}
+    D2 --> E
     E -- "não" --> E1["'USB pequeno demais para o layout UEFI:NTFS.'"]
     E -- "sim" --> F["diskpart: clean, MBR, partição 1 ativa até 3 MiB do fim,<br/>partição 2 tipo 0xEF no fim"]
     F --> G["Grava uefi-ntfs.img na partição 2"]
@@ -636,12 +639,14 @@ flowchart TD
     H --> I["Copia os arquivos da ISO sem dividir nenhum"]
     I --> J["Confere presença e tamanho dos arquivos,<br/>partição 2 byte a byte e BOOTX64.EFI no NTFS"]
     J --> K["'USB UEFI:NTFS verificado por manifesto e particao auxiliar.'"]
+    K --> L["Oferece ejetar o USB"]
 ```
 
 **Mensagem de sucesso:** acrescenta "O USB inicia em modo UEFI (o Windows 11 exige UEFI; nao ha boot BIOS/Legacy)." e
 o aviso sobre Secure Boot com a CA UEFI de terceiros da Microsoft.
 
-**Configurações de hash:** este método não usa "Validar hash antes/após"; a conferência é sempre a descrita acima.
+**Configurações de hash:** "Validar hash antes da gravação ISO" vale como na cópia FAT32. A conferência depois de gravar é
+sempre a descrita acima (manifesto da ISO, partição auxiliar e `BOOTX64.EFI`), com ou sem "Validar hash após gravação".
 
 ### 10.5 Imagem do USB e Validar Boot do USB
 

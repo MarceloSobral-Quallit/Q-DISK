@@ -4215,6 +4215,11 @@ Namespace Views
                 End If
                 Await _logService.WriteAsync($"USB | UEFI_NTFS | INICIO | {item.DisplayName} -> Disk {drive.DiskNumber} | Imagem={imagePath}")
 
+                ' Mesma opcao "Validar hash antes da gravacao ISO" da copia FAT32: confere a ISO antes de apagar o USB.
+                If _settingsService.Load().AutoValidateSha256BeforeIsoBurn AndAlso Not Await ConfirmIsoSha256BeforeBurnAsync(item, cancellationToken) Then
+                    Return
+                End If
+
                 _statusLabel.Text = "Criando particoes NTFS + UEFI:NTFS..."
                 Await CreateUefiNtfsPartitionsAsync(drive, cancellationToken)
 
@@ -4256,6 +4261,7 @@ Namespace Views
                                 $"O USB inicia em modo UEFI (o Windows 11 exige UEFI; nao ha boot BIOS/Legacy).{Environment.NewLine}{Environment.NewLine}" &
                                 "Com Secure Boot ligado, o firmware precisa aceitar a CA UEFI de terceiros da Microsoft (padrao na maioria dos PCs).",
                                 "USB Boot", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                OfferEjectUsb(drive)
             Catch ex As OperationCanceledException
                 errorLog = $"USB | UEFI_NTFS | CANCELADO | {item.DisplayName}"
                 _statusLabel.Text = "Operacao USB cancelada."
