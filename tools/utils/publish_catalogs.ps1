@@ -266,7 +266,7 @@ function Test-RemoteJsonFiles {
 function Validate-CatalogName {
     param([Parameter(Mandatory)] [System.IO.FileInfo]$File)
 
-    if ($File.Name -notmatch '^qdisk\.quallit\.(pnb|rd|tools|devteam)\.json$') {
+    if ($File.Name -notmatch '^qdisk\.catalog\.(pnb|rd|tools|devteam)\.json$') {
         throw "Catalogo nao oficial para upload automatico: $($File.Name)"
     }
     $null = Get-Content -LiteralPath $File.FullName -Raw | ConvertFrom-Json
@@ -346,7 +346,7 @@ if ($CatalogPath.Count -gt 0) {
     }
 }
 else {
-    $catalogFiles = Get-ChildItem -LiteralPath $CatalogDir -Filter 'qdisk.quallit.*.json' -File | Sort-Object Name
+    $catalogFiles = Get-ChildItem -LiteralPath $CatalogDir -Filter 'qdisk.catalog.*.json' -File | Sort-Object Name
 }
 
 if ($catalogFiles.Count -eq 0) {

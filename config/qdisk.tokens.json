@@ -4,19 +4,19 @@
       "profile": "RD",
       "displayName": "RD",
       "internalId": "010911",
-      "catalogFile": "qdisk.quallit.rd.json"
+      "catalogFile": "qdisk.catalog.rd.json"
     },
     {
       "profile": "PNB",
       "displayName": "PNB",
       "internalId": "060171",
-      "catalogFile": "qdisk.quallit.pnb.json"
+      "catalogFile": "qdisk.catalog.pnb.json"
     },
     {
       "profile": "DevTeam",
       "displayName": "DevTeam",
       "internalId": "270777",
-      "catalogFile": "qdisk.quallit.devteam.json"
+      "catalogFile": "qdisk.catalog.devteam.json"
     }
   ],
   "downloader": {

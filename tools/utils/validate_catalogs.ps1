@@ -6,10 +6,10 @@ param(
 $ErrorActionPreference = "Stop"
 
 $root = Resolve-Path -LiteralPath $CatalogDir
-$files = Get-ChildItem -LiteralPath $root -Filter "qdisk.quallit.*.json" -File | Sort-Object Name
+$files = Get-ChildItem -LiteralPath $root -Filter "qdisk.catalog.*.json" -File | Sort-Object Name
 
 if ($files.Count -eq 0) {
-    throw "Nenhum catalogo qdisk.quallit.*.json encontrado em $root"
+    throw "Nenhum catalogo qdisk.catalog.*.json encontrado em $root"
 }
 
 $totalItems = 0
@@ -18,7 +18,7 @@ foreach ($file in $files) {
     $rawJson = Get-Content -LiteralPath $file.FullName -Raw
     $items = $rawJson | ConvertFrom-Json
     if ($null -eq $items) {
-        if ($file.Name -eq "qdisk.quallit.devteam.json" -and $rawJson.Trim() -eq "[]") {
+        if ($file.Name -eq "qdisk.catalog.devteam.json" -and $rawJson.Trim() -eq "[]") {
             $items = @()
         }
         else {
@@ -30,7 +30,7 @@ foreach ($file in $files) {
         $items = @($items)
     }
 
-    if ($items.Count -eq 0 -and $file.Name -ne "qdisk.quallit.devteam.json") {
+    if ($items.Count -eq 0 -and $file.Name -ne "qdisk.catalog.devteam.json") {
         throw "$($file.Name): catalogo sem itens."
     }
 

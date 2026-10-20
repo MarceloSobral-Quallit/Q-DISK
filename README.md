@@ -45,7 +45,7 @@ manifestos USB, decide o método de gravação de cada ISO, verifica as imagens 
 | [`src/qdisk.Infrastructure`](src/qdisk.Infrastructure) | Cliente de atualização online |
 | [`src/qdisk.UI`](src/qdisk.UI) | Aplicativo WinForms (`qdisk.exe`) |
 | [`tests/qdisk.Tests`](tests/qdisk.Tests) | Testes unitários (xUnit) |
-| [`config/`](config) | Catálogos `qdisk.quallit.*.json`, endpoints, tokens e manifestos |
+| [`config/`](config) | Catálogos `qdisk.catalog.*.json`, endpoints, tokens e manifestos |
 | [`QDisk_Adm/`](QDisk_Adm) | Administrador de catálogos (Python) |
 | [`tools/`](tools) | Pipeline de release, instalador, utilitários, NetSpeedTest e IsoManifestTool |
 | [`assets/`](assets) | Ícones, imagens, manual e artefatos UEFI:NTFS embutidos no executável |

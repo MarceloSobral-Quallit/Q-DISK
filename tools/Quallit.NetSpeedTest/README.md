@@ -22,7 +22,7 @@ Executável único autônomo para Windows x64 (`win-x64`, `SelfContained`, `Publ
 
 - **Durante o desenvolvimento:** `dotnet build tools\Quallit.NetSpeedTest\Quallit.NetSpeedTest.vbproj -c Release` e abrir `tools\Quallit.NetSpeedTest\bin\Release\net8.0-windows\win-x64\Quallit.NetSpeedTest.exe`.
 
-Ao abrir, a bancada lê 4 catálogos publicados (`qdisk.quallit.rd.json`, `qdisk.quallit.pnb.json`, `qdisk.quallit.devteam.json` e `qdisk.quallit.tools.json`) no servidor principal (`primary.baseUrl` de `config/qdisk.endpoints.json`). Para cada catálogo que falhar no principal, tenta o fallback (`fallback.publicBaseUrl`). Entram os itens habilitados, com link, sem repetir o mesmo link.
+Ao abrir, a bancada lê 4 catálogos publicados (`qdisk.catalog.rd.json`, `qdisk.catalog.pnb.json`, `qdisk.catalog.devteam.json` e `qdisk.catalog.tools.json`) no servidor principal (`primary.baseUrl` de `config/qdisk.endpoints.json`). Para cada catálogo que falhar no principal, tenta o fallback (`fallback.publicBaseUrl`). Entram os itens habilitados, com link, sem repetir o mesmo link.
 
 ## O que a tela mostra
 

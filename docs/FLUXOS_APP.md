@@ -86,7 +86,7 @@ flowchart TD
 
   | Recurso | Destino em `%LOCALAPPDATA%\qdisk\` |
   |---|---|
-  | `config/qdisk.quallit.rd.json`, `qdisk.quallit.pnb.json`, `qdisk.quallit.devteam.json`, `qdisk.quallit.tools.json` | `Data\` |
+  | `config/qdisk.catalog.rd.json`, `qdisk.catalog.pnb.json`, `qdisk.catalog.devteam.json`, `qdisk.catalog.tools.json` | `Data\` |
   | `config/manifests/PNB-WIN7-x64.manifest.json` | `Data\manifests\` |
   | `config/qdisk.endpoints.json`, `config/qdisk.tokens.app.json` | `config\` |
   | `assets/**` (exceto `assets/manual/images/`) | `assets\` |
@@ -146,7 +146,7 @@ flowchart TD
   `%LOCALAPPDATA%\qdisk\config\token_attempts.dat` (`falhas|ticks UTC`), por isso vale entre aberturas do app e
   também na linha de comando. Token certo zera a contagem.
 - **Perfil.** O perfil define o catálogo de imagens: `catalogFile` em `qdisk.tokens.app.json`
-  (`qdisk.quallit.rd.json`, `qdisk.quallit.pnb.json` ou `qdisk.quallit.devteam.json`; os mesmos nomes são o padrão
+  (`qdisk.catalog.rd.json`, `qdisk.catalog.pnb.json` ou `qdisk.catalog.devteam.json`; os mesmos nomes são o padrão
   se o campo faltar). O token e o perfil ficam só em memória
   (`TokenManager`).
 
@@ -215,8 +215,8 @@ Código: [`Core/Services/CatalogService.vb`](../src/qdisk.Core/Services/CatalogS
 
   | Uso | Arquivos lidos |
   |---|---|
-  | Downloads, Teste de velocidade e verificação de imagens na abertura | o catálogo do perfil (`catalogFile` do perfil, seção 3) + `qdisk.quallit.tools.json` |
-  | Telas de USB (política de gravação, rótulo, identificação) | sempre os quatro: `qdisk.quallit.rd.json`, `qdisk.quallit.pnb.json`, `qdisk.quallit.devteam.json` e `qdisk.quallit.tools.json` (`LoadAllCatalogs`) |
+  | Downloads, Teste de velocidade e verificação de imagens na abertura | o catálogo do perfil (`catalogFile` do perfil, seção 3) + `qdisk.catalog.tools.json` |
+  | Telas de USB (política de gravação, rótulo, identificação) | sempre os quatro: `qdisk.catalog.rd.json`, `qdisk.catalog.pnb.json`, `qdisk.catalog.devteam.json` e `qdisk.catalog.tools.json` (`LoadAllCatalogs`) |
 
   As URLs remotas são `<servidor>/<nome do arquivo>`, com os mesmos nomes.
 
@@ -816,7 +816,7 @@ atualizacao agora.".
 flowchart TD
     A["Verificação"] --> G{"Já há uma verificação em andamento?"}
     G -- "sim" --> G1["Ignora (na manual: 'Ja existe uma verificacao<br/>de atualizacao em andamento.')"]
-    G -- "não" --> B["Baixa qdisk.quallit.update.json:<br/>servidor principal, depois fallback (20 s cada)"]
+    G -- "não" --> B["Baixa qdisk.update.json:<br/>servidor principal, depois fallback (20 s cada)"]
     B -- "falha nos dois" --> Z1["Indisponível"]
     B -- "ok" --> V{"version/latestVersion > versão atual?"}
     V -- "não" --> Z2["Atualizado"]

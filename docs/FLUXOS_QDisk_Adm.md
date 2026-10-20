@@ -1,6 +1,6 @@
 # Fluxos do administrador (QDisk_Adm)
 
-Fluxos do QDisk_Adm (`QDisk_Adm/catalog_admin.py`), a ferramenta que mantém os catálogos `config/qdisk.quallit.*.json`,
+Fluxos do QDisk_Adm (`QDisk_Adm/catalog_admin.py`), a ferramenta que mantém os catálogos `config/qdisk.catalog.*.json`,
 gera os manifestos USB em `config/manifests/`, decide o método de gravação de cada ISO, verifica as imagens no
 Microsoft Defender e publica. Uso botão a botão e linha de comando: [`QDisk_Adm/README.md`](../QDisk_Adm/README.md).
 Fluxos do app: [`FLUXOS_APP.md`](FLUXOS_APP.md).
@@ -23,7 +23,7 @@ Fluxos do app: [`FLUXOS_APP.md`](FLUXOS_APP.md).
 
 ```mermaid
 flowchart LR
-    A["Abrir: run_qdisk_adm.cmd,<br/>python catalog_admin.py<br/>ou dist/ADM/QDisk_Adm.exe"] --> B["Abre o primeiro<br/>qdisk.quallit.*.json da pasta"]
+    A["Abrir: run_qdisk_adm.cmd,<br/>python catalog_admin.py<br/>ou dist/ADM/QDisk_Adm.exe"] --> B["Abre o primeiro<br/>qdisk.catalog.*.json da pasta"]
     B --> C[Editar itens]
     C --> D["TIBX: Hashes…"]
     C --> E["ISO: Preparar ISO…"]
@@ -48,7 +48,7 @@ flowchart TD
     R & R1 & R2 & R3 --> D{QDISK_CONFIG_DIR definida?}
     D -- sim --> E[Pasta dos catálogos = QDISK_CONFIG_DIR]
     D -- não --> F["Pasta dos catálogos = raiz/config"]
-    E & F --> G["Lista qdisk.quallit.*.json e abre o primeiro<br/>em ordem alfabética"]
+    E & F --> G["Lista qdisk.catalog.*.json e abre o primeiro<br/>em ordem alfabética"]
     G --> H["Logs: pasta do programa/log<br/>e pasta do programa/log_debug"]
 ```
 
@@ -81,7 +81,7 @@ flowchart TD
 - Trocar de item, **Validar**, **Salvar**, **Upload**, **Preparar ISO…** e **Verificar no Defender** aplicam antes
   as alterações pendentes do painel; se não validarem, a ação para.
 - Item inativo é gravado com `enabled: false` e continua no arquivo.
-- Só `qdisk.quallit.devteam.json` pode ser salvo sem itens.
+- Só `qdisk.catalog.devteam.json` pode ser salvo sem itens.
 - Ao fechar com alterações: salvar e fechar, descartar e fechar, ou voltar. Com qualquer operação em andamento,
   a janela não fecha.
 
@@ -192,7 +192,7 @@ flowchart TD
     G --> H[Confirma arquivo e destino]
     H --> I["Copia os JSON para raiz/config<br/>se QDISK_CONFIG_DIR for outra pasta"]
     I --> J[publish_catalogs.ps1 -CatalogPath -Target]
-    J --> K{"Catálogo oficial?<br/>qdisk.quallit.pnb/rd/tools/devteam.json"}
+    J --> K{"Catálogo oficial?<br/>qdisk.catalog.pnb/rd/tools/devteam.json"}
     K -- não --> X2[Catalogo nao oficial para upload automatico]
     K -- sim --> L["Catálogo + todos os manifests/*.manifest.json"]
     L --> M["Fallback: pscp ou scp para user@host:remotePath;<br/>confere por HTTP em fallback.publicBaseUrl"]
@@ -200,7 +200,7 @@ flowchart TD
     M & N --> O["Resumo na tela; saída completa no log_debug"]
 ```
 
-`qdisk.quallit.devteam2.json` aparece na caixa **Catálogo** e pode ser editado, mas não é um dos nomes aceitos pelo
+`qdisk.catalog.devteam2.json` aparece na caixa **Catálogo** e pode ser editado, mas não é um dos nomes aceitos pelo
 script de publicação. Credenciais e destinos: variáveis `QUALLIT_UPDATE_*`, `QUALLIT_PUBLISH_*` e
 `QUALLIT_INSTALLER_*`, depois `config/qdisk.endpoints.json`; senha SSH também em `SshPassword` de
 `config/secret.md`.
@@ -222,8 +222,8 @@ flowchart TD
     I --> J
 ```
 
-Catálogos associados padrão: `qdisk.quallit.rd.json` (RD), `qdisk.quallit.pnb.json` (PNB) e
-`qdisk.quallit.devteam.json` (DevTeam). **Restaurar padrões** só preenche os valores padrão do código; nada é
+Catálogos associados padrão: `qdisk.catalog.rd.json` (RD), `qdisk.catalog.pnb.json` (PNB) e
+`qdisk.catalog.devteam.json` (DevTeam). **Restaurar padrões** só preenche os valores padrão do código; nada é
 gravado sem **Salvar**.
 
 ## 10. Build completo
@@ -260,10 +260,10 @@ flowchart TD
 Uma ação por execução, na ordem do diagrama de cima para baixo. Exemplo de preparo em lote de um catálogo de ISOs:
 
 ```powershell
-python .\QDisk_Adm\catalog_admin.py --generate-missing-manifests .\config\qdisk.quallit.pnb.json --refresh
-python .\QDisk_Adm\catalog_admin.py --suggest-write-policies .\config\qdisk.quallit.pnb.json
-python .\QDisk_Adm\catalog_admin.py --suggest-write-policies .\config\qdisk.quallit.pnb.json --apply --overwrite
-python .\QDisk_Adm\catalog_admin.py --validate .\config\qdisk.quallit.pnb.json
+python .\QDisk_Adm\catalog_admin.py --generate-missing-manifests .\config\qdisk.catalog.pnb.json --refresh
+python .\QDisk_Adm\catalog_admin.py --suggest-write-policies .\config\qdisk.catalog.pnb.json
+python .\QDisk_Adm\catalog_admin.py --suggest-write-policies .\config\qdisk.catalog.pnb.json --apply --overwrite
+python .\QDisk_Adm\catalog_admin.py --validate .\config\qdisk.catalog.pnb.json
 ```
 
 Opções e exemplos completos: [`QDisk_Adm/README.md`](../QDisk_Adm/README.md#linha-de-comando).

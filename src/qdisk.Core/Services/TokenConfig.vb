@@ -82,9 +82,9 @@ Namespace Services
 
         Private Shared Function CreateDefaultProfiles() As Dictionary(Of UserProfile, TokenProfileConfig)
             Return New Dictionary(Of UserProfile, TokenProfileConfig) From {
-                {UserProfile.RD, New TokenProfileConfig With {.Profile = UserProfile.RD, .DisplayName = "RD", .CatalogFileName = "qdisk.quallit.rd.json"}},
-                {UserProfile.PNB, New TokenProfileConfig With {.Profile = UserProfile.PNB, .DisplayName = "PNB", .CatalogFileName = "qdisk.quallit.pnb.json"}},
-                {UserProfile.DevTeam, New TokenProfileConfig With {.Profile = UserProfile.DevTeam, .DisplayName = "DevTeam", .CatalogFileName = "qdisk.quallit.devteam.json"}}
+                {UserProfile.RD, New TokenProfileConfig With {.Profile = UserProfile.RD, .DisplayName = "RD", .CatalogFileName = "qdisk.catalog.rd.json"}},
+                {UserProfile.PNB, New TokenProfileConfig With {.Profile = UserProfile.PNB, .DisplayName = "PNB", .CatalogFileName = "qdisk.catalog.pnb.json"}},
+                {UserProfile.DevTeam, New TokenProfileConfig With {.Profile = UserProfile.DevTeam, .DisplayName = "DevTeam", .CatalogFileName = "qdisk.catalog.devteam.json"}}
             }
         End Function
 

@@ -159,7 +159,7 @@ Raiz: `%LOCALAPPDATA%\qdisk\` (`AppPaths.DataRoot`). O instalador põe o `qdisk.
 | Caminho | Conteúdo | Quem grava |
 |---|---|---|
 | `%LOCALAPPDATA%\qdisk\app_version.txt` | Versão + MVID do executável que extraiu os recursos | `Program.EnsureAssetsExtracted` |
-| `%LOCALAPPDATA%\qdisk\Data\` | Catálogos (`qdisk.quallit.rd/pnb/devteam/tools.json`) e `manifests\PNB-WIN7-x64.manifest.json` | Extração dos recursos; atualização remota dos catálogos |
+| `%LOCALAPPDATA%\qdisk\Data\` | Catálogos (`qdisk.catalog.rd/pnb/devteam/tools.json`) e `manifests\PNB-WIN7-x64.manifest.json` | Extração dos recursos; atualização remota dos catálogos |
 | `%LOCALAPPDATA%\qdisk\config\` | `qdisk.endpoints.json` e `qdisk.tokens.app.json` (cópias extraídas), `settings.json`, `download_status.json`, `token_attempts.dat` | Extração; app |
 | `%LOCALAPPDATA%\qdisk\assets\` | Tudo de `assets/` exceto `manual/images` (o `manual.html` já traz as imagens embutidas) | Extração |
 | `%LOCALAPPDATA%\qdisk\manifests\` | Cache dos manifestos USB baixados | Identificação de USB |
@@ -178,8 +178,8 @@ disso, a atualização remota substitui o catálogo local quando o remoto é vá
 
 | Arquivo | Para quê | Embutido no app? | No Git? |
 |---|---|---|---|
-| `config/qdisk.quallit.rd.json`, `qdisk.quallit.pnb.json`, `qdisk.quallit.devteam.json`, `qdisk.quallit.tools.json` | Catálogos (perfis RD, PNB, DevTeam e ferramentas) | sim (`Data\`) | sim |
-| `config/qdisk.quallit.devteam2.json` | Catálogo avulso; não é embutido nem publicado pelo pipeline | não | sim |
+| `config/qdisk.catalog.rd.json`, `qdisk.catalog.pnb.json`, `qdisk.catalog.devteam.json`, `qdisk.catalog.tools.json` | Catálogos (perfis RD, PNB, DevTeam e ferramentas) | sim (`Data\`) | sim |
+| `config/qdisk.catalog.devteam2.json` | Catálogo avulso; não é embutido nem publicado pelo pipeline | não | sim |
 | `config/manifests/*.manifest.json` | Manifestos USB (bytes exatos, `-text`) | só `PNB-WIN7-x64.manifest.json` | sim |
 | [`config/qdisk.endpoints.json`](../config/qdisk.endpoints.json) | Servidor principal, fallback (HTTP e SSH) e repositório do installer | sim (`config\`) | sim |
 | [`config/qdisk.tokens.json`](../config/qdisk.tokens.json) | IDs internos dos perfis (geram o token do site) e catálogo de cada perfil | **não** | sim |
@@ -213,9 +213,9 @@ Boot". O arquivo é criado com `AppSettings.CreateDefault()` na primeira leitura
 
 ### Quais catálogos o app usa
 
-O perfil do token define o catálogo (`catalogFile` em `qdisk.tokens.app.json`): RD → `qdisk.quallit.rd.json`, PNB →
-`qdisk.quallit.pnb.json`, DevTeam → `qdisk.quallit.devteam.json`. Downloads e Teste de velocidade mostram esse catálogo mesclado com
-`qdisk.quallit.tools.json`. A gravação USB procura a política de gravação nos quatro catálogos.
+O perfil do token define o catálogo (`catalogFile` em `qdisk.tokens.app.json`): RD → `qdisk.catalog.rd.json`, PNB →
+`qdisk.catalog.pnb.json`, DevTeam → `qdisk.catalog.devteam.json`. Downloads e Teste de velocidade mostram esse catálogo mesclado com
+`qdisk.catalog.tools.json`. A gravação USB procura a política de gravação nos quatro catálogos.
 
 ### Formato
 
@@ -257,7 +257,7 @@ Ordem de busca no app (`UsbBootView.LoadUsbManifestAsync`): cache `%LOCALAPPDATA
 confere) → `manifestUrl` → mesmo caminho no fallback (quando a URL começa pela base principal) → cópias locais
 (`Data\manifests\`, entre outras) com hash conferido.
 
-Ferramentas: validar um catálogo com `python .\QDisk_Adm\catalog_admin.py --validate .\config\qdisk.quallit.tools.json`;
+Ferramentas: validar um catálogo com `python .\QDisk_Adm\catalog_admin.py --validate .\config\qdisk.catalog.tools.json`;
 exportar o formato publicado com `--export-package <origem> <destino>`. Detalhes da CLI em
 [`QDisk_Adm/README.md`](../QDisk_Adm/README.md) e [`FLUXOS_QDisk_Adm.md`](FLUXOS_QDisk_Adm.md).
 
@@ -276,13 +276,13 @@ exportar o formato publicado com `--export-package <origem> <destino>`. Detalhes
 | `fallback.remotePath` | `/store/sites/qdisk/www` | Pasta remota do envio SSH |
 | `installerGit.repositoryUrl` / `targetSubdir` | `https://github.com/quallitdesenv/quallit-installer.git` / `public/qdisk` | Repositório publicado em installer.quallit.com.br (etapa 14) |
 
-Arquivos esperados em cada origem: `qdisk.quallit.update.json`, `Setup_qdisk.update.exe`, `qdisk.quallit.pnb.json`, `qdisk.quallit.rd.json`,
-`qdisk.quallit.tools.json`, `qdisk.quallit.devteam.json` e `manifests/<imagem>.manifest.json`.
+Arquivos esperados em cada origem: `qdisk.update.json`, `Setup_qdisk.update.exe`, `qdisk.catalog.pnb.json`, `qdisk.catalog.rd.json`,
+`qdisk.catalog.tools.json`, `qdisk.catalog.devteam.json` e `manifests/<imagem>.manifest.json`.
 
 | O app busca | Ordem |
 |---|---|
 | Catálogo do perfil e de ferramentas | principal → fallback → cópia local |
-| Manifesto de atualização | `<principal>qdisk.quallit.update.json` → `<fallback>qdisk.quallit.update.json` |
+| Manifesto de atualização | `<principal>qdisk.update.json` → `<fallback>qdisk.update.json` |
 | Manifesto USB | cache → `manifestUrl` → fallback → cópias locais |
 
 As imagens (ISO/TIBX) não ficam nesses servidores: cada item aponta para a própria origem em `fileUrl` (nos catálogos
@@ -363,13 +363,13 @@ Antes da etapa 1, sem senha de assinatura (e sem `--no-sign`) o build para.
 | 10 | Gerar e assinar instalador | `iscc /DAppVersion=<versão> tools/installer/qdisk.iss` → `dist/Setup_qdisk_<versão>.exe`, assinado (salvo `--no-sign`) |
 | 11 | Backup ZIP | Projeto inteiro em `PROJECT_BACKUP/qdisk_backup-<versão>-<AAAA-MM-DD>.zip` (dois níveis acima da raiz), com prefixo `qdisk/`; exclui pastas `.git`, `obj`, `bin`, `__pycache__`, `node_modules` e os caminhos `dist`, `temp/bck`, `tools/log`, `temp`, `secret.txt`, `config/secret.md` |
 | 12 | Limpar pós-build | Apaga as pastas `obj` e `bin` dentro de `src/` |
-| 13 | Preparar pacote `dist/update` | Copia o instalador como `Setup_qdisk.update.exe` (sem instalador: `dist/qdisk.exe` como `qdisk.update.exe`); grava `qdisk.quallit.update.json`; grava os 4 catálogos no formato `build`/`items` |
+| 13 | Preparar pacote `dist/update` | Copia o instalador como `Setup_qdisk.update.exe` (sem instalador: `dist/qdisk.exe` como `qdisk.update.exe`); grava `qdisk.update.json`; grava os 4 catálogos no formato `build`/`items` |
 | 14 | Sincronizar Git installer | `git clone --depth 1` do repositório do installer numa pasta temporária (ou `--repository-dir`), esvazia `public/qdisk` (mantém `.gitkeep`), copia o pacote e `manifests/` (com `.gitattributes` `*.manifest.json -text`), commit `chore: publica pacote qdisk <versão>` e push. Falha encerra |
 | 15 | Verificar installer remoto | Em `primary.baseUrl` (até 5 tentativas, 10 s entre elas): JSONs por SHA-256 do conteúdo normalizado; instalador por `Content-Length` (ou SHA-256 com `--verify-installer-hash`); manifestos USB por SHA-256 dos bytes. Falha encerra |
 | 16 | Publicar fallback remoto | `pscp` (preferido, com `-hostkey` e `-pwfile`) ou `scp` para `<user>@<host>:<remotePath>/` e `.../manifests/`; confere tamanho e `sha256sum` por SSH (`plink`; sem `plink` ou sem senha só avisa) e por HTTP em `fallback.publicBaseUrl`. **Falha só avisa** |
 | 17 | Sincronizar Git projeto | `git status`; `git add -A`; tira do índice `secret.txt` e `config/secret.md`; commit `chore: sincroniza projeto <versão>`; push |
 
-`qdisk.quallit.update.json` gerado na etapa 13: `version`, `releaseDate`, `installerUrl` (padrão
+`qdisk.update.json` gerado na etapa 13: `version`, `releaseDate`, `installerUrl` (padrão
 `https://installer.quallit.com.br/qdisk/Setup_qdisk.update.exe`; `--update-base-url` monta a partir de outra base),
 `sha256`, `mandatory`, `minimumSupportedVersion`, `notes` (padrão `["Atualizacao do Q-DISK."]`), `fileName`,
 `sizeBytes`, `build`.
@@ -427,9 +427,9 @@ sequenceDiagram
     participant App as qdisk.exe
     participant P as installer.quallit.com.br/qdisk
     participant F as mateweb.ddns.net/qdisk
-    App->>P: GET qdisk.quallit.update.json
+    App->>P: GET qdisk.update.json
     alt principal falhou
-        App->>F: GET qdisk.quallit.update.json
+        App->>F: GET qdisk.update.json
     end
     App->>App: version > versão atual?
     App->>P: baixa installerUrl (HTTPS)
@@ -437,7 +437,7 @@ sequenceDiagram
     App->>App: cmd: instalador /SILENT ... e reabre o app
 ```
 
-[`UpdateClient`](../src/qdisk.Infrastructure/UpdateClient.vb) lê `qdisk.quallit.update.json` da base principal e, se falhar,
+[`UpdateClient`](../src/qdisk.Infrastructure/UpdateClient.vb) lê `qdisk.update.json` da base principal e, se falhar,
 da base de fallback (timeout HTTP de 20 s). Versão: `version` ou `latestVersion`. Instalador: com manifesto vindo do
 fallback e `fileName` preenchido, `<fallback>/<fileName>`; senão `installerUrl`, `downloadUrl` ou `url`; senão
 `<principal>/<fileName>`; senão `<principal>Setup_qdisk.update.exe`. A URL final tem de ser HTTPS.
@@ -511,8 +511,8 @@ grava `uefi-ntfs.img` na partição 2 e depois formata a 1 em NTFS. O app só us
 Refazer a análise e as sugestões pela CLI do QDisk_Adm:
 
 ```powershell
-python .\QDisk_Adm\catalog_admin.py --generate-missing-manifests .\config\qdisk.quallit.pnb.json --refresh --image-dir "<pasta das ISOs>" --out .\config\manifests
-python .\QDisk_Adm\catalog_admin.py --suggest-write-policies .\config\qdisk.quallit.pnb.json            # --apply grava; --overwrite substitui
+python .\QDisk_Adm\catalog_admin.py --generate-missing-manifests .\config\qdisk.catalog.pnb.json --refresh --image-dir "<pasta das ISOs>" --out .\config\manifests
+python .\QDisk_Adm\catalog_admin.py --suggest-write-policies .\config\qdisk.catalog.pnb.json            # --apply grava; --overwrite substitui
 python .\QDisk_Adm\catalog_admin.py --generate-manifest "<imagem.iso>" --out .\config\manifests  # ISO avulsa
 ```
 
@@ -589,10 +589,10 @@ Configurações.
 4. Confira `PRONTO PARA PUBLICAR`, `Atualizar item`, `Validar` e salve.
 5. Publique: `Upload` no QDisk_Adm (roda `tools\utils\publish_catalogs.ps1 -CatalogPath <catálogo> -Target
    <destino>`, que envia o catálogo e os manifestos de `config/manifests/`) ou o build completo (etapas 13 a 16).
-   Para testar o envio sem publicar: `.\tools\utils\publish_catalogs.ps1 -CatalogPath .\config\qdisk.quallit.tools.json -DryRun`.
+   Para testar o envio sem publicar: `.\tools\utils\publish_catalogs.ps1 -CatalogPath .\config\qdisk.catalog.tools.json -DryRun`.
 6. Teste pelo app (Downloads e gravação).
 
-**Lançar versão:** commits feitos → `python .\tools\build_release_dotnet_4.py` → conferir `qdisk.quallit.update.json` nos dois
+**Lançar versão:** commits feitos → `python .\tools\build_release_dotnet_4.py` → conferir `qdisk.update.json` nos dois
 servidores (a etapa 15 confere o principal; a 16, o fallback).
 
 **Atualizar o manual:** editar `assets/manual/manual.html`; para trocar capturas, substituir os PNGs de
@@ -621,8 +621,8 @@ Comportamentos atuais do código que exigem cuidado:
   `publish_update_package.ps1.example` e no QDisk_Adm são porta `2222` e `/store/repositorio/qdisk` (e base pública
   `https://<host>/repositorio/qdisk` quando falta `publicBaseUrl`). Como o arquivo de endpoints tem prioridade sobre
   esses padrões, valem 2205 e `/store/sites/qdisk/www` enquanto ele estiver completo.
-- **`tools/utils/publish_catalogs.ps1` sem `-CatalogPath`** pega todo `qdisk.quallit.*.json` de `config/`, mas só
-  aceita `qdisk.quallit.(pnb|rd|tools|devteam).json`: com `qdisk.quallit.devteam2.json` na pasta, termina com
+- **`tools/utils/publish_catalogs.ps1` sem `-CatalogPath`** pega todo `qdisk.catalog.*.json` de `config/`, mas só
+  aceita `qdisk.catalog.(pnb|rd|tools|devteam).json`: com `qdisk.catalog.devteam2.json` na pasta, termina com
   "Catalogo nao oficial para upload automatico". Passe `-CatalogPath` (o `Upload` do QDisk_Adm sempre passa o
   catálogo aberto). `validate_catalogs.ps1` valida os cinco, inclusive o `devteam2`.
 - `config/qdisk.tokens.json` (IDs dos perfis) está no Git: aceitável só com o repositório privado.

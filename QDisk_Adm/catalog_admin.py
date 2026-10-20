@@ -55,7 +55,7 @@ BUILD_SCRIPT = REPO_ROOT / "tools" / "utils" / "Build-OneFile-Sign_v4.bat"
 ISO_MANIFEST_TOOL_PROJECT = REPO_ROOT / "tools" / "Quallit.IsoManifestTool" / "Quallit.IsoManifestTool.csproj"
 LOG_DIR = APP_DIR / "log"
 DEBUG_LOG_DIR = APP_DIR / "log_debug"
-CATALOG_PATTERN = "qdisk.quallit.*.json"
+CATALOG_PATTERN = "qdisk.catalog.*.json"
 HASH_CHUNK_SIZE = 1024 * 1024
 ISO_MANIFEST_HELPER_TIMEOUT_SECONDS = 10 * 60
 IMAGE_FILETYPES = (
@@ -88,13 +88,13 @@ TOKEN_PROFILES = ("RD", "PNB", "DevTeam")
 TOKEN_DEFAULTS = {
     "RD.displayName": "RD",
     "RD.internalId": "010911",
-    "RD.catalogFile": "qdisk.quallit.rd.json",
+    "RD.catalogFile": "qdisk.catalog.rd.json",
     "PNB.displayName": "PNB",
     "PNB.internalId": "060171",
-    "PNB.catalogFile": "qdisk.quallit.pnb.json",
+    "PNB.catalogFile": "qdisk.catalog.pnb.json",
     "DevTeam.displayName": "DevTeam",
     "DevTeam.internalId": "270777",
-    "DevTeam.catalogFile": "qdisk.quallit.devteam.json",
+    "DevTeam.catalogFile": "qdisk.catalog.devteam.json",
     "downloader.profile": "RD",
     "downloader.baseDate": "1970-10-01",
 }
@@ -1198,7 +1198,7 @@ def suggest_write_policies_for_catalog(catalog_path: Path, apply: bool, overwrit
             changed += 1
 
     if changed > 0:
-        errors = validate_items(document.items, allow_empty_devteam=catalog_path.name == "qdisk.quallit.devteam.json")
+        errors = validate_items(document.items, allow_empty_devteam=catalog_path.name == "qdisk.catalog.devteam.json")
         if errors:
             raise ValueError("Politica sugerida deixou o catalogo invalido:\n" + "\n".join(errors))
         write_catalog(catalog_path, document.items, package_format=document.source_format == "package")
@@ -1380,7 +1380,7 @@ def build_upload_summary(output: str, success: bool, debug_log_path: Path) -> st
     primary_base_url, fallback_base_url = read_endpoint_base_urls()
     catalog_names = []
     for line in lines:
-        match = re.search(r"qdisk\.quallit\.[A-Za-z0-9_-]+\.json", line)
+        match = re.search(r"qdisk\.catalog\.[A-Za-z0-9_-]+\.json", line)
         if match:
             catalog_names.append(match.group(0))
     catalog_name = catalog_names[0] if catalog_names else "catalogo selecionado"
@@ -2559,7 +2559,7 @@ class CatalogAdminApp(tk.Tk):
         for label, known in self.catalog_paths.items():
             if known == resolved:
                 return label
-        match = re.fullmatch(r"qdisk\.quallit\.(.+)\.json", resolved.name, re.IGNORECASE)
+        match = re.fullmatch(r"qdisk\.catalog\.(.+)\.json", resolved.name, re.IGNORECASE)
         label = match.group(1) if match else resolved.name
         if label in self.catalog_paths:
             label = f"{label} ({resolved.parent})"
@@ -2635,7 +2635,7 @@ class CatalogAdminApp(tk.Tk):
         return False
 
     def _save_to_path(self, path: Path) -> bool:
-        errors = validate_items(self.document.items, allow_empty_devteam=path.name == "qdisk.quallit.devteam.json")
+        errors = validate_items(self.document.items, allow_empty_devteam=path.name == "qdisk.catalog.devteam.json")
         if errors:
             self.append_console(f"Validacao falhou antes de salvar {path.name}: {len(errors)} erro(s).", "ERROR")
             messagebox.showerror(APP_TITLE, "Corrija antes de salvar:\n\n" + "\n".join(errors[:12]))
@@ -3405,7 +3405,7 @@ class CatalogAdminApp(tk.Tk):
         if not self.apply_pending_form_changes("validar"):
             return
         path = self.document.path
-        allow_empty_devteam = path is not None and path.name == "qdisk.quallit.devteam.json"
+        allow_empty_devteam = path is not None and path.name == "qdisk.catalog.devteam.json"
         errors = validate_items(self.document.items, allow_empty_devteam=allow_empty_devteam)
         if errors:
             self.append_console(f"Catalogo invalido: {len(errors)} erro(s).", "ERROR")
@@ -3428,7 +3428,7 @@ class CatalogAdminApp(tk.Tk):
         if not PUBLISH_CATALOGS_SCRIPT.exists():
             messagebox.showerror(APP_TITLE, f"Script de upload nao encontrado:\n{PUBLISH_CATALOGS_SCRIPT}")
             return
-        errors = validate_items(self.document.items, allow_empty_devteam=self.document.path.name == "qdisk.quallit.devteam.json")
+        errors = validate_items(self.document.items, allow_empty_devteam=self.document.path.name == "qdisk.catalog.devteam.json")
         if errors:
             messagebox.showerror(APP_TITLE, "Corrija antes do upload:\n\n" + "\n".join(errors[:12]))
             return
@@ -3591,7 +3591,7 @@ def run_cli(argv: list[str]) -> int:
 
     if args.validate:
         document = load_catalog(args.validate)
-        errors = validate_items(document.items, allow_empty_devteam=args.validate.name == "qdisk.quallit.devteam.json")
+        errors = validate_items(document.items, allow_empty_devteam=args.validate.name == "qdisk.catalog.devteam.json")
         if errors:
             for error in errors:
                 print(error, file=sys.stderr)
@@ -3603,7 +3603,7 @@ def run_cli(argv: list[str]) -> int:
         source = Path(args.export_package[0])
         dest = Path(args.export_package[1])
         document = load_catalog(source)
-        errors = validate_items(document.items, allow_empty_devteam=source.name == "qdisk.quallit.devteam.json")
+        errors = validate_items(document.items, allow_empty_devteam=source.name == "qdisk.catalog.devteam.json")
         if errors:
             for error in errors:
                 print(error, file=sys.stderr)

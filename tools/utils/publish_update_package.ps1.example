@@ -126,7 +126,7 @@ if (-not [string]::IsNullOrWhiteSpace($env:QUALLIT_UPDATE_REMOTE_PATH)) { $Remot
 if (-not [string]::IsNullOrWhiteSpace($env:QUALLIT_UPDATE_SSH_PASSWORD)) { $SshPassword = $env:QUALLIT_UPDATE_SSH_PASSWORD }
 
 $localDir = Resolve-Path -LiteralPath $LocalUpdateDir
-$manifestName = 'qdisk.quallit.update.json'
+$manifestName = 'qdisk.update.json'
 $manifest = Join-Path $localDir $manifestName
 if (-not (Test-Path -LiteralPath $manifest)) {
     throw "Manifesto nao encontrado: $manifest. Execute tools\build_release_dotnet_4.py antes."
@@ -144,10 +144,10 @@ if (-not (Test-Path -LiteralPath $artifact)) {
 }
 
 $catalogNames = @(
-    'qdisk.quallit.pnb.json',
-    'qdisk.quallit.rd.json',
-    'qdisk.quallit.tools.json',
-    'qdisk.quallit.devteam.json'
+    'qdisk.catalog.pnb.json',
+    'qdisk.catalog.rd.json',
+    'qdisk.catalog.tools.json',
+    'qdisk.catalog.devteam.json'
 )
 $catalogSourceDir = Join-Path $scriptRoot '..\config'
 $catalogFiles = @()

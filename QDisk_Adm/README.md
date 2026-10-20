@@ -2,7 +2,7 @@
 
 O QDisk_Adm (`QDisk_Adm/catalog_admin.py`, Python com Tkinter) é a ferramenta do administrador para:
 
-- editar e validar os catálogos `config/qdisk.quallit.*.json`;
+- editar e validar os catálogos `config/qdisk.catalog.*.json`;
 - gerar os manifestos USB das ISOs em `config/manifests/`;
 - decidir o método de gravação USB de cada ISO (`usbWritePolicy`);
 - verificar as ISOs no Microsoft Defender e gerar uma ISO sem os arquivos barrados;
@@ -72,7 +72,7 @@ específicas:
 |---|---|
 | Raiz do projeto | `QDISK_ROOT`, se definida; senão a pasta acima de `QDisk_Adm/`. No executável: dois níveis acima de `dist/ADM/` (ou a pasta acima da do `.exe`, se ele estiver em outro lugar). |
 | Pasta dos catálogos | `QDISK_CONFIG_DIR`, se definida; senão `<raiz>/config` |
-| Catálogos | `<pasta dos catálogos>/qdisk.quallit.*.json` (`rd`, `pnb`, `devteam`, `devteam2`, `tools`) |
+| Catálogos | `<pasta dos catálogos>/qdisk.catalog.*.json` (`rd`, `pnb`, `devteam`, `devteam2`, `tools`) |
 | Endpoints | `<pasta dos catálogos>/qdisk.endpoints.json` |
 | Tokens | `<pasta dos catálogos>/qdisk.tokens.json` |
 | Manifestos gerados | `<pasta dos catálogos>/manifests/` |
@@ -109,7 +109,7 @@ Atalhos: `Ctrl+S` (Salvar) e `Ctrl+Shift+S` (Salvar como…).
 
 | Controle | O que faz |
 |---|---|
-| **Catálogo** | Lista os arquivos `qdisk.quallit.*.json` da pasta dos catálogos (e os abertos ou salvos na sessão), pela identificação: `devteam`, `devteam2`, `pnb`, `rd`, `tools`. Arquivo fora desse padrão aparece pelo nome. Ao iniciar, abre o primeiro em ordem alfabética. Escolher outro abre esse arquivo. |
+| **Catálogo** | Lista os arquivos `qdisk.catalog.*.json` da pasta dos catálogos (e os abertos ou salvos na sessão), pela identificação: `devteam`, `devteam2`, `pnb`, `rd`, `tools`. Arquivo fora desse padrão aparece pelo nome. Ao iniciar, abre o primeiro em ordem alfabética. Escolher outro abre esse arquivo. |
 | **Abrir** | Abre qualquer `.json` pelo seletor de arquivos (começa na pasta dos catálogos). |
 | **Novo** | Começa um catálogo vazio, em memória, sem arquivo. |
 | **Salvar ▾** → **Salvar** | Aplica as alterações pendentes do item, valida e grava no arquivo aberto. Sem arquivo, age como "Salvar como…". |
@@ -273,8 +273,8 @@ Publica o catálogo aberto e os manifestos.
 
 O que o script faz (`publish_catalogs.ps1`):
 
-- aceita só catálogos `qdisk.quallit.pnb.json`, `qdisk.quallit.rd.json`, `qdisk.quallit.tools.json` e
-  `qdisk.quallit.devteam.json`; qualquer outro nome (como `qdisk.quallit.devteam2.json`) é recusado com
+- aceita só catálogos `qdisk.catalog.pnb.json`, `qdisk.catalog.rd.json`, `qdisk.catalog.tools.json` e
+  `qdisk.catalog.devteam.json`; qualquer outro nome (como `qdisk.catalog.devteam2.json`) é recusado com
   "Catalogo nao oficial para upload automatico";
 - leva junto todos os `config/manifests/*.manifest.json`;
 - **Fallback**: copia catálogo e manifestos por `pscp` (ou `scp`) para `<user>@<host>:<remotePath>/` e confere cada
@@ -293,7 +293,7 @@ se existir. Senha SSH: variável de ambiente ou `SshPassword` em `config/secret.
 Ensaio sem enviar nada (direto pelo script; o upload do QDisk_Adm não usa esta opção):
 
 ```powershell
-.\tools\utils\publish_catalogs.ps1 -CatalogPath .\config\qdisk.quallit.tools.json -Target Fallback -DryRun
+.\tools\utils\publish_catalogs.ps1 -CatalogPath .\config\qdisk.catalog.tools.json -Target Fallback -DryRun
 ```
 
 ## Configurações
@@ -321,11 +321,11 @@ todos os campos, menos a host key, são obrigatórios.
 **Tokens** → `<pasta dos catálogos>/qdisk.tokens.json`
 
 - Para cada perfil (`RD`, `PNB`, `DevTeam`): **Nome exibido**, **ID interno** (exatamente 6 dígitos) e
-  **Catálogo associado** (arquivo `.json`; padrões `qdisk.quallit.rd.json`, `qdisk.quallit.pnb.json`,
-  `qdisk.quallit.devteam.json`).
+  **Catálogo associado** (arquivo `.json`; padrões `qdisk.catalog.rd.json`, `qdisk.catalog.pnb.json`,
+  `qdisk.catalog.devteam.json`).
 - **Perfil downloader** (um dos três) e **Data base downloader** (`AAAA-MM-DD`).
 
-Nenhum perfil tem `qdisk.quallit.tools.json` ou `qdisk.quallit.devteam2.json` como catálogo associado.
+Nenhum perfil tem `qdisk.catalog.tools.json` ou `qdisk.catalog.devteam2.json` como catálogo associado.
 
 Se algo da aba Tokens mudou, o QDisk_Adm roda `tools/utils/generate_token_verifiers.py`, que gera
 `config/qdisk.tokens.app.json` (o arquivo embutido no app) a partir de `config/qdisk.tokens.json`. Sem `python`/`py`
@@ -350,7 +350,7 @@ e "Sincronizar Git projeto". A janela não fecha com o build em execução. Etap
 
 Usada por **Validar**, **Salvar**, **Atualizar item**, **Upload** e pela linha de comando:
 
-- catálogo com ao menos um item (exceto arquivo chamado `qdisk.quallit.devteam.json`, que pode ficar vazio);
+- catálogo com ao menos um item (exceto arquivo chamado `qdisk.catalog.devteam.json`, que pode ficar vazio);
 - `name` obrigatório e único; `group` obrigatório; `fileUrl` obrigatório, começando com `http://` ou `https://`;
 - `fileName`, se houver: só o nome (sem pasta), terminando em `.tibx`, `.iso` ou `.img`;
 - `md5` com 32 e `sha256` com 64 dígitos hexadecimais; com `sha256`, `imageSizeBytes` maior que zero;
@@ -402,14 +402,14 @@ O `run_qdisk_adm.cmd` não repassa argumentos; para a linha de comando use o `py
 Validar catálogos:
 
 ```powershell
-python .\QDisk_Adm\catalog_admin.py --validate .\config\qdisk.quallit.tools.json
-python .\QDisk_Adm\catalog_admin.py --validate .\config\qdisk.quallit.pnb.json
+python .\QDisk_Adm\catalog_admin.py --validate .\config\qdisk.catalog.tools.json
+python .\QDisk_Adm\catalog_admin.py --validate .\config\qdisk.catalog.pnb.json
 ```
 
 Exportar no formato publicado (para fora do repositório):
 
 ```powershell
-python .\QDisk_Adm\catalog_admin.py --export-package .\config\qdisk.quallit.tools.json "$env:TEMP\qdisk.quallit.tools.json"
+python .\QDisk_Adm\catalog_admin.py --export-package .\config\qdisk.catalog.tools.json "$env:TEMP\qdisk.catalog.tools.json"
 ```
 
 Gerar o manifesto de uma ISO (grava em `config\manifests\` e imprime o resumo):
@@ -421,8 +421,8 @@ python .\QDisk_Adm\catalog_admin.py --generate-manifest "$HOME\Downloads\qdisk\P
 Preencher os manifestos que faltam num catálogo, com as imagens em `~/Downloads/qdisk`:
 
 ```powershell
-python .\QDisk_Adm\catalog_admin.py --generate-missing-manifests .\config\qdisk.quallit.pnb.json
-python .\QDisk_Adm\catalog_admin.py --generate-missing-manifests .\config\qdisk.quallit.pnb.json --image-dir "D:\isos" --refresh
+python .\QDisk_Adm\catalog_admin.py --generate-missing-manifests .\config\qdisk.catalog.pnb.json
+python .\QDisk_Adm\catalog_admin.py --generate-missing-manifests .\config\qdisk.catalog.pnb.json --image-dir "D:\isos" --refresh
 ```
 
 Comportamento de `--generate-missing-manifests`, item a item:
@@ -439,9 +439,9 @@ Comportamento de `--generate-missing-manifests`, item a item:
 Sugestões de método de gravação:
 
 ```powershell
-python .\QDisk_Adm\catalog_admin.py --suggest-write-policies .\config\qdisk.quallit.pnb.json
-python .\QDisk_Adm\catalog_admin.py --suggest-write-policies .\config\qdisk.quallit.pnb.json --apply
-python .\QDisk_Adm\catalog_admin.py --suggest-write-policies .\config\qdisk.quallit.pnb.json --apply --overwrite
+python .\QDisk_Adm\catalog_admin.py --suggest-write-policies .\config\qdisk.catalog.pnb.json
+python .\QDisk_Adm\catalog_admin.py --suggest-write-policies .\config\qdisk.catalog.pnb.json --apply
+python .\QDisk_Adm\catalog_admin.py --suggest-write-policies .\config\qdisk.catalog.pnb.json --apply --overwrite
 ```
 
 Cada item sai como `SKIP` (não é ISO, ou já tem política sem `--overwrite`), `PENDENTE` (sem análise completa ou sem
@@ -450,7 +450,7 @@ método que preserve a imagem), `SUGESTAO` (sem `--apply`) ou `OK` (gravado).
 Verificar uma ISO no Defender e gravar o resultado nos dois itens que usam a mesma imagem:
 
 ```powershell
-python .\QDisk_Adm\catalog_admin.py --scan-iso "$HOME\Downloads\qdisk\Quallit_Boot.iso" --catalog .\config\qdisk.quallit.tools.json --item "quallit-boot-sharepoint,quallit-boot-dropbox"
+python .\QDisk_Adm\catalog_admin.py --scan-iso "$HOME\Downloads\qdisk\Quallit_Boot.iso" --catalog .\config\qdisk.catalog.tools.json --item "quallit-boot-sharepoint,quallit-boot-dropbox"
 ```
 
 Sem `--catalog`/`--item`, só imprime o resultado.
