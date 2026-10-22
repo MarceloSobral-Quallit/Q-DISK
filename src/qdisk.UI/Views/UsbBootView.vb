@@ -526,14 +526,20 @@ Namespace Views
             Controls.Add(_statusLabel)
             ' Texto longo quebra em mais linhas (sem "...") e a faixa da status cresce para caber.
             line.TextLabel.AutoEllipsis = False
+            ' O calculo e adiado ate o layout assentar: medido no meio da abertura da tela, pegava uma largura
+            ' intermediaria e a faixa ficava com varias linhas para um texto de uma linha.
             Dim lastStatusWidth = -1
-            AddHandler _statusLabel.TextChanged, Sub() FitStatusRowHeight(line)
+            AddHandler _statusLabel.TextChanged, Sub() RequestStatusFit(line)
             AddHandler line.TextLabel.SizeChanged,
                 Sub()
                     If line.TextLabel.Width = lastStatusWidth Then Return
                     lastStatusWidth = line.TextLabel.Width
-                    FitStatusRowHeight(line)
+                    RequestStatusFit(line)
                 End Sub
+            AddHandler VisibleChanged, Sub()
+                                           If Visible Then RequestStatusFit(line)
+                                       End Sub
+            AddHandler HandleCreated, Sub() RequestStatusFit(line)
 
             ' 6: run.gif | barra | Cancelar
             LayoutRoot.SetRow(ProgressPanel, 6)
@@ -883,6 +889,20 @@ Namespace Views
             _driveCombo.Enabled = True
             _tibxList.Enabled = True
             _isoList.Enabled = True
+        End Sub
+
+        Private _statusFitPending As Boolean
+
+        ''' <summary>Agenda FitStatusRowHeight para depois do layout corrente (varios pedidos viram um so).</summary>
+        Private Sub RequestStatusFit(line As StatusLine)
+            ' Sem handle ainda: o HandleCreated pede o ajuste quando a tela existir.
+            If Not IsHandleCreated Then Return
+            If _statusFitPending Then Return
+            _statusFitPending = True
+            BeginInvoke(Sub()
+                            _statusFitPending = False
+                            FitStatusRowHeight(line)
+                        End Sub)
         End Sub
 
         ''' <summary>Ajusta a altura da linha 5 (status) ao texto: 40 px para uma linha, mais o que a quebra exigir.</summary>
