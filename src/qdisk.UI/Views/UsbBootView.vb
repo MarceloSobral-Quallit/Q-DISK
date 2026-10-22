@@ -412,16 +412,28 @@ Namespace Views
             listInner.Padding = New Padding(4)
             listInner.Controls.Add(list)
             ' Descricao da imagem selecionada (catalogo) e "Como gravar", abaixo da lista.
-            _imageDescriptionLabel = New Label() With {
+            ' TextBox somente leitura (em vez de Label) para permitir rolagem vertical quando o texto
+            ' passa da altura maxima.
+            _imageDescriptionPanel = New Panel() With {
                 .Dock = DockStyle.Bottom,
-                .AutoSize = False,
                 .Height = 72,
-                .Padding = New Padding(8, 6, 8, 6),
-                .BackColor = Color.FromArgb(246, 248, 250),
+                .Padding = New Padding(8, 6, 2, 6),
+                .BackColor = Color.FromArgb(246, 248, 250)
+            }
+            _imageDescriptionBox = New TextBox() With {
+                .Dock = DockStyle.Fill,
+                .Multiline = True,
+                .ReadOnly = True,
+                .WordWrap = True,
+                .BorderStyle = BorderStyle.None,
+                .ScrollBars = ScrollBars.None,
+                .TabStop = False,
+                .BackColor = _imageDescriptionPanel.BackColor,
                 .ForeColor = UiTheme.StatusText,
                 .Text = String.Empty
             }
-            listInner.Controls.Add(_imageDescriptionLabel)
+            _imageDescriptionPanel.Controls.Add(_imageDescriptionBox)
+            listInner.Controls.Add(_imageDescriptionPanel)
             AddHandler listInner.Resize, Sub() FitImageDescriptionHeight()
             list.BringToFront()
 
@@ -865,14 +877,16 @@ Namespace Views
             UpdateImageDescription(TryCast(sender, ListBox))
         End Sub
 
-        Private _imageDescriptionLabel As Label
+        Private _imageDescriptionPanel As Panel
+        Private _imageDescriptionBox As TextBox
 
         ''' <summary>Mostra a descricao do catalogo e o "Como gravar" da imagem selecionada.</summary>
         Private Sub UpdateImageDescription(list As ListBox)
-            If _imageDescriptionLabel Is Nothing OrElse list Is Nothing Then Return
+            If _imageDescriptionBox Is Nothing OrElse list Is Nothing Then Return
             Dim item = TryCast(list.SelectedItem, CacheItem)
             If item Is Nothing OrElse item.IsPlaceholder OrElse Not File.Exists(item.FullPath) Then
-                _imageDescriptionLabel.Text = String.Empty
+                _imageDescriptionBox.Text = String.Empty
+                FitImageDescriptionHeight()
                 Return
             End If
             Try
@@ -881,29 +895,38 @@ Namespace Views
                                                                           FindCatalogNameForPath(LoadDownloadStatusMap(), item.FullPath),
                                                                           Path.GetFileName(item.FullPath), New FileInfo(item.FullPath).Length, reason)
                 Dim text = ImageGuidance.Describe(catalogItem)
-                _imageDescriptionLabel.Text = If(text.Length > 0, text, "Imagem fora dos catalogos: sem descricao.")
+                _imageDescriptionBox.Text = If(text.Length > 0, text, "Imagem fora dos catalogos: sem descricao.")
             Catch
-                _imageDescriptionLabel.Text = String.Empty
+                _imageDescriptionBox.Text = String.Empty
             End Try
+            _imageDescriptionBox.SelectionStart = 0
+            _imageDescriptionBox.ScrollToCaret()
             FitImageDescriptionHeight()
         End Sub
 
-        ''' <summary>Ajusta a altura da descricao ao texto (minimo 72, maximo metade do painel da lista).</summary>
+        ''' <summary>
+        ''' Ajusta a altura da descricao ao texto (minimo 72, maximo metade do painel da lista).
+        ''' Acima do maximo, fixa a altura e mostra a barra de rolagem vertical.
+        ''' </summary>
         Private Sub FitImageDescriptionHeight()
             Const MinHeight = 72
-            Dim lbl = _imageDescriptionLabel
-            If lbl Is Nothing OrElse lbl.Parent Is Nothing Then Return
-            Dim textWidth = lbl.ClientSize.Width - lbl.Padding.Horizontal
+            Dim panel = _imageDescriptionPanel
+            Dim box = _imageDescriptionBox
+            If panel Is Nothing OrElse box Is Nothing OrElse panel.Parent Is Nothing Then Return
+            ' Folga para as margens internas da TextBox.
+            Dim textWidth = panel.ClientSize.Width - panel.Padding.Horizontal - 8
             If textWidth <= 0 Then Return
             Dim needed = MinHeight
-            If lbl.Text.Length > 0 Then
-                Dim measured = TextRenderer.MeasureText(lbl.Text, lbl.Font, New Size(textWidth, Integer.MaxValue),
+            If box.Text.Length > 0 Then
+                Dim measured = TextRenderer.MeasureText(box.Text, box.Font, New Size(textWidth, Integer.MaxValue),
                                                         TextFormatFlags.WordBreak Or TextFormatFlags.TextBoxControl)
-                needed = Math.Max(MinHeight, measured.Height + lbl.Padding.Vertical + 2)
+                needed = Math.Max(MinHeight, measured.Height + panel.Padding.Vertical + 4)
             End If
-            Dim maxHeight = Math.Max(MinHeight, lbl.Parent.ClientSize.Height \ 2)
+            Dim maxHeight = Math.Max(MinHeight, panel.Parent.ClientSize.Height \ 2)
+            Dim wantedBars = If(needed > maxHeight, ScrollBars.Vertical, ScrollBars.None)
+            If box.ScrollBars <> wantedBars Then box.ScrollBars = wantedBars
             Dim target = Math.Min(needed, maxHeight)
-            If lbl.Height <> target Then lbl.Height = target
+            If panel.Height <> target Then panel.Height = target
         End Sub
 
         Private Sub UpdateImageActionButtons()
