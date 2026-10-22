@@ -1655,7 +1655,7 @@ Namespace Views
                         MessageBox.Show("SHA-256 divergente após cópia do TIBX.", "USB Boot", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                     Else
                         Await _logService.WriteAsync($"USB | SHA256_TIBX | OK | {destination}")
-                        _statusLabel.Text = "SHA-256 validado com sucesso."
+                        _statusLabel.Text = "TIBX copiado e verificado: o arquivo no USB é idêntico ao do cache (SHA-256 confere)."
                     End If
                 End If
             Catch ex As OperationCanceledException
