@@ -422,6 +422,7 @@ Namespace Views
                 .Text = String.Empty
             }
             listInner.Controls.Add(_imageDescriptionLabel)
+            AddHandler listInner.Resize, Sub() FitImageDescriptionHeight()
             list.BringToFront()
 
             Dim mainButton = If(isTibx, _copyButton, _bootButton)
@@ -884,6 +885,25 @@ Namespace Views
             Catch
                 _imageDescriptionLabel.Text = String.Empty
             End Try
+            FitImageDescriptionHeight()
+        End Sub
+
+        ''' <summary>Ajusta a altura da descricao ao texto (minimo 72, maximo metade do painel da lista).</summary>
+        Private Sub FitImageDescriptionHeight()
+            Const MinHeight = 72
+            Dim lbl = _imageDescriptionLabel
+            If lbl Is Nothing OrElse lbl.Parent Is Nothing Then Return
+            Dim textWidth = lbl.ClientSize.Width - lbl.Padding.Horizontal
+            If textWidth <= 0 Then Return
+            Dim needed = MinHeight
+            If lbl.Text.Length > 0 Then
+                Dim measured = TextRenderer.MeasureText(lbl.Text, lbl.Font, New Size(textWidth, Integer.MaxValue),
+                                                        TextFormatFlags.WordBreak Or TextFormatFlags.TextBoxControl)
+                needed = Math.Max(MinHeight, measured.Height + lbl.Padding.Vertical + 2)
+            End If
+            Dim maxHeight = Math.Max(MinHeight, lbl.Parent.ClientSize.Height \ 2)
+            Dim target = Math.Min(needed, maxHeight)
+            If lbl.Height <> target Then lbl.Height = target
         End Sub
 
         Private Sub UpdateImageActionButtons()
