@@ -521,6 +521,16 @@ Namespace Views
             dividerGap.BringToFront()
             line.BringToFront()
             Controls.Add(_statusLabel)
+            ' Texto longo quebra em mais linhas (sem "...") e a faixa da status cresce para caber.
+            line.TextLabel.AutoEllipsis = False
+            Dim lastStatusWidth = -1
+            AddHandler _statusLabel.TextChanged, Sub() FitStatusRowHeight(line)
+            AddHandler line.TextLabel.SizeChanged,
+                Sub()
+                    If line.TextLabel.Width = lastStatusWidth Then Return
+                    lastStatusWidth = line.TextLabel.Width
+                    FitStatusRowHeight(line)
+                End Sub
 
             ' 6: run.gif | barra | Cancelar
             LayoutRoot.SetRow(ProgressPanel, 6)
@@ -870,6 +880,25 @@ Namespace Views
             _driveCombo.Enabled = True
             _tibxList.Enabled = True
             _isoList.Enabled = True
+        End Sub
+
+        ''' <summary>Ajusta a altura da linha 5 (status) ao texto: 40 px para uma linha, mais o que a quebra exigir.</summary>
+        Private Sub FitStatusRowHeight(line As StatusLine)
+            Const StatusRow = 5
+            Const BaseRowHeight = 40
+            Const BaseLineHeight = 22
+            Dim lbl = line.TextLabel
+            If lbl.Width <= 0 OrElse LayoutRoot.RowStyles.Count <= StatusRow Then Return
+            Dim lineHeight = BaseLineHeight
+            If lbl.Text.Length > 0 Then
+                Dim measured = TextRenderer.MeasureText(lbl.Text, lbl.Font, New Size(lbl.Width, Integer.MaxValue),
+                                                        TextFormatFlags.WordBreak Or TextFormatFlags.TextBoxControl)
+                lineHeight = Math.Max(BaseLineHeight, measured.Height + 4)
+            End If
+            Dim rowHeight = CSng(BaseRowHeight + lineHeight - BaseLineHeight)
+            If LayoutRoot.RowStyles(StatusRow).Height <> rowHeight Then
+                LayoutRoot.RowStyles(StatusRow).Height = rowHeight
+            End If
         End Sub
 
         Private Sub OnImageSelectionChanged(sender As Object, e As EventArgs)
@@ -1655,7 +1684,7 @@ Namespace Views
                         MessageBox.Show("SHA-256 divergente após cópia do TIBX.", "USB Boot", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                     Else
                         Await _logService.WriteAsync($"USB | SHA256_TIBX | OK | {destination}")
-                        _statusLabel.Text = "TIBX copiado e verificado: o arquivo no USB é idêntico ao do cache (SHA-256 confere)."
+                        _statusLabel.Text = $"Verificação do SHA-256 do {Path.GetFileName(destination)} validado com sucesso."
                     End If
                 End If
             Catch ex As OperationCanceledException
@@ -3995,7 +4024,7 @@ Namespace Views
                         End If
 
                         Dim copiedPercent = If(totalBytes > 0, CInt(Math.Min(100, copiedBytes * 100L \ totalBytes)), 100)
-                        _statusLabel.Text = $"Copiando arquivos da ISO... {copiedPercent}% - {relPath}"
+                        _statusLabel.Text = $"Copiando {relPath}... {copiedPercent}%"
 
                         Try
                             Dim openedPath As String = String.Empty
@@ -4014,7 +4043,7 @@ Namespace Views
                                         Dim newPercent = If(totalBytes > 0, CInt(Math.Min(100, copiedBytes * 100L \ totalBytes)), 100)
                                         If newPercent <> copiedPercent Then
                                             copiedPercent = newPercent
-                                            _statusLabel.Text = $"Copiando arquivos da ISO... {copiedPercent}% - {relPath}"
+                                            _statusLabel.Text = $"Copiando {relPath}... {copiedPercent}%"
                                         End If
                                     Loop
                                 End Using
