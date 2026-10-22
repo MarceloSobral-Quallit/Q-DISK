@@ -351,9 +351,17 @@ e `BootIso`). Código: `USB`; Core: [`DiskSafety.vb`](../src/qdisk.Core/Services
   - As duas trazem o botão "Ativar Modo Administrador".
 - **Etapa 1:** "USB:", a lista de dispositivos e "Atualizar USB".
 - **Etapa 2:** "Imagens TIBX" ou "Imagens ISO", com a descrição da imagem selecionada abaixo.
-  Imagem fora dos catálogos: "Imagem fora dos catalogos: sem descricao."
+  - Texto: a descrição do catálogo e "Como gravar: <método> — Compatibilidade BIOS e UEFI" (ou "Compatibilidade
+    somente UEFI", "Compatibilidade BIOS"), de [`ImageGuidance.vb`](../src/qdisk.Core/Services/ImageGuidance.vb).
+  - Imagem fora dos catálogos: "Imagem fora dos catalogos: sem descricao."
+  - A caixa acompanha o texto: mínimo 72 px, máximo metade da área da lista; acima disso aparece a barra de rolagem
+    vertical.
 - **Coluna de ações:** "Zerar USB" fica no pé.
 - **Rodapé:** status, indicador de ocupado, barra de progresso e "Cancelar".
+  - A status não corta o texto: quebra em mais linhas e a faixa cresce para caber.
+  - Etapas com medida real mostram o percentual na barra e no texto ("... NN%"): SHA-256 de imagens, cópia do TIBX,
+    cópia dos arquivos da ISO ("Copiando <arquivo>... NN%"), gravação RAW/DD, verificação da gravação e comparação
+    imagem × USB. Formatar, analisar a ISO e criar partições seguem com a barra animada.
 
 | Modo | Botões | Habilitação |
 |---|---|---|
@@ -425,8 +433,8 @@ flowchart TD
 
 ## 9. Copiar Backup TIBX
 
-Código: `USB` `OnCopyClick`, `ShouldCopyExistingTibxAsync`, `OnVerifyTibxOnUsbClick`; Core: `TibxVolumeCheck`
-([`UsbDiskLayout.vb`](../src/qdisk.Core/Services/UsbDiskLayout.vb)).
+Código: `USB` `OnCopyClick`, `ValidateTibxBeforeCopyAsync`, `GetExpectedImageSha256`, `ShouldCopyExistingTibxAsync`,
+`OnVerifyTibxOnUsbClick`; Core: `TibxVolumeCheck` ([`UsbDiskLayout.vb`](../src/qdisk.Core/Services/UsbDiskLayout.vb)).
 
 ```mermaid
 flowchart TD
@@ -441,15 +449,25 @@ flowchart TD
     F --> G["AutoPlay desligado, se configurado"]
     G --> H{"Espaço livre ≥ tamanho do TIBX?"}
     H -- "não" --> H1["'USB insuficiente para copiar TIBX...'"]
-    H -- "sim" --> I{"TIBX de mesmo nome na raiz e<br/>'Validar hash quando TIBX ja existir no USB'?"}
+    H -- "sim" --> V["Valida o TIBX antes da cópia (sempre):<br/>'Validando SHA-256 do TIBX antes da cópia... NN%'"]
+    V --> V1{"SHA-256 do arquivo × referência"}
+    V1 -- "diverge" --> V2["'O SHA-256 do TIBX em disco não confere com o validado<br/>no download/catálogo. A cópia foi cancelada.'<br/>(Esperado/Calculado; baixar de novo em Downloads)"]
+    V1 -- "confere ou sem referência" --> I{"TIBX de mesmo nome na raiz e<br/>'Validar hash quando TIBX ja existir no USB'?"}
     I -- "sim" --> J{"'Deseja verificar se ele ja esta atualizado<br/>calculando o SHA-256...?'"}
-    J -- "Sim, SHA-256 igual" --> K["'O TIBX existente no USB ja esta atualizado.<br/>A copia foi dispensada.'"]
+    J -- "Sim, SHA-256 do USB = o validado" --> K["'O TIBX existente no USB ja esta atualizado.<br/>A copia foi dispensada.'"]
     J -- "Sim, diferente / Não" --> L
-    I -- "não" --> L["Copia para a raiz do USB com progresso"]
+    I -- "não" --> L["Copia para a raiz do USB:<br/>'Copiando TIBX... NN%'"]
     L --> M{"'Validar hash após cópia TIBX'?"}
-    M -- "sim" --> N["SHA-256 origem × USB:<br/>'SHA-256 validado com sucesso.' ou<br/>'SHA-256 divergente após cópia do TIBX.'"]
+    M -- "sim" --> N["Só o SHA-256 do USB × o validado antes da cópia:<br/>'Verificando TIBX no USB... NN%'<br/>'Verificação do SHA-256 do <nome> validado com sucesso.' ou<br/>'SHA-256 divergente após cópia do TIBX.'"]
     M -- "não" --> O["'TIBX copiado: <nome>'"]
 ```
+
+**Validação antes da cópia** (`ValidateTibxBeforeCopyAsync`)
+- Roda sempre, antes de copiar. O SHA-256 calculado aqui é a referência da verificação no USB: a imagem em disco não
+  é lida de novo depois da cópia.
+- Referência (`GetExpectedImageSha256`): o SHA-256 gravado em `download_status.json` quando o download foi validado
+  (`Downloaded` e `Md5Valid`); sem ele, o do catálogo.
+- Imagem fora dos catálogos (sem referência): a cópia segue e o log registra `SHA256_ORIGEM | SEM_REFERENCIA`.
 
 **Quando o USB precisa ser formatado** (`TibxVolumeCheck.FormatReason`)
 - O USB está sem letra.
@@ -462,7 +480,8 @@ flowchart TD
 **"Verificar TIBX no USB"** (não exige elevação)
 1. Exige USB com letra e um TIBX do cache selecionado como referência.
 2. Abre "Selecionar TIBX no USB" na raiz do USB.
-3. Compara o tamanho e depois o SHA-256. Resultados: "TIBX no USB corresponde ao cache selecionado." ou
+3. Compara o tamanho e depois o SHA-256 do cache e do USB, com percentual ("Calculando SHA-256 do TIBX no cache...
+   NN%", depois "... no USB... NN%"). Resultados: "TIBX no USB corresponde ao cache selecionado." ou
    "TIBX divergente: ...".
 
 ---
