@@ -2100,7 +2100,7 @@ Namespace Views
                     End If
                 Else
                     ' Calcular SHA-256 atual do arquivo e comparar
-                    Dim actualSha256 = Await ComputeImageSha256Async(item.FullPath, cancellationToken)
+                    Dim actualSha256 = Await ComputeSha256WithProgressAsync(item.FullPath, "Verificando SHA-256 do ISO...", cancellationToken)
                     If Not String.Equals(expectedSha256, actualSha256, StringComparison.OrdinalIgnoreCase) Then
                         Await _logService.WriteAsync($"USB | ISO | SHA256_ERRO | {item.DisplayName}")
                         Dim sha256Confirm = MessageBox.Show("SHA-256 divergente para o ISO. Deseja continuar a gravacao?",
@@ -2215,9 +2215,7 @@ Namespace Views
         Private Async Function RecordImageSha256Async(item As CacheItem, cancellationToken As CancellationToken) As Task(Of String)
             Dim imageSha256 As String = String.Empty
             Try
-                _statusLabel.Text = "Calculando SHA256 da imagem..."
-                Application.DoEvents()
-                imageSha256 = Await ComputeImageSha256Async(item.FullPath, cancellationToken)
+                imageSha256 = Await ComputeSha256WithProgressAsync(item.FullPath, "Calculando SHA-256 da imagem...", cancellationToken)
 
                 ' Atualizar status com SHA256 da imagem
                 Dim statusMap = LoadDownloadStatusMap()
@@ -2421,7 +2419,6 @@ Namespace Views
                 Try
                     SetUsbActionButtonsEnabled(False)
                     SetBusyIndicator(True)
-                    SetProgressMarquee(True)
                     _statusLabel.Text = "Verificando TIBX selecionado no USB..."
                     Await _logService.WriteAsync($"USB | TIBX_VERIFY | INICIO | Cache={item.FullPath} | USB={selectedUsbFile}")
 
@@ -2434,8 +2431,8 @@ Namespace Views
                         Return
                     End If
 
-                    Dim sourceSha256 = Await ComputeImageSha256Async(item.FullPath, cancellationToken)
-                    Dim usbSha256 = Await ComputeImageSha256Async(selectedUsbFile, cancellationToken)
+                    Dim sourceSha256 = Await ComputeSha256WithProgressAsync(item.FullPath, "Calculando SHA-256 do TIBX no cache...", cancellationToken)
+                    Dim usbSha256 = Await ComputeSha256WithProgressAsync(selectedUsbFile, "Calculando SHA-256 do TIBX no USB...", cancellationToken)
                     Dim match = String.Equals(sourceSha256, usbSha256, StringComparison.OrdinalIgnoreCase)
                     Await _logService.WriteAsync($"USB | TIBX_VERIFY | SHA256_{If(match, "OK", "DIVERGENTE")} | Cache={item.FullPath} | USB={selectedUsbFile} | CacheSHA256={sourceSha256} | UsbSHA256={usbSha256}")
 
@@ -2507,8 +2504,7 @@ Namespace Views
                 Await _logService.WriteAsync($"USB | RAW_DD | INICIO | {item.DisplayName} -> Disk {drive.DiskNumber} | Recommendation={recommendationText}")
 
                 If settings.AutoValidateSha256BeforeIsoBurn Then
-                    _statusLabel.Text = "Calculando SHA-256 da ISO..."
-                    imageSha256 = Await ComputeImageSha256Async(item.FullPath, cancellationToken)
+                    imageSha256 = Await ComputeSha256WithProgressAsync(item.FullPath, "Calculando SHA-256 da ISO...", cancellationToken)
                     Await _logService.WriteAsync($"USB | RAW_DD | SHA256_IMAGEM | {item.DisplayName} | {imageSha256}")
                 End If
 
@@ -3998,7 +3994,8 @@ Namespace Views
                             Directory.CreateDirectory(destDir)
                         End If
 
-                        _statusLabel.Text = $"Copiando: {relPath}"
+                        Dim copiedPercent = If(totalBytes > 0, CInt(Math.Min(100, copiedBytes * 100L \ totalBytes)), 100)
+                        _statusLabel.Text = $"Copiando arquivos da ISO... {copiedPercent}% - {relPath}"
 
                         Try
                             Dim openedPath As String = String.Empty
@@ -4014,6 +4011,11 @@ Namespace Views
                                         Dim pct = progressBase + CInt(Math.Min(progressRange,
                                                   If(totalBytes > 0, (copiedBytes * CLng(progressRange)) \ totalBytes, progressRange)))
                                         SetProgress(pct)
+                                        Dim newPercent = If(totalBytes > 0, CInt(Math.Min(100, copiedBytes * 100L \ totalBytes)), 100)
+                                        If newPercent <> copiedPercent Then
+                                            copiedPercent = newPercent
+                                            _statusLabel.Text = $"Copiando arquivos da ISO... {copiedPercent}% - {relPath}"
+                                        End If
                                     Loop
                                 End Using
                             End Using
@@ -5844,9 +5846,13 @@ Namespace Views
             End Using
         End Function
 
-        ''' <summary>SHA-256 do arquivo com o percentual real de leitura na barra e na status ("{statusText} NN%").</summary>
+        ''' <summary>
+        ''' SHA-256 do arquivo com o percentual real de leitura na barra e na status ("{statusText} NN%").
+        ''' Se a barra estava animada (etapa sem percentual), volta a animar ao terminar.
+        ''' </summary>
         Private Async Function ComputeSha256WithProgressAsync(filePath As String, statusText As String, cancellationToken As CancellationToken) As Task(Of String)
             Const bufferSize = 1024 * 1024
+            Dim wasMarquee = _progressBar.Style = ProgressBarStyle.Marquee
             Try
                 Using sha256 = System.Security.Cryptography.IncrementalHash.CreateHash(System.Security.Cryptography.HashAlgorithmName.SHA256)
                     Using stream = New FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize, True)
@@ -5870,6 +5876,10 @@ Namespace Views
             Catch ex As Exception
                 _logService.WriteAsync($"SHA256 | ERRO | {filePath} | {ex.Message}").GetAwaiter().GetResult()
                 Throw
+            Finally
+                If wasMarquee Then
+                    SetProgressMarquee(True)
+                End If
             End Try
         End Function
 
@@ -6605,8 +6615,23 @@ Namespace Views
                         Dim blockedByAvCount As Integer = 0
                         Dim readErrorCount As Integer = 0
 
+                        ' Percentual real: cada arquivo e lido duas vezes (ISO e USB).
+                        Const verifyText As String = "Verificando gravacao USB..."
+                        Dim workTotal = totalBytes * 2
+                        Dim workDone As Long = 0
+                        Dim startedBytes As Long = 0
+                        Dim lastPercent = ShowProgressPercent(verifyText, 0, -1)
+                        Dim onBytesRead As Action(Of Integer) =
+                            Sub(bytesRead)
+                                workDone += bytesRead
+                                lastPercent = ShowProgressPercent(verifyText, If(workTotal > 0, CInt(Math.Min(100, workDone * 100L \ workTotal)), 100), lastPercent)
+                            End Sub
+
                         For Each entry In expectedFiles
                             cancellationToken.ThrowIfCancellationRequested()
+                            ' Arquivo ausente ou com erro conta como processado.
+                            workDone = 2 * startedBytes
+                            startedBytes += entry.Size
 
                             Dim relPath = If(String.IsNullOrEmpty(entry.IsoDir), entry.Entry, Path.Combine(entry.IsoDir, entry.Entry))
                             Dim usbPath = Path.Combine(drive.RootPath, relPath)
@@ -6622,8 +6647,11 @@ Namespace Views
                             Try
                                 Dim openedPath As String = String.Empty
                                 Using isoFileStream As IO.Stream = OpenIsoFileWithFallback(fs, relPath, openedPath)
-                                    Dim isoHash = Await ComputeSha256FromStreamAsync(isoFileStream, cancellationToken)
-                                    Dim usbHash = Await ComputeImageSha256Async(usbPath, cancellationToken)
+                                    Dim isoHash = Await ComputeSha256FromStreamAsync(isoFileStream, cancellationToken, onBytesRead)
+                                    Dim usbHash As String
+                                    Using usbStream As New FileStream(usbPath, FileMode.Open, FileAccess.Read, FileShare.Read, 1024 * 1024, useAsync:=True)
+                                        usbHash = Await ComputeSha256FromStreamAsync(usbStream, cancellationToken, onBytesRead)
+                                    End Using
                                     If Not String.Equals(isoHash, usbHash, StringComparison.OrdinalIgnoreCase) Then
                                         mismatchCount += 1
                                         If mismatchCount <= 20 Then
@@ -6695,7 +6723,8 @@ Namespace Views
                    lower.Contains("access is denied")
         End Function
 
-        Private Shared Async Function ComputeSha256FromStreamAsync(input As IO.Stream, cancellationToken As CancellationToken) As Task(Of String)
+        Private Shared Async Function ComputeSha256FromStreamAsync(input As IO.Stream, cancellationToken As CancellationToken,
+                                                                   Optional onBytesRead As Action(Of Integer) = Nothing) As Task(Of String)
             input.Position = 0
             Using sha256 = System.Security.Cryptography.SHA256.Create()
                 Dim buffer(1024 * 1024 - 1) As Byte
@@ -6704,6 +6733,7 @@ Namespace Views
                     Dim bytesRead = Await input.ReadAsync(buffer, 0, buffer.Length, cancellationToken)
                     If bytesRead = 0 Then Exit Do
                     sha256.TransformBlock(buffer, 0, bytesRead, Nothing, 0)
+                    onBytesRead?.Invoke(bytesRead)
                 Loop
                 sha256.TransformFinalBlock(Array.Empty(Of Byte)(), 0, 0)
                 Return BitConverter.ToString(sha256.Hash).Replace("-", "").ToLowerInvariant()
@@ -6717,12 +6747,16 @@ Namespace Views
 
         ' Compara byte a byte e separa o que o Windows altera ao reconhecer o disco (assinatura do MBR) e ao montar o
         ' volume FAT/EFI da imagem das divergencias reais.
+        Private Const CompareStatusText As String = "Comparando imagem com o USB..."
+
+        ''' <summary>Comparacao binaria imagem x disco, com o percentual real na barra e na status.</summary>
         Private Async Function CompareImageWithUsbDetailedAsync(imagePath As String, diskNumber As Integer, cancellationToken As CancellationToken) As Task(Of RawCompareResult)
             Try
                 _logService.WriteAsync($"USB | COMPARE | INICIO | {imagePath} -> Disk {diskNumber}").GetAwaiter().GetResult()
                 Dim imageSize As Long = New FileInfo(imagePath).Length
                 Dim logged = 0
                 Dim nextProgress As Long = 100L * 1024 * 1024
+                Dim lastPercent = ShowProgressPercent(CompareStatusText, 0, -1)
                 Dim result As RawCompareResult
                 Using imageStream = New FileStream(imagePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize:=RawImageVerifier.BufferSize, useAsync:=True)
                     Using usbStream = New FileStream($"\\.\PhysicalDrive{diskNumber}", FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize:=RawImageVerifier.BufferSize, useAsync:=True)
@@ -6734,6 +6768,7 @@ Namespace Views
                                 End If
                             End Sub,
                             Sub(compared)
+                                lastPercent = ShowProgressPercent(CompareStatusText, If(imageSize > 0, CInt(Math.Min(100, compared * 100L \ imageSize)), 100), lastPercent)
                                 If compared >= nextProgress Then
                                     nextProgress += 100L * 1024 * 1024
                                     _logService.WriteAsync($"USB | COMPARE | PROGRESS | Disk {diskNumber} | {CInt(compared * 100 / imageSize)}% | {compared}/{imageSize} bytes | Divergências: {logged}").GetAwaiter().GetResult()
