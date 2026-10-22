@@ -379,13 +379,16 @@ Namespace Views
             DriveLabel.Anchor = AnchorStyles.Left
             DriveLabel.Margin = New Padding(0, 0, 8, 0)
             usbRow.Controls.Add(DriveLabel, 1, 0)
-            _driveCombo.Anchor = AnchorStyles.Left Or AnchorStyles.Right
-            _driveCombo.Margin = New Padding(0, 0, 8, 0)
+            ' Combo e botao presos ao topo com a mesma margem: centralizado, o combo ficava 4 px abaixo do botao
+            ' (o layout usa uma altura do combo menor que a desenhada pelo RoundedComboPainter).
+            Dim usbRowTop = (40 - UiTheme.ButtonHeight) \ 2
+            _driveCombo.Anchor = AnchorStyles.Left Or AnchorStyles.Right Or AnchorStyles.Top
+            _driveCombo.Margin = New Padding(0, usbRowTop, 8, 0)
             RoundedComboPainter.Attach(_driveCombo)
             usbRow.Controls.Add(_driveCombo, 2, 0)
             UiStatus.StyleAutoButton(_refreshButton, ButtonKind.Secondary, UiTheme.Icon16(Me, "refresh", "text"))
-            _refreshButton.Anchor = AnchorStyles.Right
-            _refreshButton.Margin = New Padding(0)
+            _refreshButton.Anchor = AnchorStyles.Right Or AnchorStyles.Top
+            _refreshButton.Margin = New Padding(0, usbRowTop, 0, 0)
             usbRow.Controls.Add(_refreshButton, 3, 0)
             UiStatus.ReplaceInParent(HeaderPanel, usbRow)
 
