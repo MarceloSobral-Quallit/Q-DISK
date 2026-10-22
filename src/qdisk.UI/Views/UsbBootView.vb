@@ -1628,25 +1628,33 @@ Namespace Views
                     Return
                 End If
 
-                If Not Await ShouldCopyExistingTibxAsync(item.FullPath, destination, cancellationToken) Then
+                ' 1: valida o TIBX em disco antes de copiar; o SHA calculado serve de referencia para a verificacao no USB.
+                Dim sourceSha256 = Await ValidateTibxBeforeCopyAsync(item, cancellationToken)
+                If sourceSha256 Is Nothing Then
                     Return
                 End If
 
+                If Not Await ShouldCopyExistingTibxAsync(sourceSha256, destination, cancellationToken) Then
+                    Return
+                End If
+
+                ' 2: copia
+                _statusLabel.Text = "Copiando TIBX..."
                 Await CopyFileWithProgressAsync(item.FullPath, destination, cancellationToken)
 
                 _statusLabel.Text = $"TIBX copiado: {Path.GetFileName(destination)}"
                 Await _logService.WriteAsync($"USB | COPIA_TIBX | OK | {destination}")
 
+                ' 3: verifica so o TIBX no USB contra o SHA validado no passo 1 (sem reler a imagem em disco).
                 Dim settingsMd5 = _settingsService.Load()
                 If settingsMd5.AutoValidateSha256AfterTibxCopy Then
                     SetProgressMarquee(True)
-                    _statusLabel.Text = "Validando SHA-256 da cópia..."
-                    Dim sourceSha256 = Await ComputeImageSha256Async(item.FullPath, cancellationToken)
+                    _statusLabel.Text = "Verificando TIBX no USB..."
                     Dim targetSha256 = Await ComputeImageSha256Async(destination, cancellationToken)
                     SetProgressMarquee(False)
 
                     If Not String.Equals(sourceSha256, targetSha256, StringComparison.OrdinalIgnoreCase) Then
-                        Await _logService.WriteAsync($"USB | SHA256_TIBX | ERRO | {destination}")
+                        Await _logService.WriteAsync($"USB | SHA256_TIBX | ERRO | {destination} | Esperado={sourceSha256} | USB={targetSha256}")
                         MessageBox.Show("SHA-256 divergente após cópia do TIBX.", "USB Boot", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                     Else
                         Await _logService.WriteAsync($"USB | SHA256_TIBX | OK | {destination}")
@@ -5837,7 +5845,68 @@ Namespace Views
             End Using
         End Function
 
-        Private Async Function ShouldCopyExistingTibxAsync(sourcePath As String, destinationPath As String, cancellationToken As CancellationToken) As Task(Of Boolean)
+        ''' <summary>
+        ''' Passo 1 da copia do TIBX: calcula o SHA-256 do arquivo em disco e confere com a referencia
+        ''' (validada no download ou do catalogo). Retorna o SHA calculado; Nothing se divergiu (copia abortada).
+        ''' Sem referencia, segue com o SHA calculado.
+        ''' </summary>
+        Private Async Function ValidateTibxBeforeCopyAsync(item As CacheItem, cancellationToken As CancellationToken) As Task(Of String)
+            Dim expectedSha256 = GetExpectedImageSha256(item)
+            Dim actualSha256 As String
+            SetProgressMarquee(True)
+            _statusLabel.Text = "Validando SHA-256 do TIBX antes da cópia..."
+            Try
+                actualSha256 = Await ComputeImageSha256Async(item.FullPath, cancellationToken)
+            Finally
+                SetProgressMarquee(False)
+            End Try
+
+            If String.IsNullOrWhiteSpace(expectedSha256) Then
+                Await _logService.WriteAsync($"USB | COPIA_TIBX | SHA256_ORIGEM | SEM_REFERENCIA | {item.DisplayName} | SHA256={actualSha256}")
+                Return actualSha256
+            End If
+
+            If Not String.Equals(expectedSha256, actualSha256, StringComparison.OrdinalIgnoreCase) Then
+                Await _logService.WriteAsync($"USB | COPIA_TIBX | SHA256_ORIGEM | DIVERGENTE | {item.DisplayName} | Esperado={expectedSha256} | Calculado={actualSha256}")
+                _statusLabel.Text = "TIBX em disco com SHA-256 divergente. Cópia cancelada."
+                MessageBox.Show($"O SHA-256 do TIBX em disco não confere com o validado no download/catálogo. A cópia foi cancelada.{Environment.NewLine}{Environment.NewLine}" &
+                                $"Esperado: {expectedSha256}{Environment.NewLine}Calculado: {actualSha256}{Environment.NewLine}{Environment.NewLine}" &
+                                "Baixe a imagem novamente na tela Downloads.",
+                                "USB Boot", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Return Nothing
+            End If
+
+            Await _logService.WriteAsync($"USB | COPIA_TIBX | SHA256_ORIGEM | OK | {item.DisplayName} | SHA256={actualSha256}")
+            Return actualSha256
+        End Function
+
+        ''' <summary>
+        ''' SHA-256 de referencia da imagem: o gravado no download_status quando o download foi validado;
+        ''' senao, o do catalogo. Vazio se nenhum dos dois existir.
+        ''' </summary>
+        Private Function GetExpectedImageSha256(item As CacheItem) As String
+            Dim statusMap = LoadDownloadStatusMap()
+            Dim catalogName = FindCatalogNameForPath(statusMap, item.FullPath)
+            Dim entry As DownloadStatusEntry = Nothing
+            If Not String.IsNullOrWhiteSpace(catalogName) AndAlso statusMap.TryGetValue(catalogName, entry) AndAlso entry IsNot Nothing AndAlso
+               entry.Downloaded AndAlso entry.Md5Valid.GetValueOrDefault() AndAlso Not String.IsNullOrWhiteSpace(entry.ImageSha256) Then
+                Return entry.ImageSha256.Trim()
+            End If
+            Try
+                Dim reason As String = Nothing
+                Dim catalogItem = _usbWritePolicyResolver.FindCatalogItem(_catalogService.LoadAllCatalogs(AppPaths.DataDir), catalogName,
+                                                                          Path.GetFileName(item.FullPath), New FileInfo(item.FullPath).Length, reason)
+                If catalogItem IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(catalogItem.Sha256) Then
+                    Return catalogItem.Sha256.Trim()
+                End If
+            Catch ex As Exception
+                _logService.WriteAsync($"USB | COPIA_TIBX | SHA256_REFERENCIA | ERRO_CATALOGO | {item.DisplayName} | {ex.Message}").GetAwaiter().GetResult()
+            End Try
+            Return String.Empty
+        End Function
+
+        ''' <summary>Arquivo com o mesmo nome ja no USB: compara o SHA dele com o SHA validado no passo 1.</summary>
+        Private Async Function ShouldCopyExistingTibxAsync(sourceSha256 As String, destinationPath As String, cancellationToken As CancellationToken) As Task(Of Boolean)
             If Not File.Exists(destinationPath) Then
                 Return True
             End If
@@ -5862,7 +5931,6 @@ Namespace Views
             Try
                 SetProgressMarquee(True)
                 _statusLabel.Text = "Verificando TIBX existente no USB..."
-                Dim sourceSha256 = Await ComputeImageSha256Async(sourcePath, cancellationToken)
                 Dim targetSha256 = Await ComputeImageSha256Async(destinationPath, cancellationToken)
                 Dim match = String.Equals(sourceSha256, targetSha256, StringComparison.OrdinalIgnoreCase)
                 Await _logService.WriteAsync($"USB | COPIA_TIBX | EXISTE | SHA256_{If(match, "OK", "DIVERGENTE")} | {destinationPath}")
