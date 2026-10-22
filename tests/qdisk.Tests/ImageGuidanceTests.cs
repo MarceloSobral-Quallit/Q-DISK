@@ -14,10 +14,10 @@ public class ImageGuidanceTests
     };
 
     [Theory]
-    [InlineData("logical-fat32", "Cópia lógica FAT32 — BIOS e UEFI", "bios", "uefi")]
-    [InlineData("uefi-ntfs", "UEFI:NTFS — somente UEFI", "uefi")]
-    [InlineData("raw", "RAW/DD — BIOS", "bios")]
-    [InlineData("raw", "RAW/DD — BIOS e UEFI", "bios", "uefi")]
+    [InlineData("logical-fat32", "Cópia lógica FAT32 — Compatibilidade BIOS e UEFI", "bios", "uefi")]
+    [InlineData("uefi-ntfs", "UEFI:NTFS — Compatibilidade somente UEFI", "uefi")]
+    [InlineData("raw", "RAW/DD — Compatibilidade BIOS", "bios")]
+    [InlineData("raw", "RAW/DD — Compatibilidade BIOS e UEFI", "bios", "uefi")]
     public void ComoGravar_DaPolitica(string method, string expected, params string[] targets)
     {
         Assert.Equal(expected, ImageGuidance.HowToWrite(Iso(method, targets)));
@@ -34,7 +34,7 @@ public class ImageGuidanceTests
     public void Describe_JuntaDescricaoEComoGravar()
     {
         var text = ImageGuidance.Describe(Iso("raw", "bios"));
-        Assert.Equal($"Descricao{Environment.NewLine}Como gravar: RAW/DD — BIOS", text);
+        Assert.Equal($"Descricao{Environment.NewLine}Como gravar: RAW/DD — Compatibilidade BIOS", text);
     }
 
     [Fact]

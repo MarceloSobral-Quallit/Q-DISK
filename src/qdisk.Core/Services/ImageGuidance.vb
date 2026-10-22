@@ -56,9 +56,9 @@ Namespace Services
             Dim targetSet = New HashSet(Of String)(If(targets, Enumerable.Empty(Of String)()).Select(Function(target) target.Trim().ToLowerInvariant()))
             Dim bios = targetSet.Contains("bios")
             Dim uefi = targetSet.Contains("uefi")
-            If bios AndAlso uefi Then Return "BIOS e UEFI"
-            If uefi Then Return "somente UEFI"
-            If bios Then Return "BIOS"
+            If bios AndAlso uefi Then Return "Compatibilidade BIOS e UEFI"
+            If uefi Then Return "Compatibilidade somente UEFI"
+            If bios Then Return "Compatibilidade BIOS"
             Return String.Empty
         End Function
     End Class
