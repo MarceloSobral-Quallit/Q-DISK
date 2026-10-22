@@ -1639,8 +1639,7 @@ Namespace Views
                 End If
 
                 ' 2: copia
-                _statusLabel.Text = "Copiando TIBX..."
-                Await CopyFileWithProgressAsync(item.FullPath, destination, cancellationToken)
+                Await CopyFileWithProgressAsync(item.FullPath, destination, "Copiando TIBX...", cancellationToken)
 
                 _statusLabel.Text = $"TIBX copiado: {Path.GetFileName(destination)}"
                 Await _logService.WriteAsync($"USB | COPIA_TIBX | OK | {destination}")
@@ -1648,9 +1647,7 @@ Namespace Views
                 ' 3: verifica so o TIBX no USB contra o SHA validado no passo 1 (sem reler a imagem em disco).
                 Dim settingsMd5 = _settingsService.Load()
                 If settingsMd5.AutoValidateSha256AfterTibxCopy Then
-                    SetProgressMarquee(True)
-                    _statusLabel.Text = "Verificando TIBX no USB..."
-                    Dim targetSha256 = Await ComputeImageSha256Async(destination, cancellationToken)
+                    Dim targetSha256 = Await ComputeSha256WithProgressAsync(destination, "Verificando TIBX no USB...", cancellationToken)
                     SetProgressMarquee(False)
 
                     If Not String.Equals(sourceSha256, targetSha256, StringComparison.OrdinalIgnoreCase) Then
@@ -5821,7 +5818,8 @@ Namespace Views
             Return False
         End Function
 
-        Private Async Function CopyFileWithProgressAsync(sourcePath As String, destinationPath As String, cancellationToken As CancellationToken) As Task
+        ''' <summary>Copia com o percentual real na barra e na status ("{statusText} NN%").</summary>
+        Private Async Function CopyFileWithProgressAsync(sourcePath As String, destinationPath As String, statusText As String, cancellationToken As CancellationToken) As Task
             Dim bufferSize = 1024 * 1024
             Using sourceStream As New FileStream(sourcePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize, True)
                 Using destStream As New FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize, True)
@@ -5829,6 +5827,8 @@ Namespace Views
                     Dim buffer(bufferSize - 1) As Byte
                     Dim read As Integer
                     Dim totalRead As Long = 0
+                    Dim lastPercent = -1
+                    lastPercent = ShowProgressPercent(statusText, 0, lastPercent)
 
                     Do
                         cancellationToken.ThrowIfCancellationRequested()
@@ -5838,11 +5838,47 @@ Namespace Views
                         End If
                         Await destStream.WriteAsync(buffer.AsMemory(0, read), cancellationToken)
                         totalRead += read
-                        Dim percent = CInt(Math.Min(100, (totalRead * 100L) \ total))
-                        SetProgress(percent)
+                        lastPercent = ShowProgressPercent(statusText, If(total > 0, CInt(Math.Min(100, (totalRead * 100L) \ total)), 100), lastPercent)
                     Loop
                 End Using
             End Using
+        End Function
+
+        ''' <summary>SHA-256 do arquivo com o percentual real de leitura na barra e na status ("{statusText} NN%").</summary>
+        Private Async Function ComputeSha256WithProgressAsync(filePath As String, statusText As String, cancellationToken As CancellationToken) As Task(Of String)
+            Const bufferSize = 1024 * 1024
+            Try
+                Using sha256 = System.Security.Cryptography.IncrementalHash.CreateHash(System.Security.Cryptography.HashAlgorithmName.SHA256)
+                    Using stream = New FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize, True)
+                        Dim total = stream.Length
+                        Dim buffer(bufferSize - 1) As Byte
+                        Dim totalRead As Long = 0
+                        Dim lastPercent = -1
+                        lastPercent = ShowProgressPercent(statusText, 0, lastPercent)
+                        Do
+                            Dim read = Await stream.ReadAsync(buffer.AsMemory(0, buffer.Length), cancellationToken)
+                            If read = 0 Then
+                                Exit Do
+                            End If
+                            sha256.AppendData(buffer, 0, read)
+                            totalRead += read
+                            lastPercent = ShowProgressPercent(statusText, If(total > 0, CInt(Math.Min(100, (totalRead * 100L) \ total)), 100), lastPercent)
+                        Loop
+                        Return Convert.ToHexString(sha256.GetHashAndReset()).ToLowerInvariant()
+                    End Using
+                End Using
+            Catch ex As Exception
+                _logService.WriteAsync($"SHA256 | ERRO | {filePath} | {ex.Message}").GetAwaiter().GetResult()
+                Throw
+            End Try
+        End Function
+
+        ''' <summary>Atualiza barra e status so quando o percentual muda. Retorna o percentual exibido.</summary>
+        Private Function ShowProgressPercent(statusText As String, percent As Integer, lastPercent As Integer) As Integer
+            If percent = lastPercent Then Return lastPercent
+            SetProgress(percent)
+            _statusLabel.Text = $"{statusText} {percent}%"
+            Return percent
         End Function
 
         ''' <summary>
@@ -5853,10 +5889,8 @@ Namespace Views
         Private Async Function ValidateTibxBeforeCopyAsync(item As CacheItem, cancellationToken As CancellationToken) As Task(Of String)
             Dim expectedSha256 = GetExpectedImageSha256(item)
             Dim actualSha256 As String
-            SetProgressMarquee(True)
-            _statusLabel.Text = "Validando SHA-256 do TIBX antes da cópia..."
             Try
-                actualSha256 = Await ComputeImageSha256Async(item.FullPath, cancellationToken)
+                actualSha256 = Await ComputeSha256WithProgressAsync(item.FullPath, "Validando SHA-256 do TIBX antes da cópia...", cancellationToken)
             Finally
                 SetProgressMarquee(False)
             End Try
@@ -5929,9 +5963,7 @@ Namespace Views
             End If
 
             Try
-                SetProgressMarquee(True)
-                _statusLabel.Text = "Verificando TIBX existente no USB..."
-                Dim targetSha256 = Await ComputeImageSha256Async(destinationPath, cancellationToken)
+                Dim targetSha256 = Await ComputeSha256WithProgressAsync(destinationPath, "Verificando TIBX existente no USB...", cancellationToken)
                 Dim match = String.Equals(sourceSha256, targetSha256, StringComparison.OrdinalIgnoreCase)
                 Await _logService.WriteAsync($"USB | COPIA_TIBX | EXISTE | SHA256_{If(match, "OK", "DIVERGENTE")} | {destinationPath}")
 
