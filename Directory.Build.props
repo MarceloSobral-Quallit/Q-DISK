@@ -1,9 +1,9 @@
 <Project>
   <PropertyGroup>
-    <Version>0.00.10.26</Version>
-    <AssemblyVersion>0.00.10.26</AssemblyVersion>
-    <FileVersion>0.00.10.26</FileVersion>
-    <InformationalVersion>0.00.10.26</InformationalVersion>
+    <Version>0.01.10.26</Version>
+    <AssemblyVersion>0.01.10.26</AssemblyVersion>
+    <FileVersion>0.01.10.26</FileVersion>
+    <InformationalVersion>0.01.10.26</InformationalVersion>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <PublishDir>$(MSBuildThisFileDirectory)dist\</PublishDir>
     <!-- Caminhos relativos a raiz do projeto que nao devem entrar no build/backup do pipeline. Separe por ponto e virgula. -->
