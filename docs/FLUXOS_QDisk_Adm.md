@@ -233,7 +233,7 @@ flowchart TD
     A[Build completo] --> B[Executar build completo]
     B --> C[Confirma]
     C --> D["Copia os JSON para raiz/config<br/>se QDISK_CONFIG_DIR for outra pasta"]
-    D --> E["cmd.exe /c tools/utils/Build-OneFile-Sign_v4.bat<br/>→ python tools/build_release_dotnet_4.py"]
+    D --> E["cmd.exe /c tools/utils/Build-OneFile-Sign_OV.bat<br/>→ python tools/build_release_OV.py"]
     E --> F["Console ao vivo<br/>+ log_debug/build_console_*.log"]
     F --> G{Terminou}
     G --> H["Resumo: código de saída, versão nova,<br/>Git installer, fallback, Git projeto"]

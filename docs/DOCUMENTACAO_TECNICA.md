@@ -75,10 +75,10 @@ lido pelo pipeline para o backup ZIP: segredos locais ficam fora do backup).
 | `src/qdisk.Infrastructure/` | [`UpdateClient.vb`](../src/qdisk.Infrastructure/UpdateClient.vb) |
 | `tests/qdisk.Tests/` | Testes xUnit sobre o Core |
 | `QDisk_Adm/` | [`catalog_admin.py`](../QDisk_Adm/catalog_admin.py), [`run_qdisk_adm.cmd`](../QDisk_Adm/run_qdisk_adm.cmd), [`README.md`](../QDisk_Adm/README.md); logs em `QDisk_Adm/log/` e `QDisk_Adm/log_debug/` (ignorados pelo Git) |
-| `tools/` | [`build_release_dotnet_4.py`](../tools/build_release_dotnet_4.py) (pipeline), `installer/` ([`qdisk.iss`](../tools/installer/qdisk.iss)), `utils/`, `git/`, `certs/`, os dois projetos acima; log do pipeline em `tools/log/` (ignorado) |
-| `tools/utils/` | `Build-OneFile-Sign_v4.bat` (atalho do pipeline), `generate_token_verifiers.py`, `publish_catalogs.ps1`, `validate_catalogs.ps1`, `generate_image_hashes.ps1`, `embed_manual_images.py`, `capturar_manual.ps1` (usa `uia_lib.ps1`), `capturar_instalador.ps1`, `gerar_pdf_manuais.ps1`, `Build-OneFile-Sign_OV.bat` (atalho do pipeline OV), `publish_update_package.ps1.example` |
+| `tools/` | [`build_release_OV.py`](../tools/build_release_OV.py) (pipeline), `installer/` ([`qdisk.iss`](../tools/installer/qdisk.iss)), `utils/`, `git/`, `certs/`, os dois projetos acima; log do pipeline em `tools/log/` (ignorado) |
+| `tools/utils/` | `Build-OneFile-Sign_OV.bat` (atalho do pipeline), `generate_token_verifiers.py`, `publish_catalogs.ps1`, `validate_catalogs.ps1`, `generate_image_hashes.ps1`, `embed_manual_images.py`, `capturar_manual.ps1` (usa `uia_lib.ps1`), `capturar_instalador.ps1`, `gerar_pdf_manuais.ps1`, `publish_update_package.ps1.example` |
 | `tools/git/` | `github_sync.py` (commit/push conforme `config/github_sync.ini`), `restore_from_backup.ps1`, `git-details.txt` |
-| `tools/certs/` | Só `.gitkeep` e `extract_cert_chain.ps1` vão para o Git; o PFX de assinatura (`quallit_codesign.pfx`) fica local |
+| `tools/certs/` | Só `.gitkeep` e `extract_cert_chain.ps1` vão para o Git; o PEM da cadeia do certificado OV (`quallit_servicos_de_informatica_ltda.pem`, usado por `config/signkit.json`) fica local |
 | `config/` | Catálogos, manifestos USB, endpoints, tokens, modelos de segredos — fonte do que é embutido no app e publicado |
 | `assets/` | `favicon.ico`, `logo-quallit-512x512.png`, `APP_BG.jpg`, `run.gif`, `icons/`, `manual/` (`manual.html` + `images/`), `uefi-ntfs/` (`uefi-ntfs.img` + `ORIGEM.txt`) |
 | `docs/` | Esta documentação, os fluxos e as restrições de design das telas ([`RESTRICOES_WINFORMS.md`](RESTRICOES_WINFORMS.md)) |
@@ -184,7 +184,7 @@ disso, a atualização remota substitui o catálogo local quando o remoto é vá
 | [`config/qdisk.endpoints.json`](../config/qdisk.endpoints.json) | Servidor principal, fallback (HTTP e SSH) e repositório do installer | sim (`config\`) | sim |
 | [`config/qdisk.tokens.json`](../config/qdisk.tokens.json) | IDs internos dos perfis (geram o token do site) e catálogo de cada perfil | **não** | sim |
 | `config/qdisk.tokens.app.json` | Perfis e verificadores PBKDF2 por dia, sem os IDs (gerado) | sim (`config\`) | sim |
-| [`config/secret.md.example`](../config/secret.md.example) → `config/secret.md` | Senhas: `SignPassword`, `SshPassword`, `BackupPassword` | não | só o modelo (`config/secret.md` está no `.gitignore`) |
+| [`config/secret.md.example`](../config/secret.md.example) → `config/secret.md` | Senhas: `SshPassword`, `BackupPassword` | não | só o modelo (`config/secret.md` está no `.gitignore`) |
 | [`config/github_sync.ini.example`](../config/github_sync.ini.example) → `config/github_sync.ini` | Remote, branch e permissão de publicação do `tools/git/github_sync.py` | não | só o modelo |
 
 **Release × Debug** ([`AppConfigSource.vb`](../src/qdisk.Core/Services/AppConfigSource.vb)): endpoints e tokens são
@@ -198,7 +198,6 @@ Variáveis de ambiente têm prioridade:
 
 | Chave | Variável | Usado por |
 |---|---|---|
-| `SignPassword` | `QUALLIT_SIGN_PASSWORD` | Pipeline (assinatura) |
 | `SshPassword` | `QUALLIT_UPDATE_SSH_PASSWORD` (ou `QUALLIT_PUBLISH_SSH_PASSWORD`) | Pipeline (fallback) e `publish_catalogs.ps1` |
 | `BackupPassword` | `QUALLIT_BACKUP_PASSWORD` | `tools/git/restore_from_backup.ps1` |
 
@@ -298,7 +297,7 @@ Requisitos:
 |---|---|
 | App, testes, helper, bancada | SDK .NET capaz de compilar `net8.0`/`net8.0-windows` (não há `global.json`; o pipeline só exige `dotnet` no PATH) |
 | QDisk_Adm | Python 3 com Tkinter |
-| Pipeline | Python 3.11 ou superior (usa `datetime.UTC`) com PyInstaller; Windows SDK (`signtool.exe`) e o PFX; Inno Setup 6 (`iscc.exe`); Git; PuTTY (`pscp`, `plink`) ou OpenSSH (`scp`) |
+| Pipeline | Python 3.11 ou superior (usa `datetime.UTC`) com PyInstaller; Windows SDK (`signtool.exe`), Cloud KMS CNG Provider, Google Cloud SDK com login ADC e o `signkit` (`python -m signkit check`); Inno Setup 6 (`iscc.exe`); Git; PuTTY (`pscp`, `plink`) ou OpenSSH (`scp`) |
 | ISO limpa no QDisk_Adm | Windows ADK, Deployment Tools (`oscdimg.exe`) |
 
 Comandos:
@@ -341,53 +340,35 @@ O pipeline roda `dotnet test tests\qdisk.Tests -c Release -nologo -v q` na etapa
 ## 10. Pipeline de release
 
 ```powershell
-python .\tools\build_release_dotnet_4.py            # build completo
-.\tools\utils\Build-OneFile-Sign_v4.bat              # mesmo comando, repassando os argumentos
+python .\tools\build_release_OV.py                    # build completo (bump do Menor, assinatura OV, publicação)
+python .\tools\build_release_OV.py --set-version 1.00 # build completo fixando Maior.Menor (1.00.<mês>.<ano>)
+.\tools\utils\Build-OneFile-Sign_OV.bat              # mesmo comando, repassando os argumentos
 ```
 
-Pipeline OV (certificado OV da Quallit, chave no Google Cloud KMS), autocontido e independente do v4:
+Assinatura só com o certificado OV da Quallit (chave no Google Cloud KMS), pelo `signkit` (kit
+`C:\QSI_DESENV\signtest`, instalado no Python do build com `python -m pip install --user -e C:\QSI_DESENV\signtest`):
+`python -m signkit sign --backend signtool --config config/signkit.json <exe>`. Não há senha: a credencial é o login do
+Google (ADC) da estação. `config/signkit.json` tem a chave KMS, o PEM da cadeia
+(`tools/certs/quallit_servicos_de_informatica_ltda.pem`, fora do Git), o carimbo RFC 3161 e `/d`/`/du`;
+`--signkit-config` ou `QUALLIT_SIGNKIT_CONFIG` trocam o arquivo. O PFX autoassinado e o pipeline
+`build_release_dotnet_4.py` foram removidos na 1.00.
 
-```powershell
-python .\tools\build_release_OV.py                  # build completo, assinatura OV (--sign-mode kms, padrão)
-python .\tools\build_release_OV.py --sign-only      # reassina os exes de dist\ com o OV, sem compilar
-python .\tools\build_release_OV.py --sign-mode pfx  # mesmo pipeline com o PFX autoassinado (volta)
-python .\tools\build_release_OV.py --fallback-only  # só a etapa 16: reenvia dist\update ao fallback (sem bump, sem Git)
-```
-
-Diferenças do OV em relação ao v4 (o resto das etapas é igual):
-
-- Assina com `python -m signkit sign --backend signtool --config config/signkit.json <exe>` (kit
-  `C:\QSI_DESENV\signtest`, instalado no Python do build com `python -m pip install --user -e C:\QSI_DESENV\signtest`).
-  Sem senha: a credencial é o login do Google (ADC) da estação. `config/signkit.json` tem a chave KMS, o PEM da cadeia
-  (`tools/certs/quallit_servicos_de_informatica_ltda.pem`, fora do Git), o carimbo RFC 3161 e `/d`/`/du`;
-  `--signkit-config` ou `QUALLIT_SIGNKIT_CONFIG` trocam o arquivo. `--no-timestamp` não se aplica ao modo kms.
-- Etapa 1: `python -m signkit check --config config/signkit.json` sem pendência, em vez do PFX e da senha.
-- Etapa 2: o bump de versão é obrigatório (não há `--no-bump-version` nem `atualizar_versao` no painel).
-- Etapa 10: `iscc /DSignKit=1 /Ssignkit=...`; com `SignKit` definido, `qdisk.iss` liga `SignTool=signkit` e
-  `SignedUninstaller=yes`, e o Inno assina o desinstalador e o Setup. Falha de assinatura do Setup marca FALHOU.
-- Log em `tools/log/build_ov_<AAAAMMDD_HHMMSS>.log`.
-- Etapa 6 compila o **QDisk_Adm_OV** (`QDisk_Adm/catalog_admin_OV.py`, cópia autocontida do `catalog_admin.py`) em
-  `dist/ADM/QDisk_Adm_OV.exe`, no lugar do `QDisk_Adm.exe`. O "Executar build completo" do QDisk_Adm_OV roda
-  `tools/utils/Build-OneFile-Sign_OV.bat` (que chama `build_release_OV.py`); pelo fonte, `QDisk_Adm/run_qdisk_adm_OV.cmd`.
-  Logs próprios: `catalog_admin_OV.log` e `catalog_admin_OV_debug_<data>.log`.
-
-O QDisk_Adm ("Build completo" → "Executar build completo") roda o `.bat` sem argumentos. Log completo em
-`tools/log/build_v4_<AAAAMMDD_HHMMSS>.log`; no fim o console mostra o resumo por etapa (OK, PULADO, AVISO, FALHOU).
-
-Antes da etapa 1, sem senha de assinatura (e sem `--no-sign`) o build para.
+O QDisk_Adm ("Build completo" → "Executar build completo") roda `tools/utils/Build-OneFile-Sign_OV.bat` sem argumentos.
+Log completo em `tools/log/build_ov_<AAAAMMDD_HHMMSS>.log`; no fim o console mostra o resumo por etapa (OK, PULADO,
+AVISO, FALHOU).
 
 | # | Etapa | O que faz (conforme o código) |
 |---|---|---|
-| 1 | Validar pré-requisitos | `dotnet --version`; `signtool.exe` e PFX (`tools/certs/quallit_codesign.pfx` ou `QUALLIT_SIGN_PFX`), salvo `--no-sign`; `Directory.Build.props`; `iscc.exe` (ausente só avisa e pula a etapa 10); testes unitários. Qualquer falha encerra |
-| 2 | Atualizar versão | Formato `Major.Minor.MM.AA`: soma 1 no Minor (2 dígitos) e grava mês/ano atuais nas quatro tags de versão de `Directory.Build.props` e em `version_info.txt` (`--no-bump-version` pula). Em seguida, **sempre**, regenera `config/qdisk.tokens.app.json` com `tools/utils/generate_token_verifiers.py` |
+| 1 | Validar pré-requisitos | `dotnet --version`; `signtool.exe`, o `signkit` importável e `python -m signkit check --config config/signkit.json` sem pendência, salvo `--no-sign`; `Directory.Build.props`; `iscc.exe` (ausente só avisa e pula a etapa 10); testes unitários. Qualquer falha encerra |
+| 2 | Atualizar versão | Formato `Major.Minor.MM.AA`: soma 1 no Minor (2 dígitos) ou, com `--set-version M.mm`, fixa Major.Minor; grava mês/ano atuais nas quatro tags de versão de `Directory.Build.props` e em `version_info.txt`. Obrigatória: não há como pular. Em seguida, **sempre**, regenera `config/qdisk.tokens.app.json` com `tools/utils/generate_token_verifiers.py` |
 | 3 | Atualizar manual | Embute em base64 as 10 imagens de `assets/manual/images` nos `<img>` de `assets/manual/manual.html` (na ordem de `MANUAL_IMAGE_NAMES`) e atualiza versão e data (`version_info.txt`); imagem ausente → AVISO |
 | 4 | Limpar artefatos | `dotnet clean` de `src/qdisk.UI`, `src/qdisk.Core` e `src/qdisk.Infrastructure` (Release) |
 | 5 | Publicar app principal | `dotnet publish src/qdisk.UI -c Release -r win-x64 --self-contained true` single-file comprimido → `dist/qdisk.exe` (via `PublishDir`). Falha encerra |
 | 6 | Compilar QDisk_Adm e NetSpeedTest | PyInstaller `--onefile` → `dist/ADM/QDisk_Adm.exe` (com versão nos metadados); `dotnet publish` do helper → `dist/ADM/Quallit.IsoManifestTool.exe`; `dotnet publish` da bancada → `dist/NetSpeedTest/Quallit.NetSpeedTest.exe`. Exe em uso é renomeado para `.locked-<data>`. Falha encerra |
-| 7 | Assinar executáveis | `signtool sign /fd sha256 /f <pfx> /p *** /d "Q-DISK - Quallit Solucoes em TI" /du https://www.quallit.com.br`, com `/tr <timestamp> /td sha256` (padrão `http://timestamp.digicert.com`; `QUALLIT_SIGN_TIMESTAMP`; `--no-timestamp` tira). Assina app, QDisk_Adm, bancada e helper; até 5 tentativas se o arquivo estiver em uso. Falha marca FALHOU mas não encerra |
+| 7 | Assinar executáveis | `python -m signkit sign --backend signtool --config config/signkit.json <exe>` (o signkit chama `signtool sign` com o CNG Provider do Cloud KMS, `/tr` RFC 3161 e `/d`/`/du` da config). Assina app, QDisk_Adm, bancada e helper; até 5 tentativas se o arquivo estiver em uso. Falha marca FALHOU mas não encerra |
 | 8 | Verificar assinaturas | `Get-AuthenticodeSignature` e `signtool verify /pa /v` de cada exe (cadeia pública não confiável só avisa); pulada se a 7 não deu OK |
 | 9 | Empacotar distribuição | ZIP de `dist/` (sem `.pdb`, `.log`, `.xml`, `.zip`, `.locked-`) em `PROJECT_RELEASE/qdisk_release-<versão>-<AAAA-MM-DD>.zip`, dois níveis acima da raiz do projeto |
-| 10 | Gerar e assinar instalador | `iscc /DAppVersion=<versão> tools/installer/qdisk.iss` → `dist/Setup_qdisk_<versão>.exe`, assinado (salvo `--no-sign`) |
+| 10 | Gerar e assinar instalador | `iscc /DAppVersion=<versão> /DSignKit=1 /Ssignkit=<python -m signkit sign ...> tools/installer/qdisk.iss` → `dist/Setup_qdisk_<versão>.exe`; com `SignKit`, o `qdisk.iss` liga `SignTool=signkit` e `SignedUninstaller=yes` e o Inno assina o desinstalador e o Setup (sem os dois parâmetros com `--no-sign`). Depois, verificação da assinatura do Setup |
 | 11 | Backup ZIP | Projeto inteiro em `PROJECT_BACKUP/qdisk_backup-<versão>-<AAAA-MM-DD>.zip` (dois níveis acima da raiz), com prefixo `qdisk/`; exclui pastas `.git`, `obj`, `bin`, `__pycache__`, `node_modules` e os caminhos `dist`, `temp/bck`, `tools/log`, `temp`, `secret.txt`, `config/secret.md` |
 | 12 | Limpar pós-build | Apaga as pastas `obj` e `bin` dentro de `src/` |
 | 13 | Preparar pacote `dist/update` | Copia o instalador como `Setup_qdisk.update.exe` (sem instalador: `dist/qdisk.exe` como `qdisk.update.exe`); grava `qdisk.update.json`; grava os 4 catálogos no formato `build`/`items` |
@@ -411,9 +392,9 @@ Antes da etapa 1, sem senha de assinatura (e sem `--no-sign`) o build para.
 | `--sync-project` | Etapas 11 e 17 (com `--sync-only`, também 14 e 15) |
 | `--verify-only` | Só a verificação de assinatura de `dist/qdisk.exe` |
 | `--sign-only` | Etapas 7 e 8 sobre os exes já existentes em `dist/` (útil após trocar o certificado) |
+| `--fallback-only` | Só a etapa 16: reenvia ao fallback o pacote já pronto em `dist/update` (sem compilar, sem bump, sem Git) |
 
-Desligar partes do build completo: `--no-sign`, `--no-tests`, `--no-bump-version`, `--no-timestamp`,
-`--no-installer`, `--no-backup`, `--no-post-clean`, `--no-update-package`, `--no-installer-git-publish`,
+Desligar partes do build completo: `--no-sign`, `--no-tests`, `--no-installer`, `--no-backup`, `--no-post-clean`, `--no-update-package`, `--no-installer-git-publish`,
 `--no-verify-remote`, `--no-fallback-publish`, `--no-project-git-publish`, `--no-push` (commit sem push nas etapas 14
 e 17), `--dry-run` (nas etapas 14, 16 e 17 prepara e mostra, sem commit, push nem envio; as etapas de build rodam
 normalmente). Também há o painel `RUN_CONFIG` no topo do script (chaves `True`/`False`, todas ligadas exceto
@@ -475,10 +456,9 @@ escolher), Depois, Cancelar. Antes de executar ou entregar o instalador, exige:
 
 1. `sha256` no manifesto, igual ao SHA-256 do arquivo baixado;
 2. assinatura Authenticode íntegra ([`AuthenticodeVerifier`](../src/qdisk.Core/Services/AuthenticodeVerifier.vb);
-   raiz não confiável é aceita) **e** impressão digital do assinante em `TrustedSignerThumbprints` (hoje
-   `C991A7773B40EFEFC87359967882E53A3774E378`, `CN=Quallit Local Code Signing`, válido até 14/08/2027, e
+   raiz não confiável é aceita) **e** impressão digital do assinante em `TrustedSignerThumbprints` (hoje só
    `5D4730113CFC90891D3AEC06630F53EE6DF14B79`, `CN=QUALLIT SERVICOS DE INFORMATICA LTDA`, OV DigiCert, válido até
-   21/10/2027).
+   21/10/2027; o PFX autoassinado `C991A777...` deixou de ser aceito na 1.00).
 
 Instalador recusado é apagado e não executado. Aceito: `cmd.exe /c start "" /wait "<instalador>" /SILENT
 /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS && start "" "<qdisk.exe>"` e o app fecha. `mandatory` só aparece como
@@ -487,10 +467,11 @@ texto na janela; `minimumSupportedVersion` não é usado pelo app.
 Publicar ou conferir sem recompilar:
 
 ```powershell
-python .\tools\build_release_dotnet_4.py --sync-only                    # etapas 14 e 15
-python .\tools\build_release_dotnet_4.py --sync-only --dry-run          # prepara, sem commit/push
-python .\tools\build_release_dotnet_4.py --verify-installer             # compara dist\update com o principal
-python .\tools\build_release_dotnet_4.py --verify-installer --verify-installer-hash
+python .\tools\build_release_OV.py --sync-only                    # etapas 14 e 15
+python .\tools\build_release_OV.py --sync-only --dry-run          # prepara, sem commit/push
+python .\tools\build_release_OV.py --verify-installer             # compara dist\update com o principal
+python .\tools\build_release_OV.py --verify-installer --verify-installer-hash
+python .\tools\build_release_OV.py --fallback-only                # reenvia dist\update ao fallback
 ```
 
 <a id="metodos-gravacao"></a>
@@ -621,8 +602,10 @@ Configurações.
    Para testar o envio sem publicar: `.\tools\utils\publish_catalogs.ps1 -CatalogPath .\config\qdisk.catalog.tools.json -DryRun`.
 6. Teste pelo app (Downloads e gravação).
 
-**Lançar versão:** commits feitos → `python .\tools\build_release_dotnet_4.py` → conferir `qdisk.update.json` nos dois
-servidores (a etapa 15 confere o principal; a 16, o fallback).
+**Lançar versão:** commits feitos → `python .\tools\build_release_OV.py --update-notes "<nota>"` (uma
+`--update-notes` por linha; `--set-version M.mm` para mudar Major.Minor) → conferir `qdisk.update.json` nos dois
+servidores (a etapa 15 confere o principal; a 16, o fallback; se o fallback estiver fora, depois
+`--fallback-only`) → registrar a versão em [RoadMap.md](RoadMap.md) → gerar os PDFs dos manuais se eles mudaram.
 
 **Atualizar o manual:** editar `assets/manual/manual.html`; para trocar capturas, substituir os PNGs de
 `assets/manual/images` com os mesmos nomes. A etapa 3 do pipeline (ou `python tools\utils\embed_manual_images.py`)
@@ -635,9 +618,11 @@ embute as imagens.
 **Mudar o ID de um perfil:** QDisk_Adm → Configurações → Tokens (regera `qdisk.tokens.app.json`); atualizar o site com a
 mesma regra (§14); publicar versão nova, porque o app embute os verificadores.
 
-**Trocar o certificado de assinatura:** incluir a nova impressão digital em
-`AuthenticodeVerifier.TrustedSignerThumbprints`, publicar essa versão assinada com o certificado atual e só então
-assinar instaladores com o novo (`--sign-only` reassina os exes de `dist/`).
+**Trocar ou renovar o certificado de assinatura** (a renovação do OV, que vence em 21/10/2027, muda a impressão
+digital): incluir a nova impressão digital em `AuthenticodeVerifier.TrustedSignerThumbprints`, publicar essa versão
+assinada com o certificado atual e só então assinar instaladores com o novo (`config/signkit.json` e o PEM em
+`tools/certs/`; `--sign-only` reassina os exes de `dist/`). Atualizar também emissor, validade e impressão digital no
+manual de instalação.
 
 **Regerar um manifesto USB:** gerar pelo QDisk_Adm, atualizar `manifestSha256` em todos os itens que apontam para ele e
 publicar catálogo e manifesto juntos (o app recusa manifesto com hash diferente do catálogo).

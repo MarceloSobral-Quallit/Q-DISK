@@ -45,7 +45,7 @@ python .\QDisk_Adm\catalog_admin.py
 ```
 
 Executável gerado pelo pipeline (etapa "Compilar QDisk_Adm e NetSpeedTest" de
-[`tools/build_release_dotnet_4.py`](../tools/build_release_dotnet_4.py)):
+[`tools/build_release_OV.py`](../tools/build_release_OV.py)):
 
 ```powershell
 .\dist\ADM\QDisk_Adm.exe
@@ -63,7 +63,7 @@ específicas:
 | Verificar no Defender | `MpCmdRun.exe` do Microsoft Defender |
 | Gerar ISO limpa | `robocopy` e `oscdimg.exe` (Windows ADK, Deployment Tools) |
 | Upload | PowerShell com [`tools/utils/publish_catalogs.ps1`](../tools/utils/publish_catalogs.ps1); `pscp` ou `scp`; `git` |
-| Build completo | [`tools/utils/Build-OneFile-Sign_v4.bat`](../tools/utils/Build-OneFile-Sign_v4.bat) |
+| Build completo | [`tools/utils/Build-OneFile-Sign_OV.bat`](../tools/utils/Build-OneFile-Sign_OV.bat) |
 | Verificadores do token | `python` (ou `py`) com [`tools/utils/generate_token_verifiers.py`](../tools/utils/generate_token_verifiers.py) |
 
 ## Pastas, variáveis de ambiente e logs
@@ -337,7 +337,7 @@ Janela **Build completo**:
 
 | Controle | O que faz |
 |---|---|
-| **Executar build completo** | Confirma ("bump de versao, publicacao do Git installer, fallback e Git do projeto"), sincroniza os JSON e roda `cmd.exe /c tools\utils\Build-OneFile-Sign_v4.bat`, que chama `python tools\build_release_dotnet_4.py` sem argumentos. |
+| **Executar build completo** | Confirma ("bump de versao, assinatura com o certificado OV (Cloud KMS), publicacao do Git installer, fallback e Git do projeto"), sincroniza os JSON e roda `cmd.exe /c tools\utils\Build-OneFile-Sign_OV.bat`, que chama `python tools\build_release_OV.py` sem argumentos. |
 | **Cancelar build** | Após confirmação, encerra o processo e seus filhos (`taskkill /T /F`). |
 | **Console do build** | Saída do pipeline ao vivo, também gravada em `log_debug/build_console_*.log`. |
 

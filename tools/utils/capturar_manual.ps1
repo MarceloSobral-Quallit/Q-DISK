@@ -2,7 +2,7 @@
 # qdisk  |  Tools / Utils  |  capturar_manual.ps1
 # Refaz as capturas de tela do manual (assets/manual/images) pelo app, por UI Automation: abre o app SEM Modo
 # Administrador (estado descrito no manual), captura a autenticacao, entra com o token do dia do perfil e percorre
-# as telas pelo menu lateral. Os nomes e a ordem seguem MANUAL_IMAGE_NAMES de tools/build_release_dotnet_4.py; o
+# as telas pelo menu lateral. Os nomes e a ordem seguem MANUAL_IMAGE_NAMES de tools/build_release_OV.py; o
 # pipeline embute as imagens no manual.html.
 #
 # Uso (PowerShell 7, pwsh): .\tools\utils\capturar_manual.ps1 -OutDir <pasta> [-TokenProfile RD] [-Exe <qdisk.exe>]

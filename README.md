@@ -36,6 +36,28 @@ No programa, o nome exibido é **Q-DISK**; arquivos, pastas, projetos e o execut
 O **QDisk_Adm** ([`QDisk_Adm/`](QDisk_Adm/README.md)) é a ferramenta de administração: mantém os catálogos, gera os
 manifestos USB, decide o método de gravação de cada ISO, verifica as imagens no Microsoft Defender e publica.
 
+## Instalação
+
+- Instalador `Setup_qdisk_<versão>.exe`: instala só para o usuário atual (`%LOCALAPPDATA%\qdisk`), sem pedir
+  administrador e sem exigir o .NET instalado. Depois, o próprio Q-DISK oferece as atualizações.
+- Passo a passo, com a verificação do certificado do instalador e o aviso do SmartScreen:
+  [Manual de Instalação (PDF)](docs/manual/Manual_Instalacao_Q-DISK.pdf). Uso do programa:
+  [Manual do Q-DISK (PDF)](docs/manual/Manual_Q-DISK.pdf), também disponível dentro do app (menu **Manual**).
+
+### Assinatura digital
+
+Executáveis, instalador e desinstalador são assinados com o certificado de assinatura de código **OV** da Quallit:
+
+| Campo | Valor |
+|---|---|
+| Emitido para | QUALLIT SERVICOS DE INFORMATICA LTDA |
+| Emitido por | DigiCert Trusted G4 Code Signing RSA4096 SHA384 2021 CA1 |
+| Validade | 22/10/2026 a 21/10/2027 |
+| Impressão digital (SHA-1) | `5d4730113cfc90891d3aec06630f53ee6df14b79` |
+
+Confira em **Propriedades → Assinaturas Digitais** do arquivo. A atualização automática só executa instaladores com
+SHA-256 igual ao do manifesto e assinados por esse certificado.
+
 ## Estrutura
 
 | Pasta / arquivo | Conteúdo |
@@ -62,6 +84,7 @@ manifestos USB, decide o método de gravação de cada ISO, verifica as imagens 
 | [tools/git/README.md](tools/git/README.md) | Sincronização com o GitHub |
 | [docs/RESTRICOES_WINFORMS.md](docs/RESTRICOES_WINFORMS.md) | Restrições de design da interface |
 | [docs/RoadMap.md](docs/RoadMap.md) | Histórico de versões |
+| [docs/manual/](docs/manual) | Manuais em PDF: uso do Q-DISK e instalação |
 
 ## Início rápido (desenvolvimento)
 
@@ -69,11 +92,13 @@ manifestos USB, decide o método de gravação de cada ISO, verifica as imagens 
 dotnet build src\qdisk.UI -c Release      # app
 dotnet test tests\qdisk.Tests             # testes unitários
 .\QDisk_Adm\run_qdisk_adm.cmd             # administrador de catálogos
-python tools\build_release_dotnet_4.py    # release completa (versão, build, assinatura, instalador, publicação)
+python tools\build_release_OV.py          # release completa (versão, build, assinatura OV, instalador, publicação)
 ```
 
-Requisitos, segredos (`config/secret.md`, modelo em [`config/secret.md.example`](config/secret.md.example)) e as
-17 etapas do pipeline estão em [docs/DOCUMENTACAO_TECNICA.md](docs/DOCUMENTACAO_TECNICA.md).
+A assinatura usa o `signkit` (chave do certificado no Google Cloud KMS, credencial pelo login do Google da estação;
+nenhuma senha no repositório). Requisitos, segredos de publicação (`config/secret.md`, modelo em
+[`config/secret.md.example`](config/secret.md.example)) e as 17 etapas do pipeline estão em
+[docs/DOCUMENTACAO_TECNICA.md](docs/DOCUMENTACAO_TECNICA.md).
 
 ## Repositório
 

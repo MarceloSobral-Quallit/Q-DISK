@@ -13,7 +13,7 @@ Em relação à aba do app, a bancada acrescenta as opções **Link final** e **
 
 Executável único autônomo para Windows x64 (`win-x64`, `SelfContained`, `PublishSingleFile`): traz o .NET, os ícones e o logo dentro do exe e não precisa de nada instalado. Não faz parte do instalador do qdisk (`tools/installer/qdisk.iss`).
 
-- **Pelo pipeline:** o passo 6 do `tools/build_release_dotnet_4.py` ("Compilar QDisk_Adm e NetSpeedTest") gera `dist\NetSpeedTest\Quallit.NetSpeedTest.exe` com a versão do projeto (`Directory.Build.props`), mostrada no título da janela. Os passos 7 e 8 assinam e verificam o exe junto com os demais executáveis, e o passo 9 o inclui no ZIP de distribuição (o ZIP leva todo o conteúdo de `dist\`).
+- **Pelo pipeline:** o passo 6 do `tools/build_release_OV.py` ("Compilar QDisk_Adm e NetSpeedTest") gera `dist\NetSpeedTest\Quallit.NetSpeedTest.exe` com a versão do projeto (`Directory.Build.props`), mostrada no título da janela. Os passos 7 e 8 assinam e verificam o exe junto com os demais executáveis, e o passo 9 o inclui no ZIP de distribuição (o ZIP leva todo o conteúdo de `dist\`).
 - **Só a bancada:**
 
   ```powershell
