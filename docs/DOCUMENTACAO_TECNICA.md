@@ -76,7 +76,7 @@ lido pelo pipeline para o backup ZIP: segredos locais ficam fora do backup).
 | `tests/qdisk.Tests/` | Testes xUnit sobre o Core |
 | `QDisk_Adm/` | [`catalog_admin.py`](../QDisk_Adm/catalog_admin.py), [`run_qdisk_adm.cmd`](../QDisk_Adm/run_qdisk_adm.cmd), [`README.md`](../QDisk_Adm/README.md); logs em `QDisk_Adm/log/` e `QDisk_Adm/log_debug/` (ignorados pelo Git) |
 | `tools/` | [`build_release_dotnet_4.py`](../tools/build_release_dotnet_4.py) (pipeline), `installer/` ([`qdisk.iss`](../tools/installer/qdisk.iss)), `utils/`, `git/`, `certs/`, os dois projetos acima; log do pipeline em `tools/log/` (ignorado) |
-| `tools/utils/` | `Build-OneFile-Sign_v4.bat` (atalho do pipeline), `generate_token_verifiers.py`, `publish_catalogs.ps1`, `validate_catalogs.ps1`, `generate_image_hashes.ps1`, `embed_manual_images.py`, `capturar_manual.ps1` (usa `uia_lib.ps1`), `capturar_instalador.ps1`, `Build-OneFile-Sign_OV.bat` (atalho do pipeline OV), `publish_update_package.ps1.example` |
+| `tools/utils/` | `Build-OneFile-Sign_v4.bat` (atalho do pipeline), `generate_token_verifiers.py`, `publish_catalogs.ps1`, `validate_catalogs.ps1`, `generate_image_hashes.ps1`, `embed_manual_images.py`, `capturar_manual.ps1` (usa `uia_lib.ps1`), `capturar_instalador.ps1`, `gerar_pdf_manuais.ps1`, `Build-OneFile-Sign_OV.bat` (atalho do pipeline OV), `publish_update_package.ps1.example` |
 | `tools/git/` | `github_sync.py` (commit/push conforme `config/github_sync.ini`), `restore_from_backup.ps1`, `git-details.txt` |
 | `tools/certs/` | Só `.gitkeep` e `extract_cert_chain.ps1` vão para o Git; o PFX de assinatura (`quallit_codesign.pfx`) fica local |
 | `config/` | Catálogos, manifestos USB, endpoints, tokens, modelos de segredos — fonte do que é embutido no app e publicado |
@@ -629,6 +629,8 @@ servidores (a etapa 15 confere o principal; a 16, o fallback).
 embute as imagens.
 
 **Manual de instalação:** `assets/manual/instalacao.html` (arquivo único, imagens embutidas; para entregar junto com o instalador). Mostra a verificação do certificado OV (Propriedades → Assinaturas Digitais → Detalhes → Exibir Certificado), o aviso do SmartScreen com o Fornecedor e as páginas do Inno. Refazer as telas: `.\tools\utils\capturar_instalador.ps1 -OutDir <pasta>` (instala o Q-DISK no usuário atual a partir do Setup mais recente de `dist\`), conferir, copiar para `assets/manual/images/instalacao` e rodar `.\tools\utils\capturar_instalador.ps1 -EmbedOnly`, que troca o `src` de cada `<img data-src="<nome>.png">`. Ao trocar o certificado, atualizar no texto o emissor, a validade e a impressão digital.
+
+**PDF dos manuais:** `.\tools\utils\gerar_pdf_manuais.ps1` imprime `manual.html` e `instalacao.html` pelo Edge headless em `assets/manual/pdf/Manual_Q-DISK.pdf` e `Manual_Instalacao_Q-DISK.pdf` (`-OutDir` troca a pasta). A paginação vem do `@media print` de cada HTML (captura reduzida; parágrafo que antecede uma imagem não se separa dela). Os PDFs não são regerados pelo pipeline: gerar de novo depois de mudar um manual.
 
 **Mudar o ID de um perfil:** QDisk_Adm → Configurações → Tokens (regera `qdisk.tokens.app.json`); atualizar o site com a
 mesma regra (§14); publicar versão nova, porque o app embute os verificadores.

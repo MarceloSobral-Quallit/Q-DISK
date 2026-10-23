@@ -74,6 +74,32 @@
       footer .meta {
         margin-top: 6px;
       }
+      /* Impressao/PDF: captura menor e centralizada, sem separar o texto da imagem que ele descreve. */
+      @page {
+        margin: 15mm;
+      }
+      @media print {
+        body {
+          padding: 0;
+        }
+        section img {
+          width: auto;
+          max-width: 80%;
+          margin: 12px auto;
+          break-inside: avoid;
+        }
+        h3,
+        h4 {
+          break-after: avoid;
+        }
+        p:has(+ img) {
+          break-inside: avoid;
+          break-after: avoid;
+        }
+        li {
+          break-inside: avoid;
+        }
+      }
     </style>
   </head>
   <body>

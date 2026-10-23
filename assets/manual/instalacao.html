@@ -76,6 +76,33 @@
         padding: 8px 12px;
         margin: 12px 0;
       }
+      /* Impressao/PDF: sem separar o texto de cada passo da imagem que ele descreve. */
+      @page {
+        margin: 15mm;
+      }
+      @media print {
+        body {
+          padding: 0;
+          max-width: none;
+        }
+        section img {
+          max-width: 75%;
+          break-inside: avoid;
+        }
+        h3,
+        table:has(+ img) {
+          break-after: avoid;
+        }
+        p:has(+ img),
+        p:has(+ table) {
+          break-inside: avoid;
+          break-after: avoid;
+        }
+        .alerta,
+        table {
+          break-inside: avoid;
+        }
+      }
       footer {
         margin-top: 24px;
         padding-top: 12px;
