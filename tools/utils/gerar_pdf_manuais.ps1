@@ -5,17 +5,17 @@
 # A paginacao vem do @media print de cada HTML.
 #
 # Uso (PowerShell 7, pwsh): .\tools\utils\gerar_pdf_manuais.ps1 [-OutDir <pasta>] [-Layout v1|v2|v3]
-#   Padrao: assets\manual\pdf (Manual_Q-DISK.pdf e Manual_Instalacao_Q-DISK.pdf; v2/v3 com sufixo _v2/_v3).
+#   Padrao: v3 em assets\manual\pdf (Manual_Q-DISK.pdf e Manual_Instalacao_Q-DISK.pdf); v1/v2 com sufixo _v1/_v2.
 #
 # © Quallit — Licenciado sob GPL-3.0-or-later.
 # ─────────────────────────────────────────────────────────────────────────────
 param(
     [string] $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path,
     [string] $OutDir = '',
-    # v1: paginacao do @media print do proprio HTML. v2: diagramacao compacta (menos espaco em branco),
-    # injetada numa copia temporaria do HTML; gera <nome>_v2.pdf. v3: v2 com capa (versao, data e creditos
-    # do rodape do HTML, que sai da ultima pagina); gera <nome>_v3.pdf.
-    [ValidateSet('v1', 'v2', 'v3')] [string] $Layout = 'v1'
+    # v3 (padrao): v2 com capa (versao, data e creditos do rodape do HTML, que sai da ultima pagina); gera
+    # <nome>.pdf. v2: diagramacao compacta em A4 (menos espaco em branco), injetada numa copia temporaria do
+    # HTML; gera <nome>_v2.pdf. v1: so o @media print do proprio HTML (papel padrao do Edge); gera <nome>_v1.pdf.
+    [ValidateSet('v1', 'v2', 'v3')] [string] $Layout = 'v3'
 )
 $ErrorActionPreference = 'Stop'
 
@@ -141,8 +141,8 @@ foreach ($html in $docs.Keys) {
     $src = Join-Path $RepoRoot "assets\manual\$html"
     $pdfName = $docs[$html]
     $tempHtml = $null
+    if ($Layout -ne 'v3') { $pdfName = $pdfName -replace '\.pdf$', "_$Layout.pdf" }
     if ($Layout -ne 'v1') {
-        $pdfName = $pdfName -replace '\.pdf$', "_$Layout.pdf"
         $extra = if ($html -eq 'instalacao.html') { $V2Instalacao } else { $V2Manual }
         if ($Layout -eq 'v3') { $extra += $V3Style }
         $text = [IO.File]::ReadAllText($src, [Text.Encoding]::UTF8)
