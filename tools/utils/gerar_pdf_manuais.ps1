@@ -5,7 +5,7 @@
 # A paginacao vem do @media print de cada HTML.
 #
 # Uso (PowerShell 7, pwsh): .\tools\utils\gerar_pdf_manuais.ps1 [-OutDir <pasta>] [-Layout v1|v2|v3]
-#   Padrao: v3 em assets\manual\pdf (Manual_Q-DISK.pdf e Manual_Instalacao_Q-DISK.pdf); v1/v2 com sufixo _v1/_v2.
+#   Padrao: v3 em docs\manual (Manual_Q-DISK.pdf e Manual_Instalacao_Q-DISK.pdf); v1/v2 com sufixo _v1/_v2.
 #
 # © Quallit — Licenciado sob GPL-3.0-or-later.
 # ─────────────────────────────────────────────────────────────────────────────
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 '@
-if (-not $OutDir) { $OutDir = Join-Path $RepoRoot 'assets\manual\pdf' }
+if (-not $OutDir) { $OutDir = Join-Path $RepoRoot 'docs\manual' }
 $OutDir = (New-Item -ItemType Directory -Force $OutDir).FullName
 
 $edge = @(
