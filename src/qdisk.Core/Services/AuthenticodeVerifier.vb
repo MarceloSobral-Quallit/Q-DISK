@@ -7,28 +7,44 @@
 
 Imports System.IO
 Imports System.Runtime.InteropServices
+Imports System.Security.Cryptography
 Imports System.Security.Cryptography.X509Certificates
 
 Namespace Services
     ''' <summary>
     ''' Duas checagens, as duas obrigatorias:
     ''' 1. Integridade: o WinVerifyTrust confirma que o arquivo tem assinatura e que ela
-    '''    nao foi alterada. Raiz nao confiavel continua aceita (maquina sem a raiz da
-    '''    DigiCert atualizada): quem barra outro assinante e a checagem 2.
-    ''' 2. Assinante: a impressao digital do certificado precisa estar em
-    '''    <see cref="TrustedSignerThumbprints"/>. E isso que impede um instalador
-    '''    assinado por outra pessoa.
+    '''    nao foi alterada (raiz nao confiavel ainda passa aqui; a checagem 2 decide).
+    ''' 2. Assinante autorizado, por um destes caminhos:
+    '''    a. chave publica (SHA-256 do SubjectPublicKeyInfo) em <see cref="TrustedSignerPublicKeys"/>:
+    '''       sobrevive a renovacao do certificado que reusa a chave do Cloud KMS;
+    '''    b. impressao digital em <see cref="TrustedSignerThumbprints"/> (reserva);
+    '''    c. renovacao com chave nova: cadeia validada ate uma raiz confiavel do Windows
+    '''       (WinVerifyTrust = 0), titular O=<see cref="TrustedSignerOrganization"/>, C=BR, e emissor
+    '''       O=<see cref="TrustedIssuerOrganization"/>.
+    '''    Os caminhos a e b nao exigem a raiz no repositorio local (o WinVerifyTrust roda sem buscar
+    '''    na rede); o c exige, porque nada nele esta fixado no app.
     ''' </summary>
     Public NotInheritable Class AuthenticodeVerifier
         ''' <summary>
-        ''' Certificados aceitos para os instaladores do qdisk.
-        ''' Ao trocar ou renovar o certificado (a renovacao muda a impressao digital), inclua a nova
-        ''' impressao digital aqui e publique essa versao do app ANTES de distribuir instaladores
-        ''' com o certificado novo. O PFX autoassinado (C991A777...) saiu na 1.00.
+        ''' Chaves publicas aceitas: SHA-256 (hex minusculo) do SubjectPublicKeyInfo do certificado
+        ''' do assinante. Renovar o certificado com a mesma chave do KMS nao muda este valor.
+        ''' </summary>
+        Public Shared ReadOnly TrustedSignerPublicKeys As IReadOnlyList(Of String) = New String() {
+            "b229b2351a3bfc41c139e0967839f58b2d52fb55f6d57f7e87d64494c2d3ab76" ' RSA 4096, chave quallitKey/1 do Cloud KMS (certificado OV DigiCert)
+        }
+
+        ''' <summary>
+        ''' Certificados aceitos pela impressao digital (reserva). O PFX autoassinado (C991A777...) saiu na 1.00.
         ''' </summary>
         Public Shared ReadOnly TrustedSignerThumbprints As IReadOnlyList(Of String) = New String() {
             "5D4730113CFC90891D3AEC06630F53EE6DF14B79" ' CN=QUALLIT SERVICOS DE INFORMATICA LTDA (OV DigiCert, chave no Cloud KMS), valido ate 21/10/2027
         }
+
+        ''' <summary>Titular (O) exigido no caminho c, com C=BR.</summary>
+        Public Const TrustedSignerOrganization As String = "QUALLIT SERVICOS DE INFORMATICA LTDA"
+        ''' <summary>Emissor (O) exigido no caminho c: a autoridade certificadora do certificado OV.</summary>
+        Public Const TrustedIssuerOrganization As String = "DigiCert, Inc."
 
         Private Const CERT_E_UNTRUSTEDROOT As Integer = &H800B0109
         Private Const CERT_E_CHAINING As Integer = &H800B010A
@@ -65,24 +81,58 @@ Namespace Services
                     Return AuthenticodeResult.Fail($"Assinatura digital do instalador invalida (codigo 0x{trustCode:X8}).")
             End Select
 
-            Dim thumbprint As String
             Try
 #Disable Warning SYSLIB0057
                 Using signer = New X509Certificate2(X509Certificate.CreateFromSignedFile(filePath))
 #Enable Warning SYSLIB0057
-                    thumbprint = signer.Thumbprint
+                    Return EvaluateSigner(trustCode, signer, TrustedSignerPublicKeys, TrustedSignerThumbprints)
                 End Using
             Catch ex As Exception
                 Return AuthenticodeResult.Fail($"Nao foi possivel ler o certificado do instalador: {ex.Message}")
             End Try
+        End Function
 
-            For Each trusted In TrustedSignerThumbprints
-                If String.Equals(trusted, thumbprint, StringComparison.OrdinalIgnoreCase) Then
-                    Return New AuthenticodeResult With {.IsTrusted = True, .SignerThumbprint = thumbprint, .Message = "Assinatura valida."}
-                End If
-            Next
+        ''' <summary>
+        ''' Checagem 2 (assinante), separada para os testes: <paramref name="trustCode"/> e o retorno do
+        ''' WinVerifyTrust (0 = cadeia ate uma raiz confiavel).
+        ''' </summary>
+        Friend Shared Function EvaluateSigner(trustCode As Integer, signer As X509Certificate2,
+                                              publicKeys As IEnumerable(Of String),
+                                              thumbprints As IEnumerable(Of String)) As AuthenticodeResult
+            Dim thumbprint = signer.Thumbprint
+            Dim keyHash = PublicKeyHash(signer)
+
+            If publicKeys.Any(Function(k) String.Equals(k, keyHash, StringComparison.OrdinalIgnoreCase)) Then
+                Return AuthenticodeResult.Ok(thumbprint, "Assinatura valida (chave publica autorizada).")
+            End If
+            If thumbprints.Any(Function(t) String.Equals(t, thumbprint, StringComparison.OrdinalIgnoreCase)) Then
+                Return AuthenticodeResult.Ok(thumbprint, "Assinatura valida (certificado autorizado).")
+            End If
+            If trustCode = 0 AndAlso
+               String.Equals(NameAttribute(signer.SubjectName, OidOrganization), TrustedSignerOrganization, StringComparison.Ordinal) AndAlso
+               String.Equals(NameAttribute(signer.SubjectName, OidCountry), "BR", StringComparison.Ordinal) AndAlso
+               String.Equals(NameAttribute(signer.IssuerName, OidOrganization), TrustedIssuerOrganization, StringComparison.Ordinal) Then
+                Return AuthenticodeResult.Ok(thumbprint, "Assinatura valida (certificado da Quallit emitido pela DigiCert, cadeia confiavel).")
+            End If
 
             Return AuthenticodeResult.Fail($"O instalador foi assinado por um certificado nao autorizado ({thumbprint}).", thumbprint)
+        End Function
+
+        ''' <summary>SHA-256 (hex minusculo) do SubjectPublicKeyInfo do certificado.</summary>
+        Public Shared Function PublicKeyHash(certificate As X509Certificate2) As String
+            Return Convert.ToHexString(SHA256.HashData(certificate.PublicKey.ExportSubjectPublicKeyInfo())).ToLowerInvariant()
+        End Function
+
+        Private Const OidOrganization As String = "2.5.4.10"
+        Private Const OidCountry As String = "2.5.4.6"
+
+        ''' <summary>Valor do atributo (ex.: O, C) no nome; vazio se nao houver.</summary>
+        Private Shared Function NameAttribute(name As X500DistinguishedName, oid As String) As String
+            For Each rdn In name.EnumerateRelativeDistinguishedNames()
+                If rdn.HasMultipleElements Then Continue For
+                If rdn.GetSingleElementType().Value = oid Then Return If(rdn.GetSingleElementValue(), "")
+            Next
+            Return ""
         End Function
 
         Private Shared Function WinVerifyTrustFile(filePath As String) As Integer
@@ -171,6 +221,10 @@ Namespace Services
 
         Friend Shared Function Fail(message As String, Optional thumbprint As String = Nothing) As AuthenticodeResult
             Return New AuthenticodeResult With {.IsTrusted = False, .Message = message, .SignerThumbprint = thumbprint}
+        End Function
+
+        Friend Shared Function Ok(thumbprint As String, message As String) As AuthenticodeResult
+            Return New AuthenticodeResult With {.IsTrusted = True, .Message = message, .SignerThumbprint = thumbprint}
         End Function
     End Class
 End Namespace

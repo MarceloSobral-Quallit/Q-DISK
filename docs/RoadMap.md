@@ -9,6 +9,8 @@ Primeira versão oficial.
 
 - Instaladores e executáveis assinados só com o certificado OV da Quallit (QUALLIT SERVICOS DE INFORMATICA LTDA,
   DigiCert, chave no Google Cloud KMS). A atualização automática deixa de aceitar o certificado autoassinado.
+- A atualização automática reconhece o assinante pela chave pública do certificado e aceita a renovação do
+  certificado da Quallit emitida pela DigiCert, sem exigir uma versão intermediária (republicada sem bump).
 - Manual de instalação, com a verificação do certificado do instalador, e PDFs dos manuais em
   [`docs/manual`](manual).
 - Desenvolvimento: um só pipeline de release (`tools/build_release_OV.py`), usado também pelo QDisk_Adm; sai o

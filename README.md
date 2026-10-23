@@ -56,7 +56,9 @@ Executáveis, instalador e desinstalador são assinados com o certificado de ass
 | Impressão digital (SHA-1) | `5d4730113cfc90891d3aec06630f53ee6df14b79` |
 
 Confira em **Propriedades → Assinaturas Digitais** do arquivo. A atualização automática só executa instaladores com
-SHA-256 igual ao do manifesto e assinados por esse certificado.
+SHA-256 igual ao do manifesto e assinados pela Quallit: pela chave pública do certificado (SHA-256 do
+SubjectPublicKeyInfo `b229b2351a3bfc41c139e0967839f58b2d52fb55f6d57f7e87d64494c2d3ab76`), pela impressão digital
+acima ou por um certificado renovado da Quallit emitido pela DigiCert com cadeia confiável.
 
 ## Estrutura
 

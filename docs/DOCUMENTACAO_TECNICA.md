@@ -455,10 +455,19 @@ de Configurações, uma verificação por vez. Opções na janela: Baixar e inst
 escolher), Depois, Cancelar. Antes de executar ou entregar o instalador, exige:
 
 1. `sha256` no manifesto, igual ao SHA-256 do arquivo baixado;
-2. assinatura Authenticode íntegra ([`AuthenticodeVerifier`](../src/qdisk.Core/Services/AuthenticodeVerifier.vb);
-   raiz não confiável é aceita) **e** impressão digital do assinante em `TrustedSignerThumbprints` (hoje só
-   `5D4730113CFC90891D3AEC06630F53EE6DF14B79`, `CN=QUALLIT SERVICOS DE INFORMATICA LTDA`, OV DigiCert, válido até
-   21/10/2027; o PFX autoassinado `C991A777...` deixou de ser aceito na 1.00).
+2. assinatura Authenticode íntegra ([`AuthenticodeVerifier`](../src/qdisk.Core/Services/AuthenticodeVerifier.vb))
+   **e** assinante autorizado por um destes caminhos:
+   - a. **chave pública** do assinante (SHA-256 do SubjectPublicKeyInfo) em `TrustedSignerPublicKeys`: hoje
+     `b229b2351a3bfc41c139e0967839f58b2d52fb55f6d57f7e87d64494c2d3ab76`, a chave RSA 4096 `quallitKey/1` do Cloud KMS.
+     Uma renovação do certificado que reuse essa chave continua aceita sem mudar o app;
+   - b. **impressão digital** em `TrustedSignerThumbprints` (reserva): hoje `5D4730113CFC90891D3AEC06630F53EE6DF14B79`,
+     `CN=QUALLIT SERVICOS DE INFORMATICA LTDA`, OV DigiCert, válido até 21/10/2027;
+   - c. **renovação com chave nova**: cadeia validada até uma raiz confiável do Windows (`WinVerifyTrust` = 0),
+     titular `O=QUALLIT SERVICOS DE INFORMATICA LTDA`, `C=BR`, e emissor `O=DigiCert, Inc.`.
+
+   Os caminhos a e b aceitam raiz não confiável (o `WinVerifyTrust` roda sem buscar na rede, e a máquina pode não ter
+   a raiz da DigiCert); o c exige a cadeia confiável, porque nada nele está fixado no app. O PFX autoassinado
+   `C991A777...` deixou de ser aceito na 1.00. Testes: `AuthenticodeSignerPolicyTests`.
 
 Instalador recusado é apagado e não executado. Aceito: `cmd.exe /c start "" /wait "<instalador>" /SILENT
 /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS && start "" "<qdisk.exe>"` e o app fecha. `mandatory` só aparece como
@@ -618,11 +627,16 @@ embute as imagens.
 **Mudar o ID de um perfil:** QDisk_Adm → Configurações → Tokens (regera `qdisk.tokens.app.json`); atualizar o site com a
 mesma regra (§14); publicar versão nova, porque o app embute os verificadores.
 
-**Trocar ou renovar o certificado de assinatura** (a renovação do OV, que vence em 21/10/2027, muda a impressão
-digital): incluir a nova impressão digital em `AuthenticodeVerifier.TrustedSignerThumbprints`, publicar essa versão
-assinada com o certificado atual e só então assinar instaladores com o novo (`config/signkit.json` e o PEM em
-`tools/certs/`; `--sign-only` reassina os exes de `dist/`). Atualizar também emissor, validade e impressão digital no
-manual de instalação.
+**Renovar o certificado de assinatura** (o OV vence em 21/10/2027; a renovação muda a impressão digital):
+- **Mesma chave do KMS** (pedido de certificado gerado com a `quallitKey/1`; a confirmar com a DigiCert): o app já
+  aceita pela chave pública (caminho a). Basta trocar o PEM em `tools/certs/` (e o `certificateFile` de
+  `config/signkit.json`, se o nome mudar).
+- **Chave nova**: o app aceita pelo caminho c (titular Quallit, emissor DigiCert, cadeia confiável). Para não depender
+  da raiz no repositório da máquina, incluir o hash da nova chave em `TrustedSignerPublicKeys` (ou a impressão digital
+  em `TrustedSignerThumbprints`) numa versão publicada antes, ainda assinada com o certificado atual.
+- Em todos os casos: `--sign-only` reassina os exes de `dist/`; atualizar emissor, validade e impressão digital no
+  manual de instalação e no README. Hash da chave de um certificado:
+  `[Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($cert.PublicKey.ExportSubjectPublicKeyInfo())).ToLower()`.
 
 **Regerar um manifesto USB:** gerar pelo QDisk_Adm, atualizar `manifestSha256` em todos os itens que apontam para ele e
 publicar catálogo e manifesto juntos (o app recusa manifesto com hash diferente do catálogo).
