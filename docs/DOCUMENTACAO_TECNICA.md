@@ -345,6 +345,27 @@ python .\tools\build_release_dotnet_4.py            # build completo
 .\tools\utils\Build-OneFile-Sign_v4.bat              # mesmo comando, repassando os argumentos
 ```
 
+Pipeline OV (certificado OV da Quallit, chave no Google Cloud KMS), autocontido e independente do v4:
+
+```powershell
+python .\tools\build_release_OV.py                  # build completo, assinatura OV (--sign-mode kms, padrão)
+python .\tools\build_release_OV.py --sign-only      # reassina os exes de dist\ com o OV, sem compilar
+python .\tools\build_release_OV.py --sign-mode pfx  # mesmo pipeline com o PFX autoassinado (volta)
+```
+
+Diferenças do OV em relação ao v4 (o resto das etapas é igual):
+
+- Assina com `python -m signkit sign --backend signtool --config config/signkit.json <exe>` (kit
+  `C:\QSI_DESENV\signtest`, instalado no Python do build com `python -m pip install --user -e C:\QSI_DESENV\signtest`).
+  Sem senha: a credencial é o login do Google (ADC) da estação. `config/signkit.json` tem a chave KMS, o PEM da cadeia
+  (`tools/certs/quallit_servicos_de_informatica_ltda.pem`, fora do Git), o carimbo RFC 3161 e `/d`/`/du`;
+  `--signkit-config` ou `QUALLIT_SIGNKIT_CONFIG` trocam o arquivo. `--no-timestamp` não se aplica ao modo kms.
+- Etapa 1: `python -m signkit check --config config/signkit.json` sem pendência, em vez do PFX e da senha.
+- Etapa 2: o bump de versão é obrigatório (não há `--no-bump-version` nem `atualizar_versao` no painel).
+- Etapa 10: `iscc /DSignKit=1 /Ssignkit=...`; com `SignKit` definido, `qdisk.iss` liga `SignTool=signkit` e
+  `SignedUninstaller=yes`, e o Inno assina o desinstalador e o Setup. Falha de assinatura do Setup marca FALHOU.
+- Log em `tools/log/build_ov_<AAAAMMDD_HHMMSS>.log`.
+
 O QDisk_Adm ("Build completo" → "Executar build completo") roda o `.bat` sem argumentos. Log completo em
 `tools/log/build_v4_<AAAAMMDD_HHMMSS>.log`; no fim o console mostra o resumo por etapa (OK, PULADO, AVISO, FALHOU).
 
@@ -450,7 +471,9 @@ escolher), Depois, Cancelar. Antes de executar ou entregar o instalador, exige:
 1. `sha256` no manifesto, igual ao SHA-256 do arquivo baixado;
 2. assinatura Authenticode íntegra ([`AuthenticodeVerifier`](../src/qdisk.Core/Services/AuthenticodeVerifier.vb);
    raiz não confiável é aceita) **e** impressão digital do assinante em `TrustedSignerThumbprints` (hoje
-   `C991A7773B40EFEFC87359967882E53A3774E378`, `CN=Quallit Local Code Signing`, válido até 14/08/2027).
+   `C991A7773B40EFEFC87359967882E53A3774E378`, `CN=Quallit Local Code Signing`, válido até 14/08/2027, e
+   `5D4730113CFC90891D3AEC06630F53EE6DF14B79`, `CN=QUALLIT SERVICOS DE INFORMATICA LTDA`, OV DigiCert, válido até
+   21/10/2027).
 
 Instalador recusado é apagado e não executado. Aceito: `cmd.exe /c start "" /wait "<instalador>" /SILENT
 /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS && start "" "<qdisk.exe>"` e o app fecha. `mandatory` só aparece como
