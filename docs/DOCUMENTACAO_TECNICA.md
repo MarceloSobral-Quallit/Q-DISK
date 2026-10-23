@@ -351,6 +351,7 @@ Pipeline OV (certificado OV da Quallit, chave no Google Cloud KMS), autocontido 
 python .\tools\build_release_OV.py                  # build completo, assinatura OV (--sign-mode kms, padrão)
 python .\tools\build_release_OV.py --sign-only      # reassina os exes de dist\ com o OV, sem compilar
 python .\tools\build_release_OV.py --sign-mode pfx  # mesmo pipeline com o PFX autoassinado (volta)
+python .\tools\build_release_OV.py --fallback-only  # só a etapa 16: reenvia dist\update ao fallback (sem bump, sem Git)
 ```
 
 Diferenças do OV em relação ao v4 (o resto das etapas é igual):

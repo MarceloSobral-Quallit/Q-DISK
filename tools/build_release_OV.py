@@ -306,7 +306,9 @@ def print_header(args: argparse.Namespace, log_file: Path) -> None:
     print(f"  Pacote update    : {'desabilitado (--no-update-package)' if args.no_update_package else 'habilitado'}")
     print(f"  Painel build     : {'ativo' if args.use_run_config else 'inativo'}")
     print(f"  Previsualizacao  : {'habilitada' if args.preview_steps else 'desabilitada'}")
-    if args.sync_project and args.sync_only:
+    if args.fallback_only:
+        publication_mode = "fallback_only (dist/update)"
+    elif args.sync_project and args.sync_only:
         publication_mode = "sync_project + sync_update"
     elif args.sync_project:
         publication_mode = "sync_project"
@@ -384,6 +386,11 @@ def full_build_skip_reason(args: argparse.Namespace, step: int) -> str | None:
 
 
 def planned_skip_reason(args: argparse.Namespace, step: int) -> str | None:
+    if args.fallback_only:
+        if step == 16:
+            return None
+        return "modo fallback-only executa apenas a publicacao fallback"
+
     if args.verify_installer:
         if step == 15:
             return "verificacao remota desativada" if args.no_verify_remote else None
@@ -1880,6 +1887,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--verify_installer", "--verify-installer", action="store_true")
     parser.add_argument("--sync_only", "--sync-only", "--sync-update", dest="sync_only", action="store_true")
     parser.add_argument("--sync-project", action="store_true")
+    parser.add_argument(
+        "--fallback-only", action="store_true",
+        help="Republica no servidor fallback o pacote ja pronto em dist/update (etapa 16), sem compilar, sem bump e sem Git.",
+    )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--local-update-dir", default="")
     parser.add_argument("--update-installer-url", default=os.environ.get("QUALLIT_UPDATE_INSTALLER_URL", DEFAULT_INSTALLER_URL))
@@ -1977,6 +1988,16 @@ def main() -> int:
         return 0
 
     try:
+        if args.fallback_only:
+            # Republica no fallback o pacote ja pronto em dist/update (sem compilar, sem bump, sem Git):
+            # para quando o servidor fallback estava fora do ar na execucao completa.
+            for step in range(1, 18):
+                status[step] = "PULADO"
+            rc = run_step(16, status, duration, log_file, lambda: publish_fallback(args, log_file))
+            log_step_summary(status, duration, log_file)
+            log_message(f"Log completo: {log_file}", "INFO", log_file)
+            return rc
+
         if args.verify_installer:
             for step in range(1, 18):
                 status[step] = "PULADO"
