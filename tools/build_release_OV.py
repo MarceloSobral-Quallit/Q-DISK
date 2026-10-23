@@ -2,20 +2,16 @@
 # -*- coding: utf-8 -*-
 # -----------------------------------------------------------------------------
 # qdisk | Tools | build_release_OV.py
-# Pipeline OV autocontido: build, dist/update, publicacao fallback, Git installer
-# e verificacao remota sem depender de outros scripts do diretorio tools/
-# (nem do build_release_dotnet_4.py, do qual partiu).
-# Compila o QDisk_Adm_OV (QDisk_Adm/catalog_admin_OV.py) no lugar do QDisk_Adm.
+# Pipeline de release autocontido: build, dist/update, publicacao fallback, Git installer
+# e verificacao remota sem depender de outros scripts do diretorio tools/.
 #
 # Assinatura com o certificado OV da Quallit, chave no Google Cloud KMS (HSM),
 # pelo signkit (kit C:\QSI_DESENV\signtest, instalado com pip install -e):
-#   --sign-mode kms   (padrao) python -m signkit sign --config config/signkit.json
-#                     O Inno Setup assina o Setup e o desinstalador (/DSignKit + /Ssignkit=).
-#   --sign-mode pfx   fluxo antigo: signtool + PFX autoassinado + SignPassword.
-#                     Mantido como volta ate o OV ser validado num release completo.
-# Credencial do modo kms: login do Google (ADC) na estacao; nenhum segredo no git.
+#   python -m signkit sign --config config/signkit.json
+#   O Inno Setup assina o Setup e o desinstalador (/DSignKit + /Ssignkit=).
+# Credencial: login do Google (ADC) na estacao; nenhum segredo no git.
 #
-# Verbosidade (herdada do v4): controle de verbosidade do console (retorno visual ao
+# Verbosidade: controle de verbosidade do console (retorno visual ao
 # usuario) adotando os switches/padroes de tools/build_unificado_sign.py
 # (projeto RD-DEPLOY-3G), adaptados de Nuitka/scons para dotnet/MSBuild:
 #   --show-progress      saida ao vivo (projeto a projeto). Padrao: minima.
@@ -55,18 +51,13 @@ VERSION_INFO = PROJECT_ROOT / "version_info.txt"
 # Segredos locais (fora do Git): uma linha `Chave: valor` por segredo. Modelo: config/secret.md.example
 SECRET_FILE = PROJECT_ROOT / "config" / "secret.md"
 SECRET_LINE_RE = re.compile(r"^\s*[-*]?\s*([A-Za-z][A-Za-z0-9_]*)\s*:\s*(\S.*?)\s*$")
-MISSING_SIGN_PASSWORD_MSG = (
-    "Senha de assinatura nao encontrada. Defina SignPassword em config/secret.md "
-    "(modelo em config/secret.md.example) ou a variavel QUALLIT_SIGN_PASSWORD, ou rode com --no-sign."
-)
 ENDPOINTS_FILE = PROJECT_ROOT / "config" / "qdisk.endpoints.json"
 DIST_DIR = PROJECT_ROOT / "dist"
 UPDATE_DIR = DIST_DIR / "update"
 DIST_EXE = DIST_DIR / "qdisk.exe"
 ADM_DIST_DIR = DIST_DIR / "ADM"
-# Pipeline OV compila o QDisk_Adm_OV (QDisk_Adm/catalog_admin_OV.py), cujo build completo chama este pipeline.
-ADM_NAME = "QDisk_Adm_OV"
-ADM_SOURCE = PROJECT_ROOT / "QDisk_Adm" / "catalog_admin_OV.py"
+ADM_NAME = "QDisk_Adm"
+ADM_SOURCE = PROJECT_ROOT / "QDisk_Adm" / "catalog_admin.py"
 ADM_EXE = ADM_DIST_DIR / f"{ADM_NAME}.exe"
 # Bancada do teste de velocidade: aplicativo autonomo como o QDisk_Adm (fora do instalador)
 NETSPEED_PROJECT = PROJECT_ROOT / "tools" / "Quallit.NetSpeedTest" / "Quallit.NetSpeedTest.vbproj"
@@ -104,13 +95,8 @@ DEFAULT_FALLBACK_HOST_KEY = "SHA256:aBVNSji5CI6pD+nASIXNxUTkCP86DMktrg1LoLiVre4"
 DEFAULT_INSTALLER_REPO_URL = "https://github.com/quallitdesenv/quallit-installer.git"
 DEFAULT_INSTALLER_TARGET_SUBDIR = "public/qdisk"
 
-DEFAULT_PFX = TOOLS_DIR / "certs" / "quallit_codesign.pfx"
-DEFAULT_TIMESTAMP = "http://timestamp.digicert.com"
-SIGN_DESCRIPTION = "Q-DISK - Quallit Solucoes em TI"
-SIGN_DESCRIPTION_URL = "https://www.quallit.com.br"
-# Config do signkit (modo kms): chave KMS, PEM da cadeia, carimbo de tempo, /d e /du. Sem segredo.
+# Config do signkit: chave KMS, PEM da cadeia, carimbo de tempo, /d e /du. Sem segredo.
 DEFAULT_SIGNKIT_CONFIG = PROJECT_ROOT / "config" / "signkit.json"
-SIGN_MODES = ("kms", "pfx")
 
 SIGNTOOL_CANDIDATES = (
     r"C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe",
@@ -194,7 +180,7 @@ STEP_TITLES = {
     3: "Atualizar manual",
     4: "Limpar artefatos",
     5: "Publicar app principal",
-    6: "Compilar QDisk_Adm_OV e NetSpeedTest",
+    6: "Compilar QDisk_Adm e NetSpeedTest",
     7: "Assinar executaveis",
     8: "Verificar assinaturas",
     9: "Empacotar distribuicao",
@@ -296,12 +282,9 @@ def print_header(args: argparse.Namespace, log_file: Path) -> None:
     print(f"  Projeto          : {PROJECT_ROOT}")
     print(f"  Log              : {log_file}")
     print(f"  Verbosidade      : {verbosity_label(args)}")
-    print(f"  Assinatura       : {'desabilitada (--no-sign)' if args.no_sign else f'habilitada ({sign_mode_label(args)})'}")
+    print(f"  Assinatura       : {'desabilitada (--no-sign)' if args.no_sign else f'habilitada (OV / Cloud KMS via signkit, {args.signkit_config})'}")
     print(f"  Backup ZIP       : {'desabilitado (--no-backup)' if args.no_backup else 'habilitado'}")
-    if args.sign_mode == "kms":
-        print(f"  Timestamp        : definido em {args.signkit_config}")
-    else:
-        print(f"  Timestamp        : {'desabilitado (--no-timestamp)' if args.no_timestamp else os.environ.get('QUALLIT_SIGN_TIMESTAMP', DEFAULT_TIMESTAMP)}")
+    print(f"  Timestamp        : definido em {args.signkit_config}")
     print(f"  Instalador       : {'desabilitado (--no-installer)' if args.no_installer else 'habilitado'}")
     print(f"  Pacote update    : {'desabilitado (--no-update-package)' if args.no_update_package else 'habilitado'}")
     print(f"  Painel build     : {'ativo' if args.use_run_config else 'inativo'}")
@@ -638,7 +621,8 @@ def read_version() -> str:
     return match.group(1).strip() if match else "1.0.00.00"
 
 
-def bump_version() -> str:
+def bump_version(set_major_minor: str = "") -> str:
+    """Soma 1 no Menor (2 digitos) e grava mes/ano atuais. Com set_major_minor ("1.00"), fixa Maior.Menor."""
     text = PROPS_FILE.read_text(encoding="utf-8")
     match = re.search(r"<Version>(.*?)</Version>", text)
     if not match:
@@ -647,7 +631,12 @@ def bump_version() -> str:
     parts = match.group(1).strip().split(".")
     while len(parts) < 4:
         parts.append("0")
-    parts[1] = f"{int(parts[1]) + 1:02d}"
+    if set_major_minor:
+        major, minor = set_major_minor.split(".")
+        parts[0] = str(int(major))
+        parts[1] = f"{int(minor):02d}"
+    else:
+        parts[1] = f"{int(parts[1]) + 1:02d}"
     parts[2] = f"{now.month:02d}"
     parts[3] = now.strftime("%y")
     version = ".".join(parts)
@@ -722,72 +711,33 @@ def embed_manual_images(log_file: Path | None) -> bool:
 
 
 class SignContext:
-    """Como assinar neste build. kms: signkit + config (chave no Cloud KMS, credencial ADC).
-    pfx: signtool + PFX + senha (fluxo antigo). signtool fica nos dois modos para a verificacao."""
+    """Assinatura com o certificado OV: signkit + config (chave no Cloud KMS, credencial ADC).
+    signtool fica guardado para a verificacao das assinaturas."""
 
-    def __init__(self, mode: str, signtool: str | None = None, signkit_config: Path | None = None,
-                 pfx: Path | None = None, password: str = "", timestamp_url: str | None = None) -> None:
-        self.mode = mode
-        self.signtool = signtool
+    def __init__(self, signkit_config: Path, signtool: str | None = None) -> None:
         self.signkit_config = signkit_config
-        self.pfx = pfx
-        self.password = password
-        self.timestamp_url = timestamp_url
+        self.signtool = signtool
 
-    def sign_command(self, exe: Path) -> tuple[list[str], list[int]]:
-        """Comando de assinatura e os indices a mascarar no log."""
-        if self.mode == "kms":
-            return [sys.executable, "-m", "signkit", "sign", "--backend", "signtool", "--config", str(self.signkit_config), str(exe)], []
-        cmd = [self.signtool or "signtool", "sign", "/v", "/fd", "sha256", "/f", str(self.pfx), "/p", self.password,
-               "/d", SIGN_DESCRIPTION, "/du", SIGN_DESCRIPTION_URL]
-        if self.timestamp_url:
-            cmd.extend(["/tr", self.timestamp_url, "/td", "sha256"])
-        cmd.append(str(exe))
-        return cmd, [cmd.index("/p") + 1]
+    def sign_command(self, exe: Path) -> list[str]:
+        return [sys.executable, "-m", "signkit", "sign", "--backend", "signtool", "--config", str(self.signkit_config), str(exe)]
 
     def inno_sign_args(self) -> list[str]:
-        """Parametros do iscc para o Inno assinar Setup e desinstalador (so no modo kms).
+        """Parametros do iscc para o Inno assinar Setup e desinstalador.
         $q vira aspas e $f o nome do arquivo entre aspas; assim o argumento nao leva aspas
         proprias e o list2cmdline do subprocess nao precisa escapar nada."""
-        if self.mode != "kms":
-            return []
         # --backend signtool: o Inno entrega o desinstalador como uninst.e32.tmp, e pela extensao
         # o signkit escolheria a assinatura destacada (.sig) em vez do Authenticode.
         command = f"$q{sys.executable}$q -m signkit sign --backend signtool --config $q{self.signkit_config}$q $f"
         return ["/DSignKit=1", f"/Ssignkit={command}"]
 
 
-def sign_mode_label(args: argparse.Namespace) -> str:
-    if args.sign_mode == "kms":
-        return f"OV / Cloud KMS via signkit ({args.signkit_config})"
-    return "PFX autoassinado (--sign-mode pfx)"
-
-
-def build_sign_context(args: argparse.Namespace, log_file: Path | None) -> SignContext | None:
-    """Monta o contexto de assinatura; None se faltar algo obrigatorio do modo (senha no pfx)."""
-    signkit_config = Path(args.signkit_config).resolve()
-    if args.sign_mode == "kms":
-        if args.no_timestamp:
-            log_message(f"--no-timestamp nao se aplica ao modo kms: o carimbo de tempo vem de {signkit_config}.", "WARN", log_file)
-        return SignContext("kms", signkit_config=signkit_config)
-    pfx = Path(os.environ.get("QUALLIT_SIGN_PFX", str(DEFAULT_PFX)))
-    password = read_secret("SignPassword", "QUALLIT_SIGN_PASSWORD")
-    if not password:
-        log_message(MISSING_SIGN_PASSWORD_MSG, "ERROR", log_file)
-        return None
-    ts_url = None if args.no_timestamp else os.environ.get("QUALLIT_SIGN_TIMESTAMP", DEFAULT_TIMESTAMP)
-    return SignContext("pfx", pfx=pfx, password=password, timestamp_url=ts_url)
+def build_sign_context(args: argparse.Namespace) -> SignContext:
+    return SignContext(Path(args.signkit_config).resolve())
 
 
 def validate_sign_prerequisites(ctx: SignContext, log_file: Path | None) -> bool:
-    """kms: signkit importavel e `signkit check` sem pendencia. pfx: arquivo PFX presente."""
-    if ctx.mode == "pfx":
-        if ctx.pfx is None or not ctx.pfx.is_file():
-            log_message(f"PFX nao encontrado: {ctx.pfx}", "ERROR", log_file)
-            return False
-        log_message(f"PFX           : {ctx.pfx}", "OK", log_file)
-        return True
-    if not ctx.signkit_config or not ctx.signkit_config.is_file():
+    """signkit importavel e `signkit check` sem pendencia."""
+    if not ctx.signkit_config.is_file():
         log_message(f"Config do signkit nao encontrada: {ctx.signkit_config}", "ERROR", log_file)
         return False
     rc, _ = run_command([sys.executable, "-c", "import signkit"], log_file=log_file, label="Procurando o signkit")
@@ -797,18 +747,18 @@ def validate_sign_prerequisites(ctx: SignContext, log_file: Path | None) -> bool
     rc, _ = run_command([sys.executable, "-m", "signkit", "check", "--config", str(ctx.signkit_config)], log_file=log_file,
                         label="Pre-requisitos do signkit")
     if rc != 0:
-        log_message("signkit check apontou pendencias (detalhes no log). Use --sign-mode pfx ou --no-sign para contornar.", "ERROR", log_file)
+        log_message("signkit check apontou pendencias (detalhes no log). Use --no-sign para contornar.", "ERROR", log_file)
         return False
     log_message(f"signkit       : OK ({ctx.signkit_config})", "OK", log_file)
     return True
 
 
 def sign_exe(exe: Path, ctx: SignContext, log_file: Path | None) -> bool:
-    cmd, mask_idx = ctx.sign_command(exe)
+    cmd = ctx.sign_command(exe)
 
     last_output = ""
     for attempt in range(1, 6):
-        rc, output = run_command(cmd, log_file=log_file, mask_idx=mask_idx, label=f"Assinando {exe.name} ({ctx.mode})")
+        rc, output = run_command(cmd, log_file=log_file, label=f"Assinando {exe.name} (OV)")
         if rc == 0:
             return True
 
@@ -1073,17 +1023,13 @@ def build_installer(version: str, iscc: str, ctx: SignContext | None, log_file: 
         log_message(f"Script ISS nao encontrado: {ISS_SCRIPT}", "ERROR", log_file)
         return None
     setup = DIST_DIR / f"Setup_qdisk_{version}.exe"
-    # Modo kms: o proprio Inno chama o signkit (SignTool=signkit) para o desinstalador e para o Setup.
+    # O proprio Inno chama o signkit (SignTool=signkit) para o desinstalador e para o Setup.
     inno_sign = ctx.inno_sign_args() if ctx else []
     rc, _ = run_command([iscc, f"/DAppVersion={version}", *inno_sign, str(ISS_SCRIPT)], log_file=log_file,
                         label="Gerando instalador (Inno Setup)" + (" com assinatura OV" if inno_sign else ""))
     if rc != 0 or not setup.is_file():
         log_message("Falha ao gerar instalador Inno Setup.", "ERROR", log_file)
         return None
-    if ctx and not inno_sign:
-        if not sign_exe(setup, ctx, log_file):
-            log_message(f"Falha ao assinar {setup.name}.", "ERROR", log_file)
-            return None
     if ctx and ctx.signtool:
         verify_sign(setup, ctx.signtool, find_powershell(), log_file)
     return setup
@@ -1670,9 +1616,7 @@ def run_sign_only(args: argparse.Namespace, log_file: Path, status: dict[int, st
     nada -- util depois de trocar/renovar o certificado de assinatura, sem
     precisar rodar `dotnet publish`/PyInstaller de novo. Assina o que ja
     existir de DIST_EXE/ADM_EXE/NETSPEED_EXE (precisa de pelo menos um)."""
-    ctx = build_sign_context(args, log_file)
-    if ctx is None:
-        return 1
+    ctx = build_sign_context(args)
 
     banner(STEP_TITLES[7], 7, len(STEP_TITLES), log_file)
     t0 = time.monotonic()
@@ -1714,11 +1658,7 @@ def run_sign_only(args: argparse.Namespace, log_file: Path, status: dict[int, st
 
 
 def run_full_build(args: argparse.Namespace, log_file: Path, status: dict[int, str], duration: dict[int, float]) -> int:
-    ctx: SignContext | None = None
-    if not args.no_sign:
-        ctx = build_sign_context(args, log_file)
-        if ctx is None:
-            return 1
+    ctx = None if args.no_sign else build_sign_context(args)
     version = read_version() if PROPS_FILE.is_file() else "0.0.00.00"
 
     banner(STEP_TITLES[1], 1, len(STEP_TITLES), log_file)
@@ -1731,9 +1671,9 @@ def run_full_build(args: argparse.Namespace, log_file: Path, status: dict[int, s
 
     banner(STEP_TITLES[2], 2, len(STEP_TITLES), log_file)
     t0 = time.monotonic()
-    # Toda compilacao do pipeline OV sobe a versao (sem --no-bump-version).
+    # Toda compilacao do pipeline sobe a versao (sem --no-bump-version); --set-version fixa Maior.Menor.
     previous_version = version
-    version = bump_version()
+    version = bump_version(args.set_version)
     log_message(f"Versao: {previous_version} -> {version}", "OK", log_file)
     status[2] = "OK"
     # Verificadores do token diario embutidos no app (sem internal_id), com janela contada a partir deste build.
@@ -1863,8 +1803,8 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build release OV autocontido (assinatura com o certificado OV via signkit).")
     parser.add_argument("--no-sign", action="store_true")
     parser.add_argument(
-        "--sign-mode", choices=SIGN_MODES, default=os.environ.get("QUALLIT_SIGN_MODE", "kms"),
-        help="kms (padrao): certificado OV com chave no Cloud KMS, via signkit. pfx: PFX autoassinado (fluxo antigo).",
+        "--set-version", default="", metavar="MAIOR.MENOR",
+        help="Fixa Maior.Menor da versao (ex.: 1.00 -> 1.00.<mes>.<ano>) em vez de somar 1 no Menor.",
     )
     parser.add_argument(
         "--signkit-config", default=os.environ.get("QUALLIT_SIGNKIT_CONFIG", str(DEFAULT_SIGNKIT_CONFIG)),
@@ -1872,13 +1812,12 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--no-tests", action="store_true", help="Nao roda os testes unitarios na etapa 1.")
     parser.add_argument("--no-backup", action="store_true")
-    parser.add_argument("--no-timestamp", action="store_true")
     parser.add_argument("--no-post-clean", action="store_true")
     parser.add_argument("--no-installer", action="store_true")
     parser.add_argument("--verify-only", action="store_true")
     parser.add_argument(
         "--sign-only", action="store_true",
-        help="Reassina o(s) executavel(is) ja publicado(s) em dist/ (app principal, QDisk_Adm_OV e/ou NetSpeedTest) sem rebuildar nada. Util apos trocar/renovar o certificado.",
+        help="Reassina o(s) executavel(is) ja publicado(s) em dist/ (app principal, QDisk_Adm e/ou NetSpeedTest) sem rebuildar nada. Util apos trocar/renovar o certificado.",
     )
     parser.add_argument("--no-update-package", action="store_true")
     parser.add_argument("--no-fallback-publish", action="store_true")
@@ -1933,6 +1872,8 @@ def parse_args() -> argparse.Namespace:
         help="Mostra uma barra de progresso compacta (%% + contagem de projetos) para a etapa de build/publish do dotnet, em vez de texto bruto.",
     )
     args = parser.parse_args()
+    if args.set_version and not re.fullmatch(r"\d+\.\d{2}", args.set_version):
+        parser.error("--set-version deve ter o formato MAIOR.MENOR com 2 digitos no Menor (ex.: 1.00)")
     args.no_manual_update = False
     args.no_clean_artifacts = False
     args.no_dist_package = False

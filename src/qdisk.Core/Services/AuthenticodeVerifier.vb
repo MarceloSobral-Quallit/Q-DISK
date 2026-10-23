@@ -13,8 +13,8 @@ Namespace Services
     ''' <summary>
     ''' Duas checagens, as duas obrigatorias:
     ''' 1. Integridade: o WinVerifyTrust confirma que o arquivo tem assinatura e que ela
-    '''    nao foi alterada. Raiz nao confiavel e aceita, porque o certificado atual e
-    '''    autoassinado e nao esta instalado nas maquinas dos usuarios.
+    '''    nao foi alterada. Raiz nao confiavel continua aceita (maquina sem a raiz da
+    '''    DigiCert atualizada): quem barra outro assinante e a checagem 2.
     ''' 2. Assinante: a impressao digital do certificado precisa estar em
     '''    <see cref="TrustedSignerThumbprints"/>. E isso que impede um instalador
     '''    assinado por outra pessoa.
@@ -22,12 +22,12 @@ Namespace Services
     Public NotInheritable Class AuthenticodeVerifier
         ''' <summary>
         ''' Certificados aceitos para os instaladores do qdisk.
-        ''' Ao trocar de certificado (ex.: OV/EV), inclua a nova impressao digital aqui e
-        ''' publique essa versao do app ANTES de distribuir instaladores com o certificado novo.
+        ''' Ao trocar ou renovar o certificado (a renovacao muda a impressao digital), inclua a nova
+        ''' impressao digital aqui e publique essa versao do app ANTES de distribuir instaladores
+        ''' com o certificado novo. O PFX autoassinado (C991A777...) saiu na 1.00.
         ''' </summary>
         Public Shared ReadOnly TrustedSignerThumbprints As IReadOnlyList(Of String) = New String() {
-            "C991A7773B40EFEFC87359967882E53A3774E378", ' CN=Quallit Local Code Signing, valido ate 14/08/2027
-            "5D4730113CFC90891D3AEC06630F53EE6DF14B79"  ' CN=QUALLIT SERVICOS DE INFORMATICA LTDA (OV DigiCert, chave no Cloud KMS), valido ate 21/10/2027
+            "5D4730113CFC90891D3AEC06630F53EE6DF14B79" ' CN=QUALLIT SERVICOS DE INFORMATICA LTDA (OV DigiCert, chave no Cloud KMS), valido ate 21/10/2027
         }
 
         Private Const CERT_E_UNTRUSTEDROOT As Integer = &H800B0109

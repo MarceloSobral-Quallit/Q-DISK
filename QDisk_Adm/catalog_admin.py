@@ -51,7 +51,7 @@ PROJECT_CONFIG_DIR = REPO_ROOT / "config"
 CONFIG_DIR = get_config_dir(APP_DIR, REPO_ROOT)
 VERSION_FILE = REPO_ROOT / "version_info.txt"
 PUBLISH_CATALOGS_SCRIPT = REPO_ROOT / "tools" / "utils" / "publish_catalogs.ps1"
-BUILD_SCRIPT = REPO_ROOT / "tools" / "utils" / "Build-OneFile-Sign_v4.bat"
+BUILD_SCRIPT = REPO_ROOT / "tools" / "utils" / "Build-OneFile-Sign_OV.bat"
 ISO_MANIFEST_TOOL_PROJECT = REPO_ROOT / "tools" / "Quallit.IsoManifestTool" / "Quallit.IsoManifestTool.csproj"
 LOG_DIR = APP_DIR / "log"
 DEBUG_LOG_DIR = APP_DIR / "log_debug"
@@ -2389,7 +2389,7 @@ class CatalogAdminApp(tk.Tk):
         scrollbar.pack(side=RIGHT, fill=Y)
         self.build_console_text.configure(yscrollcommand=scrollbar.set)
 
-        self.append_build_console("Pronto para executar o build completo com bump e sincronizacao.")
+        self.append_build_console("Pronto para executar o build completo com bump, assinatura OV e sincronizacao.")
 
         def on_close() -> None:
             if self.build_worker is not None and self.build_worker.is_alive():
@@ -2420,7 +2420,7 @@ class CatalogAdminApp(tk.Tk):
             return
         if not messagebox.askyesno(
             APP_TITLE,
-            "Executar build completo com bump de versao, publicacao do Git installer, fallback e Git do projeto?",
+            "Executar build completo com bump de versao, assinatura com o certificado OV (Cloud KMS), publicacao do Git installer, fallback e Git do projeto?",
             parent=self.build_window,
         ):
             return
@@ -2490,7 +2490,7 @@ class CatalogAdminApp(tk.Tk):
                         log_stream.write(clean_line + "\n")
                         log_stream.flush()
                         self.build_queue.put(("progress", clean_line))
-                        log_match = re.search(r"Log\s*:\s*(.+build_v\d+_\d{8}_\d{6}\.log)", clean_line)
+                        log_match = re.search(r"Log\s*:\s*(.+build_ov_\d{8}_\d{6}\.log)", clean_line)
                         if log_match:
                             self.build_queue.put(("official_log", Path(log_match.group(1).strip())))
                 exit_code = process.wait()
