@@ -1,2 +1,2 @@
-Versao: 0.01.10.26
-Atualizado em: 23/10/2026 13:07:29
+Versao: 0.02.10.26
+Atualizado em: 23/10/2026 13:15:20
