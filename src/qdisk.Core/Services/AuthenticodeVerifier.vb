@@ -26,7 +26,8 @@ Namespace Services
         ''' publique essa versao do app ANTES de distribuir instaladores com o certificado novo.
         ''' </summary>
         Public Shared ReadOnly TrustedSignerThumbprints As IReadOnlyList(Of String) = New String() {
-            "C991A7773B40EFEFC87359967882E53A3774E378" ' CN=Quallit Local Code Signing, valido ate 14/08/2027
+            "C991A7773B40EFEFC87359967882E53A3774E378", ' CN=Quallit Local Code Signing, valido ate 14/08/2027
+            "5D4730113CFC90891D3AEC06630F53EE6DF14B79"  ' CN=QUALLIT SERVICOS DE INFORMATICA LTDA (OV DigiCert, chave no Cloud KMS), valido ate 21/10/2027
         }
 
         Private Const CERT_E_UNTRUSTEDROOT As Integer = &H800B0109
