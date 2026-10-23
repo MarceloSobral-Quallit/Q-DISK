@@ -5,6 +5,7 @@
 # Pipeline OV autocontido: build, dist/update, publicacao fallback, Git installer
 # e verificacao remota sem depender de outros scripts do diretorio tools/
 # (nem do build_release_dotnet_4.py, do qual partiu).
+# Compila o QDisk_Adm_OV (QDisk_Adm/catalog_admin_OV.py) no lugar do QDisk_Adm.
 #
 # Assinatura com o certificado OV da Quallit, chave no Google Cloud KMS (HSM),
 # pelo signkit (kit C:\QSI_DESENV\signtest, instalado com pip install -e):
@@ -63,7 +64,10 @@ DIST_DIR = PROJECT_ROOT / "dist"
 UPDATE_DIR = DIST_DIR / "update"
 DIST_EXE = DIST_DIR / "qdisk.exe"
 ADM_DIST_DIR = DIST_DIR / "ADM"
-ADM_EXE = ADM_DIST_DIR / "QDisk_Adm.exe"
+# Pipeline OV compila o QDisk_Adm_OV (QDisk_Adm/catalog_admin_OV.py), cujo build completo chama este pipeline.
+ADM_NAME = "QDisk_Adm_OV"
+ADM_SOURCE = PROJECT_ROOT / "QDisk_Adm" / "catalog_admin_OV.py"
+ADM_EXE = ADM_DIST_DIR / f"{ADM_NAME}.exe"
 # Bancada do teste de velocidade: aplicativo autonomo como o QDisk_Adm (fora do instalador)
 NETSPEED_PROJECT = PROJECT_ROOT / "tools" / "Quallit.NetSpeedTest" / "Quallit.NetSpeedTest.vbproj"
 NETSPEED_DIST_DIR = DIST_DIR / "NetSpeedTest"
@@ -190,7 +194,7 @@ STEP_TITLES = {
     3: "Atualizar manual",
     4: "Limpar artefatos",
     5: "Publicar app principal",
-    6: "Compilar QDisk_Adm e NetSpeedTest",
+    6: "Compilar QDisk_Adm_OV e NetSpeedTest",
     7: "Assinar executaveis",
     8: "Verificar assinaturas",
     9: "Empacotar distribuicao",
@@ -848,10 +852,10 @@ def write_qdisk_adm_version_file(path: Path, version: str) -> None:
         "    StringFileInfo([\n"
         "      StringTable('040904B0', [\n"
         "        StringStruct('CompanyName', 'Quallit Solucoes em TI'),\n"
-        f"        StringStruct('FileDescription', 'QDisk_Adm - Quallit Catalogo ADM {safe_version}'),\n"
+        f"        StringStruct('FileDescription', '{ADM_NAME} - Quallit Catalogo ADM OV {safe_version}'),\n"
         f"        StringStruct('FileVersion', '{safe_version}'),\n"
-        "        StringStruct('InternalName', 'QDisk_Adm'),\n"
-        "        StringStruct('OriginalFilename', 'QDisk_Adm.exe'),\n"
+        f"        StringStruct('InternalName', '{ADM_NAME}'),\n"
+        f"        StringStruct('OriginalFilename', '{ADM_NAME}.exe'),\n"
         "        StringStruct('ProductName', 'Q-DISK'),\n"
         f"        StringStruct('ProductVersion', '{safe_version}')\n"
         "      ])\n"
@@ -869,9 +873,9 @@ def resolve_config_json(name: str) -> Path:
 
 def build_qdisk_adm_exe(log_file: Path | None, version: str | None = None) -> bool:
     version = version or read_version()
-    source = PROJECT_ROOT / "QDisk_Adm" / "catalog_admin.py"
+    source = ADM_SOURCE
     if not source.is_file():
-        log_message(f"Fonte do QDisk_Adm nao encontrado: {source}", "ERROR", log_file)
+        log_message(f"Fonte do {ADM_NAME} nao encontrado: {source}", "ERROR", log_file)
         return False
 
     ADM_DIST_DIR.mkdir(parents=True, exist_ok=True)
@@ -900,7 +904,7 @@ def build_qdisk_adm_exe(log_file: Path | None, version: str | None = None) -> bo
             stale_name = ADM_EXE.with_name(f"{ADM_EXE.stem}.locked-{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}{ADM_EXE.suffix}")
             try:
                 ADM_EXE.rename(stale_name)
-                log_message(f"QDisk_Adm.exe estava em uso; renomeado para {stale_name.name} para liberar o build.", "WARN", log_file)
+                log_message(f"{ADM_EXE.name} estava em uso; renomeado para {stale_name.name} para liberar o build.", "WARN", log_file)
             except OSError as exc:
                 log_message(f"Nao foi possivel substituir {ADM_EXE}: {exc}", "ERROR", log_file)
                 return False
@@ -914,7 +918,7 @@ def build_qdisk_adm_exe(log_file: Path | None, version: str | None = None) -> bo
         build_dir = work_dir / "build"
         spec_dir.mkdir(parents=True, exist_ok=True)
         build_dir.mkdir(parents=True, exist_ok=True)
-        version_file = work_dir / "QDisk_Adm.version"
+        version_file = work_dir / f"{ADM_NAME}.version"
         write_qdisk_adm_version_file(version_file, version)
 
         rc, _ = run_command([
@@ -925,7 +929,7 @@ def build_qdisk_adm_exe(log_file: Path | None, version: str | None = None) -> bo
             "--clean",
             "--onefile",
             "--name",
-            "QDisk_Adm",
+            ADM_NAME,
             "--distpath",
             str(ADM_DIST_DIR),
             "--workpath",
@@ -935,13 +939,13 @@ def build_qdisk_adm_exe(log_file: Path | None, version: str | None = None) -> bo
             "--version-file",
             str(version_file),
             str(source),
-        ], log_file=log_file, cwd=PROJECT_ROOT, label="Compilando QDisk_Adm (PyInstaller)")
+        ], log_file=log_file, cwd=PROJECT_ROOT, label=f"Compilando {ADM_NAME} (PyInstaller)")
 
         if rc != 0 or not ADM_EXE.is_file():
-            log_message("Falha ao gerar dist/ADM/QDisk_Adm.exe com PyInstaller.", "ERROR", log_file)
+            log_message(f"Falha ao gerar dist/ADM/{ADM_EXE.name} com PyInstaller.", "ERROR", log_file)
             return False
 
-    log_message(f"QDisk_Adm gerado: {ADM_EXE} (versao {version})", "OK", log_file)
+    log_message(f"{ADM_NAME} gerado: {ADM_EXE} (versao {version})", "OK", log_file)
     return True
 
 
@@ -1867,7 +1871,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--verify-only", action="store_true")
     parser.add_argument(
         "--sign-only", action="store_true",
-        help="Reassina o(s) executavel(is) ja publicado(s) em dist/ (app principal, QDisk_Adm e/ou NetSpeedTest) sem rebuildar nada. Util apos trocar/renovar o certificado.",
+        help="Reassina o(s) executavel(is) ja publicado(s) em dist/ (app principal, QDisk_Adm_OV e/ou NetSpeedTest) sem rebuildar nada. Util apos trocar/renovar o certificado.",
     )
     parser.add_argument("--no-update-package", action="store_true")
     parser.add_argument("--no-fallback-publish", action="store_true")

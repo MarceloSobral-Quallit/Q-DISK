@@ -365,6 +365,10 @@ Diferenças do OV em relação ao v4 (o resto das etapas é igual):
 - Etapa 10: `iscc /DSignKit=1 /Ssignkit=...`; com `SignKit` definido, `qdisk.iss` liga `SignTool=signkit` e
   `SignedUninstaller=yes`, e o Inno assina o desinstalador e o Setup. Falha de assinatura do Setup marca FALHOU.
 - Log em `tools/log/build_ov_<AAAAMMDD_HHMMSS>.log`.
+- Etapa 6 compila o **QDisk_Adm_OV** (`QDisk_Adm/catalog_admin_OV.py`, cópia autocontida do `catalog_admin.py`) em
+  `dist/ADM/QDisk_Adm_OV.exe`, no lugar do `QDisk_Adm.exe`. O "Executar build completo" do QDisk_Adm_OV roda
+  `tools/utils/Build-OneFile-Sign_OV.bat` (que chama `build_release_OV.py`); pelo fonte, `QDisk_Adm/run_qdisk_adm_OV.cmd`.
+  Logs próprios: `catalog_admin_OV.log` e `catalog_admin_OV_debug_<data>.log`.
 
 O QDisk_Adm ("Build completo" → "Executar build completo") roda o `.bat` sem argumentos. Log completo em
 `tools/log/build_v4_<AAAAMMDD_HHMMSS>.log`; no fim o console mostra o resumo por etapa (OK, PULADO, AVISO, FALHOU).
