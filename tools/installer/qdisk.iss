@@ -8,6 +8,7 @@
 ; Compilar pelo pipeline de build (recomendado):
 ;   python tools\build_release_dotnet_4.py
 ;   python tools\build_release_dotnet_4.py --no-installer   (pula esta etapa)
+;   python tools\build_release_OV.py                        (assinatura OV via signkit)
 ;
 ; © Quallit — Licenciado sob GPL-3.0-or-later.
 ; ─────────────────────────────────────────────────────────────────────────────
@@ -69,6 +70,13 @@ RestartApplications=no
 
 ; Exibe diálogo de idioma somente quando há mais de um idioma disponível
 ShowLanguageDialog=auto
+
+; Assinatura OV (Cloud KMS): só com /DSignKit, passado pelo tools\build_release_OV.py junto com
+; /Ssignkit=<comando>. O Inno assina o Setup e o desinstalador. Sem /DSignKit (build v4), nada muda.
+#ifdef SignKit
+SignTool=signkit
+SignedUninstaller=yes
+#endif
 
 [Languages]
 Name: "ptbr"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"

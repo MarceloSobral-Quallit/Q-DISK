@@ -1,0 +1,9 @@
+{
+  "kmsKeyVersion": "projects/project-f639992e-e93f-4f50-a72/locations/global/keyRings/OVCodeSigning/cryptoKeys/quallitKey/cryptoKeyVersions/1",
+  "certificateFile": "../tools/certs/quallit_servicos_de_informatica_ltda.pem",
+  "timestampUrl": "http://timestamp.digicert.com",
+  "timestampProtocol": "rfc3161",
+  "description": "Q-DISK - Quallit Solucoes em TI",
+  "descriptionUrl": "https://www.quallit.com.br",
+  "credential": { "type": "adc", "name": "" }
+}
