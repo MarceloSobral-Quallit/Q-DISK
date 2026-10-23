@@ -11,6 +11,8 @@ public static class QW {
     [DllImport("user32.dll")] public static extern bool SetCursorPos(int x, int y);
     [DllImport("user32.dll")] public static extern void mouse_event(uint f, uint dx, uint dy, uint d, IntPtr e);
     [DllImport("dwmapi.dll")] public static extern int DwmGetWindowAttribute(IntPtr h, int a, out RECT r, int s);
+    [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr h, out RECT r);
+    [DllImport("user32.dll")] public static extern bool PrintWindow(IntPtr h, IntPtr hdc, uint flags);
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern IntPtr FindWindowEx(IntPtr parent, IntPtr after, string cls, string title);
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern int GetWindowText(IntPtr h, System.Text.StringBuilder sb, int max);
     [DllImport("user32.dll")] public static extern IntPtr SendMessage(IntPtr h, uint msg, IntPtr w, IntPtr l);
@@ -168,18 +170,32 @@ function Focus-Window($win, [int] $w = 0, [int] $h = 0) {
     Start-Sleep -Milliseconds 500
 }
 
+# Captura so a janela: PrintWindow (PW_RENDERFULLCONTENT) desenha o conteudo dela mesmo com outra janela por cima
+# (ex.: janela "sempre visivel" de uma chamada de video); o recorte segue a moldura do DWM, sem as bordas invisiveis.
+# Se o PrintWindow falhar, copia a regiao da tela.
 function Save-Shot($win, [string] $file) {
     $hwnd = [IntPtr]$win.Current.NativeWindowHandle
     [QW]::SetForegroundWindow($hwnd) | Out-Null
     Start-Sleep -Milliseconds 600
     $r = New-Object QW+RECT
     [QW]::DwmGetWindowAttribute($hwnd, 9, [ref]$r, 16) | Out-Null
+    $wr = New-Object QW+RECT
+    [QW]::GetWindowRect($hwnd, [ref]$wr) | Out-Null
+    $full = New-Object Drawing.Bitmap ($wr.R - $wr.L), ($wr.B - $wr.T)
+    $g = [Drawing.Graphics]::FromImage($full)
+    $hdc = $g.GetHdc()
+    $printed = [QW]::PrintWindow($hwnd, $hdc, 2)
+    $g.ReleaseHdc($hdc); $g.Dispose()
     $bmp = New-Object Drawing.Bitmap ($r.R - $r.L), ($r.B - $r.T)
     $g = [Drawing.Graphics]::FromImage($bmp)
-    $g.CopyFromScreen($r.L, $r.T, 0, 0, $bmp.Size)
+    if ($printed) {
+        $g.DrawImage($full, (New-Object Drawing.Rectangle 0, 0, $bmp.Width, $bmp.Height), ($r.L - $wr.L), ($r.T - $wr.T), $bmp.Width, $bmp.Height, [Drawing.GraphicsUnit]::Pixel)
+    } else {
+        $g.CopyFromScreen($r.L, $r.T, 0, 0, $bmp.Size)
+    }
     $path = Join-Path $script:OutDir $file
     $bmp.Save($path, [Drawing.Imaging.ImageFormat]::Png)
-    $g.Dispose(); $bmp.Dispose()
+    $g.Dispose(); $bmp.Dispose(); $full.Dispose()
     return $file
 }
 
