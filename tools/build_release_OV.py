@@ -723,6 +723,25 @@ def embed_manual_images(log_file: Path | None) -> bool:
     return True
 
 
+def generate_manual_pdfs(log_file: Path | None) -> bool:
+    """Regera docs/manual/*.pdf (layout v3, com capa) pelo tools/utils/gerar_pdf_manuais.ps1, depois que o
+    manual.html recebeu a versao nova. Gera numa pasta temporaria e so substitui os PDFs se ambos sairem."""
+    script = TOOLS_DIR / "utils" / "gerar_pdf_manuais.ps1"
+    with tempfile.TemporaryDirectory(prefix="qdisk-manual-pdf-") as temp_dir:
+        rc, _ = run_command([find_powershell(), "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(script), "-OutDir", temp_dir],
+                            log_file=log_file, cwd=PROJECT_ROOT, label="Gerando manuais em PDF")
+        generated = [Path(temp_dir) / name for name in MANUAL_PDF_SOURCES]
+        missing = [path.name for path in generated if not path.is_file() or path.stat().st_size == 0]
+        if rc != 0 or missing:
+            log_message(f"Falha ao gerar os manuais em PDF (codigo {rc}; ausentes: {', '.join(missing) or 'nenhum'}); mantidos os de {MANUAL_PDF_DIR}", "WARN", log_file)
+            return False
+        MANUAL_PDF_DIR.mkdir(parents=True, exist_ok=True)
+        for path in generated:
+            shutil.copy2(path, MANUAL_PDF_DIR / path.name)
+            log_message(f"{path.name} atualizado ({path.stat().st_size // 1024} KB)", "OK", log_file)
+    return True
+
+
 class SignContext:
     """Assinatura com o certificado OV: signkit + config (chave no Cloud KMS, credencial ADC).
     signtool fica guardado para a verificacao das assinaturas."""
@@ -1719,7 +1738,8 @@ def run_full_build(args: argparse.Namespace, log_file: Path, status: dict[int, s
     if args.no_manual_update:
         status[3] = "PULADO"
     else:
-        status[3] = "OK" if embed_manual_images(log_file) else "AVISO"
+        manual_ok = embed_manual_images(log_file)
+        status[3] = "OK" if generate_manual_pdfs(log_file) and manual_ok else "AVISO"
     duration[3] = time.monotonic() - t0
 
     banner(STEP_TITLES[4], 4, len(STEP_TITLES), log_file)
