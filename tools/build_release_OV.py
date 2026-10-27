@@ -75,6 +75,19 @@ DEFAULT_REMOTE_BASE_URL = "https://installer.quallit.com.br/qdisk"
 DEFAULT_SETUP_UPDATE_NAME = "Setup_qdisk.update.exe"
 DEFAULT_APP_UPDATE_NAME = "qdisk.update.exe"
 DEFAULT_MANIFEST_NAME = "qdisk.update.json"
+# Manuais em PDF (gerados por tools/utils/gerar_pdf_manuais.ps1 em docs/manual), publicados junto com o pacote.
+DEFAULT_MANUAL_INSTALLER_URL = "https://installer.quallit.com.br/qdisk/Manual_Instalacao_Q-DISK.pdf"
+DEFAULT_MANUAL_URL = "https://installer.quallit.com.br/qdisk/Manual_Q-DISK.pdf"
+MANUAL_PDF_DIR = PROJECT_ROOT / "docs" / "manual"
+# PDF -> HTML de origem em assets/manual (para avisar quando o PDF estiver mais velho que o HTML).
+MANUAL_PDF_SOURCES = {
+    "Manual_Q-DISK.pdf": "manual.html",
+    "Manual_Instalacao_Q-DISK.pdf": "instalacao.html",
+}
+MANUAL_PDF_URLS = {
+    "Manual_Q-DISK.pdf": DEFAULT_MANUAL_URL,
+    "Manual_Instalacao_Q-DISK.pdf": DEFAULT_MANUAL_INSTALLER_URL,
+}
 CATALOG_FILE_NAMES = (
     "qdisk.catalog.pnb.json",
     "qdisk.catalog.rd.json",
@@ -1076,7 +1089,7 @@ def get_manifest_payload(local_update_dir: Path) -> tuple[dict, list[Path]]:
     if not artifact_name:
         raise ValueError(f"Campo fileName ausente em {manifest}")
     files = []
-    for name in [DEFAULT_MANIFEST_NAME, artifact_name, *CATALOG_FILE_NAMES]:
+    for name in [DEFAULT_MANIFEST_NAME, artifact_name, *CATALOG_FILE_NAMES, *MANUAL_PDF_SOURCES]:
         path = local_update_dir / name
         if not path.is_file():
             raise FileNotFoundError(f"Arquivo do pacote nao encontrado: {path}")
@@ -1086,7 +1099,7 @@ def get_manifest_payload(local_update_dir: Path) -> tuple[dict, list[Path]]:
 
 def prepare_update_dir() -> None:
     UPDATE_DIR.mkdir(parents=True, exist_ok=True)
-    for pattern in ("Setup_qdisk_*.exe", "Setup_qdisk.update.exe", "qdisk.exe", "qdisk.update.exe", "update.json", "qdisk.update.json", *CATALOG_FILE_NAMES):
+    for pattern in ("Setup_qdisk_*.exe", "Setup_qdisk.update.exe", "qdisk.exe", "qdisk.update.exe", "update.json", "qdisk.update.json", *CATALOG_FILE_NAMES, *MANUAL_PDF_SOURCES):
         for path in UPDATE_DIR.glob(pattern):
             if path.is_file():
                 path.unlink()
@@ -1103,7 +1116,7 @@ def resolve_release_artifact(version: str, prefer_setup: bool) -> Path:
     raise FileNotFoundError(f"Nenhum artefato encontrado: {setup.name} ou {DIST_EXE.name}")
 
 
-def create_update_package(args: argparse.Namespace) -> tuple[Path, list[Path], list[Path]]:
+def create_update_package(args: argparse.Namespace, log_file: Path | None = None) -> tuple[Path, list[Path], list[Path]]:
     version = read_version()
     artifact = resolve_release_artifact(version, args.prefer_setup)
     prepare_update_dir()
@@ -1145,7 +1158,21 @@ def create_update_package(args: argparse.Namespace) -> tuple[Path, list[Path], l
         destination = UPDATE_DIR / name
         destination.write_text(json.dumps({"build": build_metadata, "items": items}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         catalog_paths.append(destination)
+    copy_manual_pdfs(log_file)
     return update_artifact, manifest_paths, catalog_paths
+
+
+def copy_manual_pdfs(log_file: Path | None = None) -> None:
+    """Copia os manuais em PDF de docs/manual para dist/update (publicados ao lado do Setup_qdisk.update.exe)."""
+    for name, html_name in MANUAL_PDF_SOURCES.items():
+        source = MANUAL_PDF_DIR / name
+        if not source.is_file():
+            raise FileNotFoundError(f"Manual em PDF nao encontrado: {source} (gere com tools/utils/gerar_pdf_manuais.ps1)")
+        html = PROJECT_ROOT / "assets" / "manual" / html_name
+        if html.is_file() and html.stat().st_mtime > source.stat().st_mtime:
+            log_message(f"{name} e mais antigo que {html_name}: regenere com tools/utils/gerar_pdf_manuais.ps1", "WARN", log_file)
+        shutil.copy2(source, UPDATE_DIR / name)
+        log_message(f"{name} incluido no pacote ({MANUAL_PDF_URLS[name]})", "INFO", log_file)
 
 
 def load_env_file(path: Path) -> None:
@@ -2014,7 +2041,7 @@ def main() -> int:
             return rc
 
         args.prefer_setup = not args.no_installer
-        rc = run_step(13, status, duration, log_file, lambda: create_update_package(args), skipped=args.no_update_package)
+        rc = run_step(13, status, duration, log_file, lambda: create_update_package(args, log_file), skipped=args.no_update_package)
         if rc != 0:
             log_step_summary(status, duration, log_file)
             return rc
