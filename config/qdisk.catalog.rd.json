@@ -3,20 +3,20 @@
     "name": "rd-linux-atual-sharepoint",
     "group": "rd-linux",
     "fileUrl": "https://quallit.link/rd-linux-atual-sharepoint",
-    "fileName": "RD-LINUX-V30-R318.TIBX",
-    "md5": "bcc631d26a6fa98c2301dacc3374dce1",
-    "sha256": "4a26dd61cd68b0d8d7daeeff3d84cb475da30de3ded43f42b3ea66f2da10cc65",
-    "imageSizeBytes": 7209635840,
+    "fileName": "RD-LINUX-V30-R317.TIBX",
+    "md5": "eabaf8991dcd828a0a04dd1a537547d8",
+    "sha256": "b4c33d2412bb5a81d67408d58094c2acc5ad9f77bdaf866c288ed200a1c11c84",
+    "imageSizeBytes": 6909583360,
     "description": "Imagem de sistema operacional (backup Acronis). Restauração com 2 pendrives: (1) o pendrive com a mídia Acronis (gravada em RAW/DD), para dar boot; (2) o pendrive com o TIBX (copiado em NTFS). Inicie pelo pendrive 1 e restaure a partir do arquivo no pendrive 2."
   },
   {
     "name": "rd-linux-atual-dropbox",
     "group": "rd-linux",
     "fileUrl": "https://quallit.link/rd-linux-atual-dropbox",
-    "fileName": "RD-LINUX-V30-R318.TIBX",
-    "md5": "bcc631d26a6fa98c2301dacc3374dce1",
-    "sha256": "4a26dd61cd68b0d8d7daeeff3d84cb475da30de3ded43f42b3ea66f2da10cc65",
-    "imageSizeBytes": 7209635840,
+    "fileName": "RD-LINUX-V30-R317.TIBX",
+    "md5": "eabaf8991dcd828a0a04dd1a537547d8",
+    "sha256": "b4c33d2412bb5a81d67408d58094c2acc5ad9f77bdaf866c288ed200a1c11c84",
+    "imageSizeBytes": 6909583360,
     "description": "Imagem de sistema operacional (backup Acronis). Restauração com 2 pendrives: (1) o pendrive com a mídia Acronis (gravada em RAW/DD), para dar boot; (2) o pendrive com o TIBX (copiado em NTFS). Inicie pelo pendrive 1 e restaure a partir do arquivo no pendrive 2."
   },
   {
