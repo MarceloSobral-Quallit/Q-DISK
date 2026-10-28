@@ -3,7 +3,7 @@
 Histórico de versões do qdisk. Formato da versão: `Maior.Menor.Mês.Ano` (ver `bump_version()` em
 [`tools/build_release_OV.py`](../tools/build_release_OV.py); `--set-version` fixa `Maior.Menor`).
 
-## 1.01.10.26
+## 1.01.10.26 — 28/10/2026
 
 - Atualização do modelo de autenticação do token.
 
