@@ -47,11 +47,61 @@ public class TokenValidationTests
         Assert.Equal(expected, new TokenValidationService(TodaySet()).ResolveProfile(token));
     }
 
-    [Fact]
-    public void TokenDeAnteontem_ERecusado()
+    // Verificadores de 18/10/2026 a 07/11/2026 (tres semanas, domingo a sabado), so do RD.
+    private static TokenVerifierSet WeeksSet()
     {
-        var token = SiteToken(DateTime.Today.AddDays(-2), 10911);
-        Assert.Equal(UserProfile.None, new TokenValidationService(TodaySet()).ResolveProfile(token));
+        var first = new DateTime(2026, 10, 18);
+        var set = new TokenVerifierSet { Iterations = 1000, Salt = new byte[] { 1, 2, 3, 4 }, FirstDate = first, LastDate = first.AddDays(20) };
+        var days = new Dictionary<string, string>();
+        for (var day = first; day <= set.LastDate; day = day.AddDays(1))
+        {
+            days[day.ToString("yyyy-MM-dd")] = Convert.ToHexString(TokenVerifierSet.ComputeHash(SiteToken(day, 10911), UserProfile.RD, day, set.Salt, set.Iterations));
+        }
+        set.Verifiers[UserProfile.RD] = days;
+        return set;
+    }
+
+    // Quarta 28/10/2026: vale o token de qualquer dia de domingo 25/10 a sabado 31/10.
+    [Theory]
+    [InlineData("2026-10-25", UserProfile.RD)]
+    [InlineData("2026-10-28", UserProfile.RD)]
+    [InlineData("2026-10-31", UserProfile.RD)]
+    [InlineData("2026-10-24", UserProfile.None)]
+    [InlineData("2026-11-01", UserProfile.None)]
+    public void TokenDaSemanaCorrente_EAceito(string tokenDay, UserProfile expected)
+    {
+        var wednesday = new DateTime(2026, 10, 28);
+        var token = SiteToken(DateTime.Parse(tokenDay), 10911);
+        Assert.Equal(expected, new TokenValidationService(WeeksSet()).ResolveProfile(token, wednesday, wednesday));
+    }
+
+    [Fact]
+    public void Virada_DomingoNaoAceitaTokenDaSemanaAnterior()
+    {
+        var sunday = new DateTime(2026, 11, 1);
+        var service = new TokenValidationService(WeeksSet());
+        Assert.Equal(UserProfile.None, service.ResolveProfile(SiteToken(new DateTime(2026, 10, 31), 10911), sunday, sunday));
+        Assert.Equal(UserProfile.RD, service.ResolveProfile(SiteToken(new DateTime(2026, 11, 7), 10911), sunday, sunday));
+    }
+
+    // Sabado a noite no horario local com o UTC ja no domingo: vale tambem a semana da data UTC.
+    [Fact]
+    public void ToleranciaUtc_AceitaSemanaDaDataUtc()
+    {
+        var saturday = new DateTime(2026, 10, 31);
+        var service = new TokenValidationService(WeeksSet());
+        Assert.Equal(UserProfile.RD, service.ResolveProfile(SiteToken(new DateTime(2026, 11, 1), 10911), saturday, saturday.AddDays(1)));
+        Assert.Equal(UserProfile.None, service.ResolveProfile(SiteToken(new DateTime(2026, 11, 1), 10911), saturday, saturday));
+    }
+
+    [Theory]
+    [InlineData("2026-10-25", "2026-10-25")]
+    [InlineData("2026-10-28", "2026-10-25")]
+    [InlineData("2026-10-31", "2026-10-25")]
+    [InlineData("2026-11-01", "2026-11-01")]
+    public void WeekStart_ERetornaODomingo(string day, string sunday)
+    {
+        Assert.Equal(DateTime.Parse(sunday), TokenValidationService.WeekStart(DateTime.Parse(day)));
     }
 
     [Fact]

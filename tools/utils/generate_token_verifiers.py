@@ -38,6 +38,11 @@ def site_token(day: dt.date, internal_id: str) -> str:
     return digits[:6] if len(digits) >= 6 else digits.rjust(6, "0")
 
 
+def week_start(day: dt.date) -> dt.date:
+    """Domingo da semana de day (mesma conta de TokenValidationService.WeekStart)."""
+    return day - dt.timedelta(days=(day.weekday() + 1) % 7)
+
+
 def verifier(args: tuple[str, str, dt.date, bytes, int]) -> tuple[str, str, str]:
     profile, internal_id, day, salt, iterations = args
     day_text = day.isoformat()
@@ -61,8 +66,9 @@ def main(argv: list[str]) -> int:
         return 1
 
     today = dt.date.fromisoformat(args.today) if args.today else dt.date.today()
-    first = today - dt.timedelta(days=args.days_back)
-    last = today + dt.timedelta(days=args.days_ahead)
+    # O app aceita o token de qualquer dia da semana (domingo a sabado): a janela comeca num domingo e termina num sabado.
+    first = week_start(today - dt.timedelta(days=args.days_back))
+    last = week_start(today + dt.timedelta(days=args.days_ahead)) + dt.timedelta(days=6)
     salt = os.urandom(16)
     days = [first + dt.timedelta(days=n) for n in range((last - first).days + 1)]
     jobs = [(p["profile"], str(p["internalId"]), day, salt, args.iterations) for p in profiles for day in days]

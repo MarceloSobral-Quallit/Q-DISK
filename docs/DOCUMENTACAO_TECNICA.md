@@ -583,13 +583,17 @@ echo gerar_token($date, 270777), "\n";  // DevTeam
 ### Como o app confere
 
 O app não leva os IDs. Ele embute `config/qdisk.tokens.app.json`, gerado por `generate_token_verifiers.py` a partir
-de `config/qdisk.tokens.json`: para cada perfil e cada dia da janela (padrão: hoje −2 a +730 dias), o PBKDF2-SHA256
+de `config/qdisk.tokens.json`: para cada perfil e cada dia da janela (padrão: hoje −2 a +730 dias, estendida ao
+domingo anterior e ao sábado seguinte), o PBKDF2-SHA256
 (100.000 iterações, 16 bytes) do token daquele dia, com sal aleatório + `|<perfil>|<AAAA-MM-DD>`. Opções do gerador:
 `--days-back`, `--days-ahead`, `--iterations`, `--today`.
 
 [`TokenValidationService`](../src/qdisk.Core/Services/TokenValidationService.vb): tira o que não é dígito, exige 6
-dígitos e compara (tempo constante) com o verificador da data local e, se diferente, da data UTC; o perfil é o que
-bater. Se a janela não cobre hoje, nenhum token valida e a tela pede para instalar a versão mais recente.
+dígitos e compara (tempo constante) com os verificadores de todos os dias da semana da data local (domingo 00:00 a
+sábado 23:59, começando por hoje) e, se a semana da data UTC for outra, também com os dessa semana; o perfil é o que
+bater. Ou seja, o site continua gerando o token do dia, e o app aceita o token de qualquer dia da semana corrente
+(desde a 1.01). Um token incorreto custa até 21 PBKDF2 (3 perfis × 7 dias), cerca de 0,3 s medido no desenvolvimento.
+Se a janela não cobre hoje, nenhum token valida e a tela pede para instalar a versão mais recente.
 
 Limite de tentativas (`TokenAttemptLimiter`, estado em `%LOCALAPPDATA%\qdisk\config\token_attempts.dat`): 3 erros
 livres; depois espera de 30 s, dobrando a cada erro, até 15 min. Vale para a tela e para `--token`, também entre
