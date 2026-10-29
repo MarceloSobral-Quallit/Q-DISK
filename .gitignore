@@ -54,6 +54,9 @@ config/github_sync.ini
 config/secret.md
 secret.txt
 
+# Instrucoes do token para o site do cliente (contem os IDs internos; enviadas so por canal privado)
+docs/INSTRUCOES_TOKEN_SITE.*
+
 # Publicação local do atualizador (pode conter credenciais)
 tools/utils/publish_update_package.ps1
 
